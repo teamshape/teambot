@@ -1,5 +1,6 @@
 'use strict';
 
+const got = require('got');
 const Discord = require('discord.js');
 const { prefix, token, testChannel, prodChannel, allowedChannels } = require('./config.json');
 
@@ -42,21 +43,56 @@ bot.on('message', message => {
 	if (command === 'ping') {
 		message.channel.send('Pong.');
 	}
-  if (command === 'react') {
-    message.react('😄');
-  }
+  // if (command === 'react') {
+  //   message.react('😄');
+  // }
   if (command === 'uptime') {
     message.channel.send(`Online for ${bot.uptime} ms`);
   }
+  if (command === 'stock') {
+    let stock = args.shift().toUpperCase();
 
-  if (command === 'fruits') {
-		message.react('🍎')
-			.then(() => message.react('🍊'))
-			.then(() => message.react('🍇'))
-			.catch(() => console.error('One of the emojis failed to react.'));
+    (async () => {
+      const asx = await got.get('https://www.asx.com.au/asx/1/share/' + stock).json();
+      const yahoo = await got.get('http://d.yimg.com/autoc.finance.yahoo.com/autoc?query=' + stock + '.ax&lang=en');
+    
+      let yahooBody = yahoo.body;
+      let yahooJson = JSON.parse(yahooBody);
+      let stockName = yahooJson.ResultSet.Result[0].name
+
+      let thumbnail = 'https://i.imgur.com/zCl2dri.jpg';
+      let color = '0x0099ff';
+      if (asx.last_price > asx.previous_close_price) {
+        thumbnail = 'https://i.imgur.com/RfWldqJ.png';
+        color = '#64876f';
+      } else if (asx.last_price < asx.previous_close_price) {
+        thumbnail = 'https://i.imgur.com/mjjZD7d.jpg';
+        color = '#d44942';
+      }
+
+      const stockEmbed = new Discord.MessageEmbed()
+        .setColor(color)
+        .setTitle(stockName)
+        .setURL('https://www.bloomberg.com/quote/' + stock + ':AU')
+        .setAuthor('TeamBot', 'https://i.imgur.com/zCl2dri.jpg', 'https://github.com/teamshape/teambot')
+        .setThumbnail(thumbnail)
+        .addFields(
+          { name: 'Price', value: asx.last_price },
+          { name: 'High', value: asx.day_high_price, inline: true },
+          { name: 'Low', value: asx.day_low_price, inline: true },
+          { name: 'Open', value: asx.open_price, inline: true },
+          { name: 'Change $', value: asx.change_price, inline: true },
+          { name: 'Change %', value: asx.change_in_percent, inline: true },
+          { name: 'Previous close', value: asx.previous_close_price, inline: true },
+        )
+        .setTimestamp()
+        .setFooter('Found with ❤️ by TeamBot', 'https://i.imgur.com/zCl2dri.jpg');
+      
+      message.channel.send({ embed: stockEmbed });
+    })();
+
   }
-  
-	// other commands...
+
 });
 
 bot.on('guildMemberAdd', member => {
@@ -67,5 +103,6 @@ bot.on('guildMemberAdd', member => {
   // Send the message, mentioning the member
   channel.send(`Welcome to the party, ${member}`);
 });
+
 
 bot.login(token);
