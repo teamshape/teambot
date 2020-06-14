@@ -1,15 +1,41 @@
 'use strict';
 
 const got = require('got');
+const cron = require('cron').CronJob;
 const human = require('interval-to-human');
+const dateparser = require('dateparser');
 const Discord = require('discord.js');
 const Sequelize = require('sequelize');
 const { prefixes, token, allowedChannels } = require('./config.json');
 const { CronJob } = require('cron');
+const { DatabaseError } = require('sequelize');
 
 const bot = new Discord.Client();
 
+const sequelize = new Sequelize('database', null, null, {
+	host: 'localhost',
+	dialect: 'sqlite',
+	logging: false,
+	storage: 'db/teambot.sqlite',
+});
+
+const DB = sequelize.define('reminders', {
+	id: {
+		type: Sequelize.INTEGER,
+		unique: true,
+		primaryKey: true,
+	},
+	guild: Sequelize.STRING,
+	channel: Sequelize.STRING,
+	reminder_timestamp: {
+		type: Sequelize.DATE
+	},
+	user: Sequelize.STRING,
+	reminder: Sequelize.STRING,
+});
+
 bot.once('ready', () => {
+	DB.sync();
 	console.log(`Logged in as ${bot.user.tag}!`);
 
 	allowedChannels.forEach(function(channel) {
@@ -18,6 +44,31 @@ bot.once('ready', () => {
 			chan.send('Ohai.');
 		}
 	})
+
+	const { Op } = require('sequelize')
+	let job = new CronJob('0 * * * * *', async function() {
+		const reminders = await DB.findAll({ where: {
+			reminder_timestamp: {
+				 [Op.lte]: Date.now()
+			}
+		}});
+
+		reminders.forEach(function(rm) {
+			let reminder_channel = bot.channels.cache.get(rm.dataValues.channel);
+			let member = rm.dataValues.user;
+			let reminder_message = rm.dataValues.reminder;
+			if (reminder_channel) {
+				reminder_channel.send(`<@${member}>: ${reminder_message}`);
+				DB.destroy({
+					where: {
+						id: rm.dataValues.id
+					}
+				})
+			}
+		});
+	}, null, true, 'UTC');
+	job.start();
+
 });
 
 bot.on('messageReactionAdd', (reaction) => {
@@ -42,28 +93,28 @@ bot.on('message', async message => {
 			let uptime = human(bot.uptime);
 			message.channel.send(`Online for ${uptime}.`);
 		}
-		// if (command === 'remindme') {
-		// 	// !remind me in {time increments} to {message}
-		// 	let myMessage = args.slice(1).join(" ").split(/ to (.+)?/, 2);
-		// 	console.log(myMessage);
-		// 	let timestamp = Date.now() + dateparser.parse(myMessage[0]).value;
-		// 	let reminder = myMessage[1];
+		if (command === 'remindme') {
+			// !remind me in {time increments} to {message}
+			let myMessage = args.slice(1).join(" ").split(/ to (.+)?/, 2);
+			let timestamp = Date.now() + dateparser.parse(myMessage[0]).value;
+			let reminder = myMessage[1];
 
-		// 	try {
-		// 		const remind = await DB.create({
-		// 			guild: message.guild.id,
-		// 			reminder_timestamp: timestamp,
-		// 			user: message.author.id,
-		// 			reminder: reminder,
-		// 		});
-		// 		return message.reply(`Reminder added.`);
-		// 	} catch (e) {
-		// 		if (e.name === 'SequelizeUniqueConstraintError') {
-		// 			return message.reply('That tag already exists.');
-		// 		}
-		// 		return message.reply('Something went wrong with adding a reminder.');
-		// 	}
-		// }
+			try {
+				const remind = await DB.create({
+					guild: message.guild.id,
+					channel: message.channel.id,
+					reminder_timestamp: timestamp,
+					user: message.author.id,
+					reminder: reminder,
+				});
+				return message.reply(`Reminder added.`);
+			} catch (e) {
+				if (e.name === 'SequelizeUniqueConstraintError') {
+					return message.reply('That reminder already exists.');
+				}
+				return message.reply('Something went wrong with adding a reminder.');
+			}
+		}
 	}
 	if (prefix === '$') {
 		const stock = command.toUpperCase();
