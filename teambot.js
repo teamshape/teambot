@@ -3,7 +3,9 @@
 const got = require('got');
 const human = require('interval-to-human');
 const Discord = require('discord.js');
-const { prefix, token, allowedChannels } = require('./config.json');
+const Sequelize = require('sequelize');
+const { prefixes, token, allowedChannels } = require('./config.json');
+const { CronJob } = require('cron');
 
 const bot = new Discord.Client();
 
@@ -24,32 +26,47 @@ bot.on('messageReactionAdd', (reaction) => {
 	}
 });
 
-bot.on('message', message => {
+bot.on('message', async message => {
 
-	// if (message.content === 'What does everyone think of bdogg?') {
-	// 	message.react('🇬')
-	// 		.then(() => message.react('🇦'))
-	// 		.then(() => message.react('🇾'))
-	// 		.catch(() => console.error('One of the emojis failed to react.'));
-	// }
+	if (!allowedChannels.includes(message.channel.id) || prefixes.indexOf(message.content.charAt(0)) < 0 || message.author.bot) return;
 
-	if (!allowedChannels.includes(message.channel.id) || !message.content.startsWith(prefix) || message.author.bot) return;
-
+	const prefix = message.content[0];
 	const args = message.content.slice(prefix.length).split(/ +/);
 	const command = args.shift().toLowerCase();
 
-	if (command === 'ping') {
-		message.channel.send('Pong.');
+	if (prefix === '!') {
+		if (command === 'ping') {
+			message.channel.send('Pong.');
+		}
+		if (command === 'uptime') {
+			let uptime = human(bot.uptime);
+			message.channel.send(`Online for ${uptime}.`);
+		}
+		// if (command === 'remindme') {
+		// 	// !remind me in {time increments} to {message}
+		// 	let myMessage = args.slice(1).join(" ").split(/ to (.+)?/, 2);
+		// 	console.log(myMessage);
+		// 	let timestamp = Date.now() + dateparser.parse(myMessage[0]).value;
+		// 	let reminder = myMessage[1];
+
+		// 	try {
+		// 		const remind = await DB.create({
+		// 			guild: message.guild.id,
+		// 			reminder_timestamp: timestamp,
+		// 			user: message.author.id,
+		// 			reminder: reminder,
+		// 		});
+		// 		return message.reply(`Reminder added.`);
+		// 	} catch (e) {
+		// 		if (e.name === 'SequelizeUniqueConstraintError') {
+		// 			return message.reply('That tag already exists.');
+		// 		}
+		// 		return message.reply('Something went wrong with adding a reminder.');
+		// 	}
+		// }
 	}
-	// if (command === 'react') {
-	//   message.react('😄');
-	// }
-	if (command === 'uptime') {
-		let uptime = human(bot.uptime);
-		message.channel.send(`Online for ${uptime}.`);
-	}
-	if (command === 'stock') {
-		const stock = args.shift().toUpperCase();
+	if (prefix === '$') {
+		const stock = command.toUpperCase();
 
 		(async () => {
 			const asx = await got.get('https://www.asx.com.au/asx/1/share/' + stock).json();

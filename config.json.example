@@ -1,5 +1,8 @@
 {
-    "prefix": "!",
+    "prefixes": [
+        "!",
+        "$"
+    ],
     "id": "12345678901234567890",
     "secret": "kdnewoufweufndweojfoiwe",
     "token": "",
