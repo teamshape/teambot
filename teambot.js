@@ -1,6 +1,7 @@
 'use strict';
 
 const got = require('got');
+const human = require('interval-to-human');
 const Discord = require('discord.js');
 const { prefix, token, testChannel, prodChannel, allowedChannels } = require('./config.json');
 
@@ -47,7 +48,8 @@ bot.on('message', message => {
 	//   message.react('😄');
 	// }
 	if (command === 'uptime') {
-		message.channel.send(`Online for ${bot.uptime} ms`);
+		let uptime = human(bot.uptime);
+		message.channel.send(`Online for ${uptime}`);
 	}
 	if (command === 'stock') {
 		const stock = args.shift().toUpperCase();
