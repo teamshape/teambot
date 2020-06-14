@@ -2,5 +2,9 @@
     "prefix": "!",
     "id": "12345678901234567890",
     "secret": "kdnewoufweufndweojfoiwe",
-	"token": ""
+    "token": "",
+    "allowedChannels": [
+        "123456789098765342",
+        "876543456789876566"
+    ]
 }
