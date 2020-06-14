@@ -6,7 +6,7 @@ const human = require('interval-to-human');
 const dateparser = require('dateparser');
 const Discord = require('discord.js');
 const Sequelize = require('sequelize');
-const { prefixes, token, allowedChannels, welcomes } = require('./config.json');
+const { prefixes, token, allowedChannels, welcomes, avApiKey } = require('./config.json');
 const { CronJob } = require('cron');
 
 const bot = new Discord.Client();
@@ -103,11 +103,11 @@ bot.on('message', async message => {
 		if (command === 'ping') {
 			message.channel.send('Pong.');
 		}
-		if (command === 'uptime') {
+		else if (command === 'uptime') {
 			let uptime = human(bot.uptime);
 			message.channel.send(`Online for ${uptime}.`);
 		}
-		if (command === 'remindme') {
+		else if (command === 'remindme') {
 			// !remind me in {time increments} to {message}
 			let myMessage = args.slice(1).join(" ").split(/ to (.+)?/, 2);
 			let timestamp = Date.now() + dateparser.parse(myMessage[0]).value;
@@ -129,6 +129,74 @@ bot.on('message', async message => {
 				return message.reply('Something went wrong with adding a reminder.');
 			}
 		}
+		else {
+			// Fall through to looking up US stocks.
+			const stock = command.toUpperCase();
+			(async () => {
+				const avRequest = await got.get('https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=' + stock + '&apikey=' + avApiKey).json();
+				const yahoo = await got.get('http://d.yimg.com/autoc.finance.yahoo.com/autoc?query=' + stock + '&lang=en');
+
+				let av = avRequest['Global Quote'];
+				const yahooBody = yahoo.body;
+				const yahooJson = JSON.parse(yahooBody);
+				const stockName = yahooJson.ResultSet.Result[0].name;
+
+				let thumbnail = 'https://i.imgur.com/zCl2dri.jpg';
+				let color = '0x0099ff';
+				if (av['05. price'] > av['08. previous close']) {
+					thumbnail = 'https://i.imgur.com/RfWldqJ.png';
+					color = '#64876f';
+				}
+				else if (av['05. price'] < av['08. previous close']) {
+					thumbnail = 'https://i.imgur.com/mjjZD7d.jpg';
+					color = '#d44942';
+				}
+
+				const stockEmbed = new Discord.MessageEmbed()
+					.setColor(color)
+					.setTitle(stockName)
+					.setURL('https://www.bloomberg.com/quote/' + stock + ':US')
+					.setAuthor('TeamBot', 'https://i.imgur.com/zCl2dri.jpg', 'https://github.com/teamshape/teambot')
+					.setThumbnail(thumbnail)
+					.addFields(
+						{ name: 'Price', value: av['05. price'] },
+						{ name: 'High', value: av['03. high'], inline: true },
+						{ name: 'Low', value: av['04. low'], inline: true },
+						{ name: 'Open', value: av['02. open'], inline: true },
+						{ name: 'Change $', value: av['09. change'], inline: true },
+						{ name: 'Change %', value: av['10. change percent'], inline: true },
+						{ name: 'Previous close', value: av['08. previous close'], inline: true },
+					)
+					.setTimestamp()
+					.setFooter('Found with ❤️ by TeamBot', 'https://i.imgur.com/zCl2dri.jpg');
+
+				message.channel.send({ embed: stockEmbed });
+			})();
+		}
+
+		// if (command === 'alert') {
+		// 	// !alert CBA below 39.8
+		// 	let stock = args[0];
+		// 	let operator = args[1];
+		// 	let price = args[2];
+
+		// 	try {
+		// 		const remind = await AlertDB.create({
+		// 			guild: message.guild.id,
+		// 			channel: message.channel.id,
+		// 			user: message.author.id,
+		// 			stock: stock,
+		// 			operator: operator,
+		// 			price: price
+		// 		});
+		// 		return message.reply(`Alert added.`);
+		// 	} catch (e) {
+		// 		if (e.name === 'SequelizeUniqueConstraintError') {
+		// 			return message.reply('That alert already exists.');
+		// 		}
+		// 		return message.reply('Something went wrong with adding an alert.');
+		// 	}
+		// }
 	}
 	if (prefix === '$') {
 		const stock = command.toUpperCase();
