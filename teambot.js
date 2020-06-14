@@ -46,7 +46,7 @@ bot.on('message', message => {
 	// }
 	if (command === 'uptime') {
 		let uptime = human(bot.uptime);
-		message.channel.send(`Online for ${uptime}`);
+		message.channel.send(`Online for ${uptime}.`);
 	}
 	if (command === 'stock') {
 		const stock = args.shift().toUpperCase();
