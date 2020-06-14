@@ -9,5 +9,9 @@
     "allowedChannels": [
         "123456789098765342",
         "876543456789876566"
+    ],
+    "welcomes": [
+        "Welcome to the party,",
+        "Good luck"
     ]
 }

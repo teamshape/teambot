@@ -6,9 +6,8 @@ const human = require('interval-to-human');
 const dateparser = require('dateparser');
 const Discord = require('discord.js');
 const Sequelize = require('sequelize');
-const { prefixes, token, allowedChannels } = require('./config.json');
+const { prefixes, token, allowedChannels, welcomes } = require('./config.json');
 const { CronJob } = require('cron');
-const { DatabaseError } = require('sequelize');
 
 const bot = new Discord.Client();
 
@@ -19,7 +18,7 @@ const sequelize = new Sequelize('database', null, null, {
 	storage: 'db/teambot.sqlite',
 });
 
-const DB = sequelize.define('reminders', {
+const RemindDB = sequelize.define('reminders', {
 	id: {
 		type: Sequelize.INTEGER,
 		unique: true,
@@ -35,7 +34,8 @@ const DB = sequelize.define('reminders', {
 });
 
 bot.once('ready', () => {
-	DB.sync();
+	RemindDB.sync();
+	// AlertDB.sync();
 	console.log(`Logged in as ${bot.user.tag}!`);
 
 	allowedChannels.forEach(function(channel) {
@@ -47,7 +47,7 @@ bot.once('ready', () => {
 
 	const { Op } = require('sequelize')
 	let job = new CronJob('0 * * * * *', async function() {
-		const reminders = await DB.findAll({ where: {
+		const reminders = await RemindDB.findAll({ where: {
 			reminder_timestamp: {
 				 [Op.lte]: Date.now()
 			}
@@ -59,7 +59,7 @@ bot.once('ready', () => {
 			let reminder_message = rm.dataValues.reminder;
 			if (reminder_channel) {
 				reminder_channel.send(`<@${member}>: ${reminder_message}`);
-				DB.destroy({
+				RemindDB.destroy({
 					where: {
 						id: rm.dataValues.id
 					}
@@ -78,6 +78,20 @@ bot.on('messageReactionAdd', (reaction) => {
 });
 
 bot.on('message', async message => {
+
+	if (message.content.toLowerCase().includes('brother')) {
+		const emoji = message.guild.emojis.cache.find(emoji => emoji.name === 'Brother');
+		if (emoji) {
+			message.react(emoji);
+		}
+	}
+
+	if (message.content === 'What does everyone think of bdogg?') {
+		message.react('🇬')
+			.then(() => message.react('🇦'))
+			.then(() => message.react('🇾'))
+			.catch(() => console.error('One of the emojis failed to react.'));
+	}
 
 	if (!allowedChannels.includes(message.channel.id) || prefixes.indexOf(message.content.charAt(0)) < 0 || message.author.bot) return;
 
@@ -100,7 +114,7 @@ bot.on('message', async message => {
 			let reminder = myMessage[1];
 
 			try {
-				const remind = await DB.create({
+				const remind = await RemindDB.create({
 					guild: message.guild.id,
 					channel: message.channel.id,
 					reminder_timestamp: timestamp,
@@ -169,7 +183,8 @@ bot.on('guildMemberAdd', member => {
 	// Do nothing if the channel wasn't found on this server
 	if (!channel) return;
 	// Send the message, mentioning the member
-	channel.send(`Welcome to the party, ${member}.`);
+	let welcome = welcomes[Math.floor(Math.random() * welcomes.length)];
+	channel.send(`${welcome} ${member}.`);
 });
 
 
