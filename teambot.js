@@ -3,22 +3,19 @@
 const got = require('got');
 const human = require('interval-to-human');
 const Discord = require('discord.js');
-const { prefix, token, testChannel, prodChannel, allowedChannels } = require('./config.json');
+const { prefix, token, allowedChannels } = require('./config.json');
 
 const bot = new Discord.Client();
 
 bot.once('ready', () => {
 	console.log(`Logged in as ${bot.user.tag}!`);
 
-	const test = bot.channels.cache.get(testChannel);
-	if (test) {
-		test.send('Ohai.');
-	}
-
-	const prod = bot.channels.cache.get(prodChannel);
-	if (prod) {
-		prod.send('Ohai.');
-	}
+	allowedChannels.forEach(function(channel) {
+		let chan = bot.channels.cache.get(channel);
+		if (chan) {
+			chan.send('Ohai.');
+		}
+	})
 });
 
 bot.on('messageReactionAdd', (reaction) => {
