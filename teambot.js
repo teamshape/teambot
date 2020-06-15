@@ -1,7 +1,7 @@
 'use strict';
 
+const fs = require('fs');
 const got = require('got');
-const cron = require('cron').CronJob;
 const human = require('interval-to-human');
 const dateparser = require('dateparser');
 const Discord = require('discord.js');
@@ -251,9 +251,19 @@ bot.on('guildMemberAdd', member => {
 	// Do nothing if the channel wasn't found on this server
 	if (!channel) return;
 	// Send the message, mentioning the member
-	let welcome = welcomes[Math.floor(Math.random() * welcomes.length)];
+	const welcome = welcomes[Math.floor(Math.random() * welcomes.length)];
 	channel.send(`${welcome} ${member}.`);
 });
 
-
 bot.login(token);
+
+fs.watch('./watch', (event, filename) => {
+	fs.readFile('./watch', 'utf8', function (err, data) {
+		allowedChannels.forEach(function(channel) {
+			const chan = bot.channels.cache.get(channel);
+			if (chan) {
+				chan.send(`${data}`);
+			}
+		});
+	});
+});
