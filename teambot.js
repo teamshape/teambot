@@ -27,7 +27,7 @@ const RemindDB = sequelize.define('reminders', {
 	guild: Sequelize.STRING,
 	channel: Sequelize.STRING,
 	reminder_timestamp: {
-		type: Sequelize.DATE
+		type: Sequelize.DATE,
 	},
 	user: Sequelize.STRING,
 	reminder: Sequelize.STRING,
@@ -39,31 +39,31 @@ bot.once('ready', () => {
 	console.log(`Logged in as ${bot.user.tag}!`);
 
 	allowedChannels.forEach(function(channel) {
-		let chan = bot.channels.cache.get(channel);
+		const chan = bot.channels.cache.get(channel);
 		if (chan) {
 			chan.send('Ohai.');
 		}
-	})
+	});
 
-	const { Op } = require('sequelize')
-	let job = new CronJob('0 * * * * *', async function() {
+	const { Op } = require('sequelize');
+	const job = new CronJob('0 * * * * *', async function() {
 		const reminders = await RemindDB.findAll({ where: {
 			reminder_timestamp: {
-				 [Op.lte]: Date.now()
-			}
-		}});
+				 [Op.lte]: Date.now(),
+			},
+		} });
 
 		reminders.forEach(function(rm) {
-			let reminder_channel = bot.channels.cache.get(rm.dataValues.channel);
-			let member = rm.dataValues.user;
-			let reminder_message = rm.dataValues.reminder;
+			const reminder_channel = bot.channels.cache.get(rm.dataValues.channel);
+			const member = rm.dataValues.user;
+			const reminder_message = rm.dataValues.reminder;
 			if (reminder_channel) {
 				reminder_channel.send(`<@${member}>: ${reminder_message}`);
 				RemindDB.destroy({
 					where: {
-						id: rm.dataValues.id
-					}
-				})
+						id: rm.dataValues.id,
+					},
+				});
 			}
 		});
 	}, null, true, 'UTC');
@@ -104,14 +104,14 @@ bot.on('message', async message => {
 			message.channel.send('Pong.');
 		}
 		else if (command === 'uptime') {
-			let uptime = human(bot.uptime);
+			const uptime = human(bot.uptime);
 			message.channel.send(`Online for ${uptime}.`);
 		}
 		else if (command === 'remindme') {
 			// !remind me in {time increments} to {message}
-			let myMessage = args.slice(1).join(" ").split(/ to (.+)?/, 2);
-			let timestamp = Date.now() + dateparser.parse(myMessage[0]).value;
-			let reminder = myMessage[1];
+			const myMessage = args.slice(1).join(' ').split(/ to (.+)?/, 2);
+			const timestamp = Date.now() + dateparser.parse(myMessage[0]).value;
+			const reminder = myMessage[1];
 
 			try {
 				const remind = await RemindDB.create({
@@ -121,8 +121,9 @@ bot.on('message', async message => {
 					user: message.author.id,
 					reminder: reminder,
 				});
-				return message.reply(`Reminder added.`);
-			} catch (e) {
+				return message.reply('Reminder added.');
+			}
+			catch (e) {
 				if (e.name === 'SequelizeUniqueConstraintError') {
 					return message.reply('That reminder already exists.');
 				}
@@ -136,7 +137,7 @@ bot.on('message', async message => {
 				const avRequest = await got.get('https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=' + stock + '&apikey=' + avApiKey).json();
 				const yahoo = await got.get('http://d.yimg.com/autoc.finance.yahoo.com/autoc?query=' + stock + '&lang=en');
 
-				let av = avRequest['Global Quote'];
+				const av = avRequest['Global Quote'];
 				const yahooBody = yahoo.body;
 				const yahooJson = JSON.parse(yahooBody);
 				const stockName = yahooJson.ResultSet.Result[0].name;
