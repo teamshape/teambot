@@ -257,13 +257,13 @@ bot.on('guildMemberAdd', member => {
 
 bot.login(token);
 
-fs.watch('./watch', (event, filename) => {
-	fs.readFile('./watch', 'utf8', function (err, data) {
-		allowedChannels.forEach(function(channel) {
-			const chan = bot.channels.cache.get(channel);
-			if (chan) {
-				chan.send(`${data}`);
-			}
-		});
-	});
-});
+//fs.watch('./watch', (event, filename) => {
+//	fs.readFile('./watch', 'utf8', function (err, data) {
+//		allowedChannels.forEach(function(channel) {
+//			const chan = bot.channels.cache.get(channel);
+//			if (chan) {
+//				chan.send(`${data}`);
+//			}
+//		});
+//	});
+//});
