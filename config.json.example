@@ -13,5 +13,9 @@
     "welcomes": [
         "Welcome to the party,",
         "Good luck"
+    ],
+    "botLines": [
+        "Hello?",
+        "Hi?"
     ]
 }

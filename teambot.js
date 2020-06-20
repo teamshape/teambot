@@ -6,7 +6,7 @@ const human = require('interval-to-human');
 const dateparser = require('dateparser');
 const Discord = require('discord.js');
 const Sequelize = require('sequelize');
-const { prefixes, token, allowedChannels, welcomes, avApiKey } = require('./config.json');
+const { prefixes, token, allowedChannels, welcomes, avApiKey, botLines } = require('./config.json');
 const { CronJob } = require('cron');
 
 const bot = new Discord.Client();
@@ -140,6 +140,9 @@ bot.on('message', async message => {
 				const av = avRequest['Global Quote'];
 				const yahooBody = yahoo.body;
 				const yahooJson = JSON.parse(yahooBody);
+
+				if (!yahooJson.ResultSet.Result[0]) return;
+
 				const stockName = yahooJson.ResultSet.Result[0].name;
 
 				let thumbnail = 'https://i.imgur.com/zCl2dri.jpg';
@@ -257,6 +260,26 @@ bot.on('guildMemberAdd', member => {
 });
 
 bot.login(token);
+
+
+function saySomething() {
+	allowedChannels.forEach(function(channel) {
+		const chan = bot.channels.cache.get(channel);
+		const botLine = botLines[Math.floor(Math.random() * botLines.length)];
+		if (chan) {
+			chan.send(`${botLine}`);
+		}
+	});
+}
+
+(function loop() {
+	// var rand = Math.round(Math.random() * 86400000); // One day.
+	var rand = Math.round(Math.random() * 21600000); // 6 hours.
+    setTimeout(function() {
+            saySomething();
+            loop();
+    }, rand);
+}());
 
 //fs.watch('./watch', (event, filename) => {
 //	fs.readFile('./watch', 'utf8', function (err, data) {
