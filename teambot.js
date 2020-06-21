@@ -63,7 +63,7 @@ const UserDB = sequelize.define('users', {
 
 bot.once('ready', () => {
 	RemindDB.sync();
-	// AlertDB.sync();
+	AlertDB.sync();
 	UserDB.sync();
 	console.log(`Logged in as ${bot.user.tag}!`);
 	saySomething('Ohai.');
@@ -89,6 +89,36 @@ bot.once('ready', () => {
 				});
 			}
 		});
+
+		const alerts = await AlertDB.findAll();
+
+		alerts.forEach(async function(a) {
+			const member = a.dataValues.user;
+			const stock = a.dataValues.stock;
+			const operator = a.dataValues.operator;
+			const price = a.dataValues.price;
+
+			const asx = await got.get('https://www.asx.com.au/asx/1/share/' + stock).json();
+
+			if (operator === 'gt' && asx.last_price > price) {
+				saySomething(`<@${member}>: ${stock} rose above your alert price of ${price} and is now trading at ${asx.last_price}`);
+				AlertDB.destroy({
+					where: {
+						id: a.dataValues.id,
+					},
+				});
+			}
+			else if (operator === 'lt' && asx.last_price < price) {
+				saySomething(`<@${member}>: ${stock} dropped below your alert price of ${price} and is now trading at ${asx.last_price}`);
+				AlertDB.destroy({
+					where: {
+						id: a.dataValues.id,
+					},
+				});
+			}
+		});
+
+
 	}, null, true, 'UTC');
 	job.start();
 
@@ -202,35 +232,62 @@ bot.on('message', async message => {
 			})();
 		}
 
-		// if (command === 'alert') {
-		// 	// !alert CBA below 39.8
-		// 	let stock = args[0];
-		// 	let operator = args[1];
-		// 	let price = args[2];
+		if (command === 'alert') {
+			// !alert CBA gt 39.8
+			const stock = args[0];
+			const operator = args[1];
+			const price = parseFloat(args[2]);
 
-		// 	try {
-		// 		const remind = await AlertDB.create({
-		// 			guild: message.guild.id,
-		// 			channel: message.channel.id,
-		// 			user: message.author.id,
-		// 			stock: stock,
-		// 			operator: operator,
-		// 			price: price
-		// 		});
-		// 		return message.reply(`Alert added.`);
-		// 	} catch (e) {
-		// 		if (e.name === 'SequelizeUniqueConstraintError') {
-		// 			return message.reply('That alert already exists.');
-		// 		}
-		// 		return message.reply('Something went wrong with adding an alert.');
-		// 	}
-		// }
+			try {
+				const asx = await got.get('https://www.asx.com.au/asx/1/share/' + stock).json();
+				var stockPrice = asx.last_price;
+			}
+			catch (error) {
+				return message.reply('Stock not found.');
+			}
+
+			if (operator !== 'gt' && operator !== 'lt') {
+				return message.reply('Operator should be \'gt\' or \'lt\'.');
+			}
+
+			// If operator is greater than and stockprice already over price
+			// OR if operator is less than and stockprice already under price.
+			if (operator === 'gt' && stockPrice > price) {
+				return message.reply(`Stock price for ${stock} is already above ${price} at ${stockPrice}.`);
+			}
+			else if (operator === 'lt' && stockPrice < price) {
+				return message.reply(`Stock price for ${stock} is already beneath ${price} at ${stockPrice}.`);
+			}
+
+			try {
+				const alert = await AlertDB.create({
+					guild: message.guild.id,
+					channel: message.channel.id,
+					user: message.author.id,
+					stock: stock,
+					operator: operator,
+					price: price,
+				});
+				return message.reply('Alert added.');
+			}
+			catch (e) {
+				if (e.name === 'SequelizeUniqueConstraintError') {
+					return message.reply('That alert already exists.');
+				}
+				return message.reply('Something went wrong with adding an alert.');
+			}
+		}
 	}
 	if (prefix === '$') {
 		const stock = command.toUpperCase();
 
 		(async () => {
-			const asx = await got.get('https://www.asx.com.au/asx/1/share/' + stock).json();
+			try {
+				var asx = await got.get('https://www.asx.com.au/asx/1/share/' + stock).json();
+			}
+			catch (error) {
+				return;
+			}
 			const yahoo = await got.get('http://d.yimg.com/autoc.finance.yahoo.com/autoc?query=' + stock + '.ax&lang=en');
 
 			const yahooBody = yahoo.body;
