@@ -33,17 +33,40 @@ const RemindDB = sequelize.define('reminders', {
 	reminder: Sequelize.STRING,
 });
 
+const AlertDB = sequelize.define('alerts', {
+	id: {
+		type: Sequelize.INTEGER,
+		unique: true,
+		primaryKey: true,
+	},
+	guild: Sequelize.STRING,
+	channel: Sequelize.STRING,
+	user: Sequelize.STRING,
+	stock: Sequelize.STRING,
+	operator: Sequelize.STRING,
+	price: Sequelize.STRING,
+	status: Sequelize.BOOLEAN,
+});
+
+const UserDB = sequelize.define('users', {
+	id: {
+		type: Sequelize.INTEGER,
+		unique: true,
+		primaryKey: true,
+	},
+	guild: Sequelize.STRING,
+	user: {
+		type: Sequelize.STRING,
+		unique: true,
+	},
+});
+
 bot.once('ready', () => {
 	RemindDB.sync();
 	// AlertDB.sync();
+	UserDB.sync();
 	console.log(`Logged in as ${bot.user.tag}!`);
-
-	allowedChannels.forEach(function(channel) {
-		const chan = bot.channels.cache.get(channel);
-		if (chan) {
-			chan.send('Ohai.');
-		}
-	});
+	saySomething('Ohai.');
 
 	const { Op } = require('sequelize');
 	const job = new CronJob('0 * * * * *', async function() {
@@ -101,11 +124,11 @@ bot.on('message', async message => {
 
 	if (prefix === '!') {
 		if (command === 'ping') {
-			message.channel.send('Pong.');
+			return message.channel.send('Pong.');
 		}
 		else if (command === 'uptime') {
 			const uptime = human(bot.uptime);
-			message.channel.send(`Online for ${uptime}.`);
+			return message.channel.send(`Online for ${uptime}.`);
 		}
 		else if (command === 'remindme') {
 			// !remind me in {time increments} to {message}
@@ -137,6 +160,7 @@ bot.on('message', async message => {
 				const avRequest = await got.get('https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=' + stock + '&apikey=' + avApiKey).json();
 				const yahoo = await got.get('http://d.yimg.com/autoc.finance.yahoo.com/autoc?query=' + stock + '&lang=en');
 
+				if (!avRequest['Global Quote']) return;
 				const av = avRequest['Global Quote'];
 				const yahooBody = yahoo.body;
 				const yahooJson = JSON.parse(yahooBody);
@@ -174,7 +198,7 @@ bot.on('message', async message => {
 					.setTimestamp()
 					.setFooter('Found with ❤️ by TeamBot', 'https://i.imgur.com/zCl2dri.jpg');
 
-				message.channel.send({ embed: stockEmbed });
+				return message.channel.send({ embed: stockEmbed });
 			})();
 		}
 
@@ -211,6 +235,9 @@ bot.on('message', async message => {
 
 			const yahooBody = yahoo.body;
 			const yahooJson = JSON.parse(yahooBody);
+
+			if (!yahooJson.ResultSet.Result[0]) return;
+
 			const stockName = yahooJson.ResultSet.Result[0].name;
 
 			let thumbnail = 'https://i.imgur.com/zCl2dri.jpg';
@@ -242,46 +269,79 @@ bot.on('message', async message => {
 				.setTimestamp()
 				.setFooter('Found with ❤️ by TeamBot', 'https://i.imgur.com/zCl2dri.jpg');
 
-			message.channel.send({ embed: stockEmbed });
+			return message.channel.send({ embed: stockEmbed });
 		})();
 
 	}
 
 });
 
-bot.on('guildMemberAdd', member => {
+bot.on('guildMemberAdd', async member => {
+
 	// Send the message to a designated channel on a server:
 	const channel = member.guild.channels.cache.find(ch => ch.name === 'welcome-channel');
 	// Do nothing if the channel wasn't found on this server
 	if (!channel) return;
+
+	try {
+		const users = await UserDB.upsert({
+			guild: member.guild.id,
+			user: member.id,
+		});
+	}
+	catch (e) {
+		if (e.name === 'SequelizeUniqueConstraintError') {
+			return channel.send('That user already exists.');
+		}
+		return channel.send('Something went wrong with adding a user.');
+	}
+
+
+	const { Op } = require('sequelize');
+	const users = await UserDB.count({ where: {
+		guild: member.guild.id,
+		createdAt: {
+			[Op.gte]: Date.now() - 86400000,
+		},
+	} });
+
 	// Send the message, mentioning the member
 	const welcome = welcomes[Math.floor(Math.random() * welcomes.length)];
-	channel.send(`${welcome} ${member}.`);
+
+	if (users === 1) {
+		channel.send(`${welcome} ${member}. ${users} user has joined in the last 24 hours.`);
+	}
+	else {
+		channel.send(`${welcome} ${member}. ${users} users have joined in the last 24 hours.`);
+	}
 });
 
 bot.login(token);
 
-
-function saySomething() {
+function saySomething(line) {
 	allowedChannels.forEach(function(channel) {
 		const chan = bot.channels.cache.get(channel);
-		const botLine = botLines[Math.floor(Math.random() * botLines.length)];
 		if (chan) {
-			chan.send(`${botLine}`);
+			chan.send(`${line}`);
 		}
 	});
 }
 
+function randomLine() {
+	const botLine = botLines[Math.floor(Math.random() * botLines.length)];
+	saySomething(botLine);
+}
+
 (function loop() {
-	// var rand = Math.round(Math.random() * 86400000); // One day.
-	var rand = Math.round(Math.random() * 21600000); // 6 hours.
-    setTimeout(function() {
-            saySomething();
-            loop();
-    }, rand);
+	// const rand = Math.round(Math.random() * 21600000); // 6 hours.
+	const rand = Math.round(Math.random() * 86400000); // 24 hours.
+	setTimeout(function() {
+		randomLine();
+		loop();
+	}, rand);
 }());
 
-//fs.watch('./watch', (event, filename) => {
+// fs.watch('./watch', (event, filename) => {
 //	fs.readFile('./watch', 'utf8', function (err, data) {
 //		allowedChannels.forEach(function(channel) {
 //			const chan = bot.channels.cache.get(channel);
@@ -290,4 +350,4 @@ function saySomething() {
 //			}
 //		});
 //	});
-//});
+// });
