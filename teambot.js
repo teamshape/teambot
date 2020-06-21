@@ -354,12 +354,14 @@ bot.on('guildMemberAdd', async member => {
 		return channel.send('Something went wrong with adding a user.');
 	}
 
+	const d = new Date(), e = new Date(d);
+	const msSinceMidnight = e - d.setHours(0, 0, 0, 0);
 
 	const { Op } = require('sequelize');
 	const users = await UserDB.count({ where: {
 		guild: member.guild.id,
 		createdAt: {
-			[Op.gte]: Date.now() - 86400000,
+			[Op.gte]: Date.now() - msSinceMidnight,
 		},
 	} });
 
@@ -367,10 +369,10 @@ bot.on('guildMemberAdd', async member => {
 	const welcome = welcomes[Math.floor(Math.random() * welcomes.length)];
 
 	if (users === 1) {
-		channel.send(`${welcome} ${member}. ${users} user has joined in the last 24 hours.`);
+		channel.send(`${welcome} ${member}. ${users} user has joined today.`);
 	}
 	else {
-		channel.send(`${welcome} ${member}. ${users} users have joined in the last 24 hours.`);
+		channel.send(`${welcome} ${member}. ${users} users have joined today.`);
 	}
 });
 
