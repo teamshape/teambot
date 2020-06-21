@@ -1,6 +1,6 @@
 'use strict';
 
-const fs = require('fs');
+// const fs = require('fs');
 const got = require('got');
 const human = require('interval-to-human');
 const dateparser = require('dateparser');
@@ -72,7 +72,7 @@ bot.once('ready', () => {
 	const job = new CronJob('0 * * * * *', async function() {
 		const reminders = await RemindDB.findAll({ where: {
 			reminder_timestamp: {
-				 [Op.lte]: Date.now(),
+				[Op.lte]: Date.now(),
 			},
 		} });
 
@@ -133,7 +133,7 @@ bot.on('messageReactionAdd', (reaction) => {
 bot.on('message', async message => {
 
 	if (message.content.toLowerCase().includes('brother')) {
-		const emoji = message.guild.emojis.cache.find(emoji => emoji.name === 'Brother');
+		const emoji = bot.emojis.cache.get('723757305933594665');
 		if (emoji) {
 			message.react(emoji);
 		}
@@ -167,7 +167,7 @@ bot.on('message', async message => {
 			const reminder = myMessage[1];
 
 			try {
-				const remind = await RemindDB.create({
+				await RemindDB.create({
 					guild: message.guild.id,
 					channel: message.channel.id,
 					reminder_timestamp: timestamp,
@@ -238,9 +238,9 @@ bot.on('message', async message => {
 			const operator = args[1];
 			const price = parseFloat(args[2]);
 
+			let asx = '';
 			try {
-				const asx = await got.get('https://www.asx.com.au/asx/1/share/' + stock).json();
-				var stockPrice = asx.last_price;
+				asx = await got.get('https://www.asx.com.au/asx/1/share/' + stock).json();
 			}
 			catch (error) {
 				return message.reply('Stock not found.');
@@ -252,15 +252,15 @@ bot.on('message', async message => {
 
 			// If operator is greater than and stockprice already over price
 			// OR if operator is less than and stockprice already under price.
-			if (operator === 'gt' && stockPrice > price) {
-				return message.reply(`Stock price for ${stock} is already above ${price} at ${stockPrice}.`);
+			if (operator === 'gt' && asx.last_price > price) {
+				return message.reply(`Stock price for ${stock} is already above ${price} at ${asx.last_price}.`);
 			}
-			else if (operator === 'lt' && stockPrice < price) {
-				return message.reply(`Stock price for ${stock} is already beneath ${price} at ${stockPrice}.`);
+			else if (operator === 'lt' && asx.last_price < price) {
+				return message.reply(`Stock price for ${stock} is already beneath ${price} at ${asx.last_price}.`);
 			}
 
 			try {
-				const alert = await AlertDB.create({
+				await AlertDB.create({
 					guild: message.guild.id,
 					channel: message.channel.id,
 					user: message.author.id,
@@ -282,8 +282,9 @@ bot.on('message', async message => {
 		const stock = command.toUpperCase();
 
 		(async () => {
+			let asx = '';
 			try {
-				var asx = await got.get('https://www.asx.com.au/asx/1/share/' + stock).json();
+				asx = await got.get('https://www.asx.com.au/asx/1/share/' + stock).json();
 			}
 			catch (error) {
 				return;
@@ -341,7 +342,7 @@ bot.on('guildMemberAdd', async member => {
 	if (!channel) return;
 
 	try {
-		const users = await UserDB.upsert({
+		await UserDB.upsert({
 			guild: member.guild.id,
 			user: member.id,
 		});
@@ -391,7 +392,8 @@ function randomLine() {
 
 (function loop() {
 	// const rand = Math.round(Math.random() * 21600000); // 6 hours.
-	const rand = Math.round(Math.random() * 86400000); // 24 hours.
+	// 24 hours.
+	const rand = Math.round(Math.random() * 86400000);
 	setTimeout(function() {
 		randomLine();
 		loop();
