@@ -89,7 +89,10 @@ bot.once('ready', () => {
 				});
 			}
 		});
+	}, null, true, 'Australia/Sydney');
+	job.start();
 
+	const alertJob = new CronJob('0 * 10-16 * * 1-5', async function() {
 		const alerts = await AlertDB.findAll();
 
 		alerts.forEach(async function(a) {
@@ -100,16 +103,16 @@ bot.once('ready', () => {
 
 			const asx = await got.get('https://www.asx.com.au/asx/1/share/' + stock).json();
 
-			if (operator === 'gt' && asx.last_price > price) {
-				saySomething(`<@${member}>: ${stock} rose above your alert price of ${price} and is now trading at ${asx.last_price}`);
+			if (operator === '>' && asx.last_price >= price) {
+				saySomething(`<@${member}>: ${stock} rose to/above your alert price of ${price} and is now trading at ${asx.last_price}`);
 				AlertDB.destroy({
 					where: {
 						id: a.dataValues.id,
 					},
 				});
 			}
-			else if (operator === 'lt' && asx.last_price < price) {
-				saySomething(`<@${member}>: ${stock} dropped below your alert price of ${price} and is now trading at ${asx.last_price}`);
+			else if (operator === '<' && asx.last_price <= price) {
+				saySomething(`<@${member}>: ${stock} dropped to/below your alert price of ${price} and is now trading at ${asx.last_price}`);
 				AlertDB.destroy({
 					where: {
 						id: a.dataValues.id,
@@ -119,8 +122,8 @@ bot.once('ready', () => {
 		});
 
 
-	}, null, true, 'UTC');
-	job.start();
+	}, null, true, 'Australia/Sydney');
+	alertJob.start();
 
 });
 
@@ -233,7 +236,6 @@ bot.on('message', async message => {
 		}
 
 		if (command === 'alert') {
-			// !alert CBA gt 39.8
 			const stock = args[0];
 			const operator = args[1];
 			const price = parseFloat(args[2]);
@@ -246,17 +248,17 @@ bot.on('message', async message => {
 				return message.reply('Stock not found.');
 			}
 
-			if (operator !== 'gt' && operator !== 'lt') {
-				return message.reply('Operator should be \'gt\' or \'lt\'.');
+			if (operator !== '>' && operator !== '<') {
+				return message.reply('Operator should be > or <.');
 			}
 
 			// If operator is greater than and stockprice already over price
 			// OR if operator is less than and stockprice already under price.
-			if (operator === 'gt' && asx.last_price > price) {
-				return message.reply(`Stock price for ${stock} is already above ${price} at ${asx.last_price}.`);
+			if (operator === '>' && asx.last_price >= price) {
+				return message.reply(`Stock price for ${stock} is already at/above ${price} at ${asx.last_price}.`);
 			}
-			else if (operator === 'lt' && asx.last_price < price) {
-				return message.reply(`Stock price for ${stock} is already beneath ${price} at ${asx.last_price}.`);
+			else if (operator === '<' && asx.last_price <= price) {
+				return message.reply(`Stock price for ${stock} is already at/beneath ${price} at ${asx.last_price}.`);
 			}
 
 			try {
