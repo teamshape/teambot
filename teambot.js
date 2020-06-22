@@ -357,7 +357,7 @@ bot.on('guildMemberAdd', async member => {
 		return channel.send('Something went wrong with adding a user.');
 	}
 
-	const startOfDay = moment().startOf('day').tz('UTC').format();
+	const startOfDay = moment().startOf('day').tz('UTC').format('YYYY-MM-DD HH:mm:ss.SSS Z');
 
 	const { Op } = require('sequelize');
 	const users = await UserDB.count({ where: {
