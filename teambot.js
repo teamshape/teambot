@@ -2,6 +2,7 @@
 
 // const fs = require('fs');
 const got = require('got');
+const moment = require('moment-timezone');
 const human = require('interval-to-human');
 const dateparser = require('dateparser');
 const Discord = require('discord.js');
@@ -356,14 +357,13 @@ bot.on('guildMemberAdd', async member => {
 		return channel.send('Something went wrong with adding a user.');
 	}
 
-	const d = new Date(), e = new Date(d);
-	const msSinceMidnight = e - d.setHours(0, 0, 0, 0);
+	const startOfDay = moment().startOf('day').tz('UTC').format();
 
 	const { Op } = require('sequelize');
 	const users = await UserDB.count({ where: {
 		guild: member.guild.id,
 		createdAt: {
-			[Op.gte]: Date.now() - msSinceMidnight,
+			[Op.gte]: startOfDay,
 		},
 	} });
 
