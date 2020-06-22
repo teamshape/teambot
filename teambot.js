@@ -133,7 +133,7 @@ bot.on('messageReactionAdd', (reaction) => {
 bot.on('message', async message => {
 
 	if (message.content.toLowerCase().includes('brother')) {
-		const emoji = bot.emojis.cache.get('723757305933594665');
+		const emoji = message.guild.emojis.cache.find(emoji => emoji.name === 'Brother');
 		if (emoji) {
 			message.react(emoji);
 		}
