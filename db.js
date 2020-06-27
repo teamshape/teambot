@@ -50,7 +50,23 @@ exports.UserDB = exports.sequelize.define('users', {
 	},
 });
 
+exports.KarmaDB = exports.sequelize.define('karma', {
+	id: {
+		type: Sequelize.INTEGER,
+		unique: true,
+		primaryKey: true,
+	},
+	guild: Sequelize.STRING,
+	user: {
+		type: Sequelize.STRING,
+		unique: true,
+	},
+	score: Sequelize.INTEGER,
+	karma: Sequelize.INTEGER,
+});
+
 exports.RemindDB.sync();
 exports.AlertDB.sync();
 exports.UserDB.sync();
+exports.KarmaDB.sync();
 

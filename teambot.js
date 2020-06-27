@@ -103,6 +103,22 @@ bot.on('message', async message => {
 			.catch(() => console.error('One of the emojis failed to react.'));
 	}
 
+	// Karma matches
+	const karma = /<@!\d+>\+\+|<@!\d+>\-\-/gm;
+	let l;
+
+	while ((l = karma.exec(message.content)) !== null) {
+		// This is necessary to avoid infinite loops with zero-width matches
+		if (l.index === karma.lastIndex) {
+			karma.lastIndex++;
+		}
+		// The result can be accessed through the `m`-variable.
+		l.forEach((match, groupIndex) => {
+			registerKarma(message, match);
+		});
+	}
+
+	// Only for specific bot channels after this.
 	if (!(allowedChannels.includes(message.channel.id) || message.channel.type === 'dm') || message.author.bot) return;
 
 	const prefix = message.content[0];
@@ -141,7 +157,6 @@ bot.on('message', async message => {
 		}
 		// The result can be accessed through the `m`-variable.
 		m.forEach((match, groupIndex) => {
-			console.log(`Found match, group ${groupIndex}: ${match}`);
 			goGetStock(message, match);
 		});
 	}
@@ -287,3 +302,41 @@ function goGetStock(message, match) {
 
 	})();
 }
+
+async function registerKarma(message, match) {
+	const userId = match.slice(3, -3);
+
+	if (userId === message.author.id) return;
+
+	if (match.endsWith('+')) {
+		message.channel.send(`Adding karma to <@!${userId}>`);
+		try {
+			await db.KarmaDB.create({
+				guild: message.guild.id,
+				user: message.author.id,
+				karma: 1,
+			});
+		}
+		catch (error) {
+			if (error.name === 'SequelizeUniqueConstraintError') {
+				await db.KarmaDB.update({ karma: db.sequelize.literal('IFNULL(karma, 0) + 1') }, { where: { user: userId } });
+			}
+		}
+	}
+	else {
+		message.channel.send(`Removing karma from <@!${userId}>`);
+		try {
+			await db.KarmaDB.create({
+				guild: message.guild.id,
+				user: message.author.id,
+				karma: -1,
+			});
+		}
+		catch (error) {
+			if (error.name === 'SequelizeUniqueConstraintError') {
+				await db.KarmaDB.update({ karma: db.sequelize.literal('IFNULL(karma, 0) - 1') }, { where: { user: userId } });
+			}
+		}
+	}
+}
+
