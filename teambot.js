@@ -313,7 +313,7 @@ async function registerKarma(message, match) {
 		try {
 			await db.KarmaDB.create({
 				guild: message.guild.id,
-				user: message.author.id,
+				user: userId,
 				karma: 1,
 			});
 		}
@@ -328,7 +328,7 @@ async function registerKarma(message, match) {
 		try {
 			await db.KarmaDB.create({
 				guild: message.guild.id,
-				user: message.author.id,
+				user: userId,
 				karma: -1,
 			});
 		}
