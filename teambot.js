@@ -103,6 +103,9 @@ bot.on('message', async message => {
 			.catch(() => console.error('One of the emojis failed to react.'));
 	}
 
+	// Only for specific bot channels after this.
+	if (!(allowedChannels.includes(message.channel.id) || message.channel.type === 'dm') || message.author.bot) return;
+
 	// Karma matches
 	const karma = /<@!\d+>\+\+|<@!\d+>\-\-/gm;
 	let l;
@@ -117,9 +120,6 @@ bot.on('message', async message => {
 			registerKarma(message, match);
 		});
 	}
-
-	// Only for specific bot channels after this.
-	if (!(allowedChannels.includes(message.channel.id) || message.channel.type === 'dm') || message.author.bot) return;
 
 	const prefix = message.content[0];
 	const args = message.content.slice(prefix.length).split(/ +/);
