@@ -121,10 +121,10 @@ bot.on('message', async message => {
 		l.forEach((match, groupIndex) => {
 			if (lock.isBusy()) return;
 			lock.acquire('karma', function(done) {
-				registerKarma(message, match)
+				registerKarma(message, match);
 				setTimeout(function() {
 					done();
-				}, timer)
+				}, timer);
 			}, function(err, ret) {}, {});
 		});
 	}
@@ -348,3 +348,14 @@ async function registerKarma(message, match) {
 	}
 }
 
+bot.on('presenceUpdate', async (oldMember, newMember) => {
+	try {
+		await db.UserDB.upsert({
+			guild: newMember.guild.id,
+			user: newMember.userID,
+		});
+	}
+	catch (e) {
+	}
+
+});
