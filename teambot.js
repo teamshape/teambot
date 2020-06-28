@@ -109,7 +109,7 @@ bot.on('message', async message => {
 	if (!(allowedChannels.includes(message.channel.id) || message.channel.type === 'dm') || message.author.bot) return;
 
 	// Karma matches
-	const karma = /<@!\d+>\+\+|<@!\d+>\-\-/gm;
+	const karma = /<@!\d+>\s?\+\+|<@!\d+>\s?\-\-/gm;
 	let l;
 
 	while ((l = karma.exec(message.content)) !== null) {
@@ -312,7 +312,7 @@ function goGetStock(message, match) {
 }
 
 async function registerKarma(message, match) {
-	const userId = match.slice(3, -3);
+	const userId = match.slice(3, -2).trim().slice(0, -1);
 
 	if (userId === message.author.id) return;
 
