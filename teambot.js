@@ -4,10 +4,12 @@ const fs = require('fs');
 const got = require('got');
 const moment = require('moment-timezone');
 const Discord = require('discord.js');
-const { token, allowedChannels, welcomes, avApiKey, botLines } = require('./config.json');
+const { token, allowedChannels, welcomes, avApiKey, botLines, timer } = require('./config.json');
 const { CronJob } = require('cron');
 const { Op } = require('sequelize');
+const AsyncLock = require('async-lock');
 
+const lock = new AsyncLock();
 const bot = new Discord.Client();
 bot.commands = new Discord.Collection();
 const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
@@ -117,7 +119,13 @@ bot.on('message', async message => {
 		}
 		// The result can be accessed through the `m`-variable.
 		l.forEach((match, groupIndex) => {
-			registerKarma(message, match);
+			if (lock.isBusy()) return;
+			lock.acquire('karma', function(done) {
+				registerKarma(message, match)
+				setTimeout(function() {
+					done();
+				}, timer)
+			}, function(err, ret) {}, {});
 		});
 	}
 
