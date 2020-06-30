@@ -98,6 +98,13 @@ bot.on('message', async message => {
 		}
 	}
 
+	if (message.content.toLowerCase().includes('twitter.com/bhagdip143')) {
+		const emoji = message.guild.emojis.cache.find(emoji => emoji.name === 'baghdeep');
+		if (emoji) {
+			message.react(emoji);
+		}
+	}
+
 	if (message.content === 'What does everyone think of bdogg?') {
 		message.react('🇬')
 			.then(() => message.react('🇦'))
@@ -349,6 +356,7 @@ async function registerKarma(message, match) {
 }
 
 bot.on('presenceUpdate', async (oldMember, newMember) => {
+	// console.log(newMember);
 	try {
 		await db.UserDB.upsert({
 			guild: newMember.guild.id,
