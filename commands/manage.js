@@ -57,8 +57,11 @@ module.exports = {
 						});
 						return message.reply('Permissions updated.');
 					}
+					else {
+						return message.reply('Permissions integer is invalid.');
+					}
 				} else {
-					return message.reply('Permissions integer is invalid.');
+					return message.reply('Permissions integer is too damn high.');
 				}
 			}
 			else {
