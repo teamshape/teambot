@@ -54,11 +54,11 @@ exports.UserDB = exports.sequelize.define('users', {
 },
 {
 	indexes: [
-        {
-            unique: true,
-            fields: ['user', 'guild']
-        }
-    ]
+		{
+			unique: true,
+			fields: ['user', 'guild'],
+		},
+	],
 });
 
 exports.KarmaDB = exports.sequelize.define('karma', {

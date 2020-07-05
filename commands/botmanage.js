@@ -1,4 +1,4 @@
-const { Sequelize } = require("sequelize");
+const { Sequelize } = require('sequelize');
 
 module.exports = {
 	name: 'botmanage',
@@ -20,12 +20,12 @@ module.exports = {
 		const guild = message.guild.id;
 
 		let loadedCommandUser = [];
-			
+
 		try {
 			loadedCommandUser = await db.UserDB.findOne({ where: {
 				guild: guild,
-				user: commandUser
-			}});
+				user: commandUser,
+			} });
 		}
 		catch (e) {
 			return message.reply('Something went wrong with finding your user.');
@@ -51,7 +51,8 @@ module.exports = {
 					return message.reply('Something went wrong with adding a welcome.');
 				}
 
-			}	else {
+			}
+			else {
 				return message.reply('Your permissions are not high enough to manage the bot, you must construct additional pylons.');
 			}
 		}

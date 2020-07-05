@@ -4,9 +4,9 @@ const fs = require('fs');
 const got = require('got');
 const moment = require('moment-timezone');
 const Discord = require('discord.js');
-const { token, allowedChannels, welcomes, avApiKey, botLines, timer } = require('./config.json');
+const { token, allowedChannels, avApiKey, botLines, timer } = require('./config.json');
 const { CronJob } = require('cron');
-const { Op } = require('sequelize');
+const { Sequelize, Op } = require('sequelize');
 const AsyncLock = require('async-lock');
 
 const lock = new AsyncLock();
@@ -132,7 +132,10 @@ bot.on('message', async message => {
 				setTimeout(function() {
 					done();
 				}, timer);
-			}, function(err, ret) {}, {});
+			}, function(err, ret) {
+				console.log(err);
+				console.log(ret);
+			});
 		});
 	}
 
@@ -209,7 +212,7 @@ bot.on('guildMemberAdd', async member => {
 	const welcomes = await db.WelcomeDB.findOne({ order: Sequelize.literal('random()') });
 
 	// Send the message, mentioning the member
-	const welcome = welcomes[Math.floor(Math.random() * welcomes.length)];
+	// const welcome = welcomes[Math.floor(Math.random() * welcomes.length)];
 
 	if (users === 1) {
 		channel.send(`${welcomes.dataValues.welcome} ${member}. ${users} user has joined today.`);
@@ -365,6 +368,7 @@ bot.on('presenceUpdate', async (oldMember, newMember) => {
 		});
 	}
 	catch (e) {
+		console.log(e);
 	}
 
 });

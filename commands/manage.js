@@ -1,4 +1,4 @@
-const { Op } = require("sequelize");
+const { Op } = require('sequelize');
 
 module.exports = {
 	name: 'manage',
@@ -22,12 +22,12 @@ module.exports = {
 
 		let loadedCommandUser = [];
 		let loadedTargetUser = [];
-			
+
 		try {
 			loadedCommandUser = await db.UserDB.findOne({ where: {
 				guild: guild,
-				user: commandUser
-			}});
+				user: commandUser,
+			} });
 		}
 		catch (e) {
 			return message.reply('Something went wrong with finding your user.');
@@ -36,31 +36,32 @@ module.exports = {
 		try {
 			loadedTargetUser = await db.UserDB.findOne({ where: {
 				guild: guild,
-				user: targetUser
-			}});
+				user: targetUser,
+			} });
 		}
 		catch (e) {
 			return message.reply('Something went wrong with finding the target user.');
 		}
 
 		if (args[0] === 'setpermission') {
-		   if (loadedCommandUser.dataValues.permission >= OPERATOR && loadedCommandUser.dataValues.permission > loadedTargetUser.dataValues.permission) {
+			if (loadedCommandUser.dataValues.permission >= OPERATOR && loadedCommandUser.dataValues.permission > loadedTargetUser.dataValues.permission) {
 				const p = args[2];
 				// console.log(p);
 				if (!isNaN(p) && p <= OPERATOR) {
 					if (p && (p & (p - 1)) === 0) {
 						await db.UserDB.update({
-							permission: p
+							permission: p,
 						},
 						{
-							where: { user: targetUser }
+							where: { user: targetUser },
 						});
 						return message.reply('Permissions updated.');
 					}
 					else {
 						return message.reply('Permissions integer is invalid.');
 					}
-				} else {
+				}
+				else {
 					return message.reply('Permissions integer is too damn high.');
 				}
 			}

@@ -1,9 +1,7 @@
-const Sequelize = require('sequelize');
-
 module.exports = {
 	name: 'karma',
 	description: 'Shows the karma list.',
-	async execute(db, message, args) {
+	async execute(db, message) {
 
 		const data = [];
 
@@ -15,7 +13,6 @@ module.exports = {
 			],
 		});
 
-		let response = '';
 		karmas.forEach(function(k) {
 			const member = k.dataValues.user;
 			const karma = k.dataValues.karma;
@@ -32,5 +29,5 @@ module.exports = {
 				console.error(`Could not send help DM to ${message.author.tag}.\n`, error);
 				message.reply('it seems like I can\'t DM you! Do you have DMs disabled?');
 			});
-		}
+	},
 };

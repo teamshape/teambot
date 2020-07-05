@@ -1,4 +1,3 @@
-const Sequelize = require('sequelize');
 const got = require('got');
 
 module.exports = {
@@ -48,5 +47,6 @@ module.exports = {
 				return message.reply('That alert already exists.');
 			}
 			return message.reply('Something went wrong with adding an alert.');
-		}	},
+		}
+	},
 };
