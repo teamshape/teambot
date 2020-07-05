@@ -44,7 +44,6 @@ module.exports = {
 		}
 
 		if (args[0] === 'setpermission') {
-
 		   if (loadedCommandUser.dataValues.permission >= OPERATOR && loadedCommandUser.dataValues.permission > loadedTargetUser.dataValues.permission) {
 				const p = args[2];
 				// console.log(p);

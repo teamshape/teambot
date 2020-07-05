@@ -206,14 +206,16 @@ bot.on('guildMemberAdd', async member => {
 		},
 	} });
 
+	const welcomes = await db.WelcomeDB.findOne({ order: Sequelize.literal('random()') });
+
 	// Send the message, mentioning the member
 	const welcome = welcomes[Math.floor(Math.random() * welcomes.length)];
 
 	if (users === 1) {
-		channel.send(`${welcome} ${member}. ${users} user has joined today.`);
+		channel.send(`${welcomes.dataValues.welcome} ${member}. ${users} user has joined today.`);
 	}
 	else {
-		channel.send(`${welcome} ${member}. ${users} users have joined today.`);
+		channel.send(`${welcomes.dataValues.welcome} ${member}. ${users} users have joined today.`);
 	}
 });
 
@@ -356,8 +358,6 @@ async function registerKarma(message, match) {
 }
 
 bot.on('presenceUpdate', async (oldMember, newMember) => {
-	// console.log(oldMember);
-	// console.log(newMember);
 	try {
 		await db.UserDB.upsert({
 			guild: newMember.guild.id,
