@@ -2,7 +2,7 @@ module.exports = {
 	name: 'botmanage',
 	description: 'Handles bot management',
 	args: true,
-	usage: 'addwelcome <welcome> || getwelcomes || deletewelcome <id>',
+	usage: 'addwelcome <welcome> || getwelcomes || deletewelcome <id> || addbotline <botline> || getbotlines || deletebotline <id>',
 	async execute(db, message, args) {
 
 		const ADMINISTRATOR = 64;
