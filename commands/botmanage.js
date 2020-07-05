@@ -51,7 +51,7 @@ module.exports = {
 
 			}
 			else {
-				return message.reply('Your permissions are not high enough to manage the bot, you must construct additional pylons.');
+				// return message.reply('Your permissions are not high enough to manage the bot, you must construct additional pylons.');
 			}
 		}
 		else if (args[0] === 'getwelcomes') {
@@ -102,7 +102,7 @@ module.exports = {
 
 			}
 			else {
-				return message.reply('Your permissions are not high enough to manage the bot, you must construct additional pylons.');
+				// return message.reply('Your permissions are not high enough to manage the bot, you must construct additional pylons.');
 			}
 		}
 		else if (args[0] === 'getbotlines') {

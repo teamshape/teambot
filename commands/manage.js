@@ -64,7 +64,7 @@ module.exports = {
 				}
 			}
 			else {
-				return message.reply('Your permissions are not high enough to manage this user, you must construct additional pylons.');
+				// return message.reply('Your permissions are not high enough to manage this user, you must construct additional pylons.');
 			}
 		}
 	},
