@@ -44,7 +44,7 @@ module.exports = {
 		}
 
 		if (args[1] === 'setpermission') {
-		   if (loadedCommandUser.dataValues.permission === ADMINISTRATOR && loadedCommandUser.dataValues.permission > loadedTargetUser.dataValues.permission) {
+		   if (loadedCommandUser.dataValues.permission === OPERATOR && loadedCommandUser.dataValues.permission > loadedTargetUser.dataValues.permission) {
 				const p = args[2];
 				// console.log(p);
 				if (!isNaN(p) && p <= OPERATOR) {
