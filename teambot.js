@@ -356,6 +356,7 @@ async function registerKarma(message, match) {
 }
 
 bot.on('presenceUpdate', async (oldMember, newMember) => {
+	// console.log(oldMember);
 	// console.log(newMember);
 	try {
 		await db.UserDB.upsert({

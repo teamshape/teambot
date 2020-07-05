@@ -48,6 +48,17 @@ exports.UserDB = exports.sequelize.define('users', {
 		type: Sequelize.STRING,
 		unique: true,
 	},
+	permission: {
+		type: Sequelize.INTEGER,
+	},
+},
+{
+	indexes: [
+        {
+            unique: true,
+            fields: ['user', 'guild']
+        }
+    ]
 });
 
 exports.KarmaDB = exports.sequelize.define('karma', {
