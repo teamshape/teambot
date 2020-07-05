@@ -17,7 +17,7 @@ module.exports = {
 
 		// Load user sending the command and user being acted upon.
 		const commandUser = message.author.id;
-		const targetUser = args[0].slice(3, -1).trim();
+		const targetUser = args[1].slice(3, -1).trim();
 		const guild = message.guild.id;
 
 		let loadedCommandUser = [];
@@ -43,8 +43,10 @@ module.exports = {
 			return message.reply('Something went wrong with finding the target user.');
 		}
 
-		if (args[1] === 'setpermission') {
-		   if (loadedCommandUser.dataValues.permission === OPERATOR && loadedCommandUser.dataValues.permission > loadedTargetUser.dataValues.permission) {
+		if (args[0] === 'setpermission') {
+			console.log(loadedCommandUser);
+			console.log(loadedTargetUser);
+		   if (loadedCommandUser.dataValues.permission >= OPERATOR && loadedCommandUser.dataValues.permission > loadedTargetUser.dataValues.permission) {
 				const p = args[2];
 				// console.log(p);
 				if (!isNaN(p) && p <= OPERATOR) {
