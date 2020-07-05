@@ -2,14 +2,14 @@ const got = require('got');
 
 module.exports = {
 	name: 'etf',
-	description: 'Gets holding information about an ETF.',
+	description: 'Gets holding information about an ETF. Add .ax for Australian ETFs.',
 	args: true,
 	usage: '<stock>',
 	async execute(db, message, args) {
 		const etf = args[0].toUpperCase();
 
 		try {
-			const response = await got.get('https://au.finance.yahoo.com/quote/' + etf + '.AX/holdings');
+			const response = await got.get('https://au.finance.yahoo.com/quote/' + etf + '/holdings');
 
 			const responseArray = (response.body.split("\n"));
 			const regex = /root.App.main.*/g;
