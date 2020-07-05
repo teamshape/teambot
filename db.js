@@ -90,8 +90,23 @@ exports.WelcomeDB = exports.sequelize.define('welcome', {
 	},
 });
 
+exports.BotlineDB = exports.sequelize.define('botline', {
+	id: {
+		type: Sequelize.INTEGER,
+		unique: true,
+		primaryKey: true,
+	},
+	guild: Sequelize.STRING,
+	user: Sequelize.STRING,
+	botline: {
+		type: Sequelize.STRING,
+		unique: true,
+	},
+});
+
 exports.RemindDB.sync();
 exports.AlertDB.sync();
 exports.UserDB.sync();
 exports.KarmaDB.sync();
 exports.WelcomeDB.sync();
+exports.BotlineDB.sync();

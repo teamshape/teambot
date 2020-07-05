@@ -4,7 +4,7 @@ const fs = require('fs');
 const got = require('got');
 const moment = require('moment-timezone');
 const Discord = require('discord.js');
-const { token, allowedChannels, avApiKey, botLines, timer } = require('./config.json');
+const { token, allowedChannels, avApiKey, timer } = require('./config.json');
 const { CronJob } = require('cron');
 const { Sequelize, Op } = require('sequelize');
 const AsyncLock = require('async-lock');
@@ -234,8 +234,10 @@ function saySomething(line) {
 }
 
 function randomLine() {
-	const botLine = botLines[Math.floor(Math.random() * botLines.length)];
-	saySomething(botLine);
+	(async () => {
+		const botlines = await db.BotlineDB.findOne({ order: Sequelize.literal('random()') });
+		saySomething(`${botlines.dataValues.botline}`);
+	})();
 }
 
 (function loop() {

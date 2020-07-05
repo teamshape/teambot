@@ -80,6 +80,57 @@ module.exports = {
 				message.reply(`Welcome #${args[1]} has been deleted.`);
 			}
 		}
+		else if (args[0] === 'addbotline') {
+
+			if (loadedCommandUser.dataValues.permission >= OPERATOR) {
+				const botline = args.slice(1).join(' ');
+
+				try {
+					await db.BotlineDB.create({
+						guild: message.guild.id,
+						user: message.author.id,
+						botline: botline,
+					});
+					return message.reply('Added a new botline.');
+				}
+				catch (e) {
+					if (e.name === 'SequelizeUniqueConstraintError') {
+						return message.reply('That botline already exists.');
+					}
+					return message.reply('Something went wrong with adding a botline.');
+				}
+
+			}
+			else {
+				return message.reply('Your permissions are not high enough to manage the bot, you must construct additional pylons.');
+			}
+		}
+		else if (args[0] === 'getbotlines') {
+			const botlines = await db.BotlineDB.findAll();
+			const data = [];
+			data.push('Here\'s a list of all botlines:');
+			data.push(botlines.map(botline => `${botline.id}: ${botline.botline}`).join('\n'));
+
+			return message.author.send(data, { split: true })
+				.then(() => {
+					if (message.channel.type === 'dm') return;
+					message.reply('I\'ve sent you a DM with all my commands!');
+				})
+				.catch(error => {
+					console.error(`Could not send help DM to ${message.author.tag}.\n`, error);
+					message.reply('it seems like I can\'t DM you! Do you have DMs disabled?');
+				});
+		}
+		else if (args[0] === 'deletebotline') {
+			if (loadedCommandUser.dataValues.permission >= OPERATOR && !isNaN(args[1])) {
+				db.BotlineDB.destroy({
+					where: {
+						id: args[1],
+					},
+				});
+				message.reply(`Botline #${args[1]} has been deleted.`);
+			}
+		}
 	},
 
 };
