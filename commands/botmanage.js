@@ -1,10 +1,8 @@
-const { Sequelize } = require('sequelize');
-
 module.exports = {
 	name: 'botmanage',
 	description: 'Handles bot management',
 	args: true,
-	usage: 'addwelcome <welcome>',
+	usage: 'addwelcome <welcome> || getwelcomes || deletewelcome <id>',
 	async execute(db, message, args) {
 
 		const ADMINISTRATOR = 64;
@@ -56,9 +54,31 @@ module.exports = {
 				return message.reply('Your permissions are not high enough to manage the bot, you must construct additional pylons.');
 			}
 		}
-		else if (args[0] === 'getwelcome') {
-			const welcomes = await db.WelcomeDB.findOne({ order: Sequelize.literal('random()') });
-			return message.reply(welcomes.dataValues.welcome);
+		else if (args[0] === 'getwelcomes') {
+			const welcomes = await db.WelcomeDB.findAll();
+			const data = [];
+			data.push('Here\'s a list of all welcomes:');
+			data.push(welcomes.map(welcome => `${welcome.id}: ${welcome.welcome}`).join('\n'));
+
+			return message.author.send(data, { split: true })
+				.then(() => {
+					if (message.channel.type === 'dm') return;
+					message.reply('I\'ve sent you a DM with all my commands!');
+				})
+				.catch(error => {
+					console.error(`Could not send help DM to ${message.author.tag}.\n`, error);
+					message.reply('it seems like I can\'t DM you! Do you have DMs disabled?');
+				});
+		}
+		else if (args[0] === 'deletewelcome') {
+			if (loadedCommandUser.dataValues.permission >= OPERATOR && !isNaN(args[1])) {
+				db.WelcomeDB.destroy({
+					where: {
+						id: args[1],
+					},
+				});
+				message.reply(`Welcome #${args[1]} has been deleted.`);
+			}
 		}
 	},
 

@@ -1,5 +1,3 @@
-const { Op } = require('sequelize');
-
 module.exports = {
 	name: 'manage',
 	description: 'Handles user management',
