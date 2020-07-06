@@ -116,7 +116,7 @@ bot.on('message', async message => {
 	if (!(allowedChannels.includes(message.channel.id) || message.channel.type === 'dm') || message.author.bot) return;
 
 	// Karma matches
-	const karma = /<@!\d+>\s?\+\+|<@!\d+>\s?\-\-/gm;
+	const karma = /<@!\d+>\s?\+\+|<@!\d+>\s?--/gm;
 	let l;
 
 	while ((l = karma.exec(message.content)) !== null) {
@@ -125,7 +125,7 @@ bot.on('message', async message => {
 			karma.lastIndex++;
 		}
 		// The result can be accessed through the `m`-variable.
-		l.forEach((match, groupIndex) => {
+		l.forEach((match) => {
 			if (lock.isBusy()) return;
 			lock.acquire('karma', function(done) {
 				registerKarma(message, match);
@@ -174,7 +174,7 @@ bot.on('message', async message => {
 			regex.lastIndex++;
 		}
 		// The result can be accessed through the `m`-variable.
-		m.forEach((match, groupIndex) => {
+		m.forEach((match) => {
 			goGetStock(message, match);
 		});
 	}
