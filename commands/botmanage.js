@@ -31,7 +31,7 @@ module.exports = {
 
 		if (args[0] === 'addwelcome') {
 
-			if (loadedCommandUser.dataValues.permission >= OPERATOR) {
+			if (loadedCommandUser.dataValues.permission >= PREMIUM) {
 				const welcome = args.slice(1).join(' ');
 
 				try {
@@ -82,7 +82,7 @@ module.exports = {
 		}
 		else if (args[0] === 'addbotline') {
 
-			if (loadedCommandUser.dataValues.permission >= OPERATOR) {
+			if (loadedCommandUser.dataValues.permission >= PREMIUM) {
 				const botline = args.slice(1).join(' ');
 
 				try {
