@@ -1,19 +1,8 @@
-const simpleGit = require('simple-git');
-const git = simpleGit();
-
 module.exports = {
 	name: 'pull',
 	description: 'Updates the bot',
 	args: false,
-	async execute(db, message, args) {
-
-		const ADMINISTRATOR = 64;
-		const OPERATOR = 32;
-		const PREMIUM = 16;
-		const STANDARD = 8;
-		const PLEBIAN = 4;
-		const DOUBLEPLEBIAN = 2;
-		const NOPERMS = 0;
+	async execute(teambot, message, args) {
 
 		const commandUser = message.author.id;
 		const guild = message.guild.id;
@@ -21,7 +10,7 @@ module.exports = {
 		let loadedCommandUser = [];
 
 		try {
-			loadedCommandUser = await db.UserDB.findOne({ where: {
+			loadedCommandUser = await teambot.db.UserDB.findOne({ where: {
 				guild: guild,
 				user: commandUser,
 			} });
@@ -30,7 +19,7 @@ module.exports = {
 			return message.reply('Something went wrong with finding your user.');
 		}
 
-		if (loadedCommandUser.dataValues.permission >= ADMINISTRATOR) {
+		if (loadedCommandUser.dataValues.permission >= teambot.permissions.ADMINISTRATOR) {
 			require('simple-git')()
 				.exec(() => console.log('Starting pull...'))
 				.pull('origin', 'master', { '--rebase': 'true' }, (err, update) => {

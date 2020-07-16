@@ -5,10 +5,11 @@ const fs = require('fs');
 const got = require('got');
 const moment = require('moment-timezone');
 const Discord = require('discord.js');
-const { token, allowedChannels, avApiKey, timer } = require('./config.json');
+const { token, allowedChannels, avApiKey, timer, prefix } = require('./config.json');
 const { CronJob } = require('cron');
 const { Sequelize, Op } = require('sequelize');
 const AsyncLock = require('async-lock');
+const pluralize = require('pluralize');
 
 const lock = new AsyncLock();
 const bot = new Discord.Client();
@@ -16,6 +17,12 @@ bot.commands = new Discord.Collection();
 const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
 
 const db = require('./db.js');
+const permissions = require('./permissions.js');
+
+const teambot = {
+	db: db,
+	permissions: permissions,
+};
 
 for (const file of commandFiles) {
 	const command = require(`./commands/${file}`);
@@ -23,12 +30,12 @@ for (const file of commandFiles) {
 }
 
 bot.once('ready', () => {
-	console.log(`Logged in as ${bot.user.tag}!`);
-	const timerEnd = (Date.now()-timerStart) / 1000;
+	const timerEnd = (Date.now() - timerStart) / 1000;
+	console.log(`${bot.user.tag} v1.0.0 loaded in ${timerEnd} seconds!`);
 	saySomething(`${bot.user.tag} v1.0.0 loaded in ${timerEnd} seconds!`);
 
 	const job = new CronJob('0 * * * * *', async function() {
-		const reminders = await db.RemindDB.findAll({ where: {
+		const reminders = await teambot.db.RemindDB.findAll({ where: {
 			reminder_timestamp: {
 				[Op.lte]: Date.now(),
 			},
@@ -40,7 +47,7 @@ bot.once('ready', () => {
 			const reminder_message = rm.dataValues.reminder;
 			if (reminder_channel) {
 				reminder_channel.send(`<@${member}>: ${reminder_message}`);
-				db.RemindDB.destroy({
+				teambot.db.RemindDB.destroy({
 					where: {
 						id: rm.dataValues.id,
 					},
@@ -51,7 +58,7 @@ bot.once('ready', () => {
 	job.start();
 
 	const alertJob = new CronJob('0 * 10-16 * * 1-5', async function() {
-		const alerts = await db.AlertDB.findAll();
+		const alerts = await teambot.db.AlertDB.findAll();
 
 		alerts.forEach(async function(a) {
 			const member = a.dataValues.user;
@@ -63,7 +70,7 @@ bot.once('ready', () => {
 
 			if (operator === '>' && asx.last_price >= price) {
 				saySomething(`<@${member}>: ${stock} rose to/above your alert price of ${price} and is now trading at ${asx.last_price}`);
-				db.AlertDB.destroy({
+				teambot.db.AlertDB.destroy({
 					where: {
 						id: a.dataValues.id,
 					},
@@ -71,7 +78,7 @@ bot.once('ready', () => {
 			}
 			else if (operator === '<' && asx.last_price <= price) {
 				saySomething(`<@${member}>: ${stock} dropped to/below your alert price of ${price} and is now trading at ${asx.last_price}`);
-				db.AlertDB.destroy({
+				teambot.db.AlertDB.destroy({
 					where: {
 						id: a.dataValues.id,
 					},
@@ -151,28 +158,30 @@ bot.on('message', async message => {
 		});
 	}
 
-	const prefix = message.content[0];
-	const args = message.content.slice(prefix.length).split(/ +/);
-	const commandName = args.shift().toLowerCase();
+	if (message.content.startsWith(prefix)) {
+		const args = message.content.slice(prefix.length).trim().split(/ +/);
+		const commandName = args.shift().toLowerCase();
 
-	if (bot.commands.has(commandName)) {
-		const command = bot.commands.get(commandName);
-		if (command.args && !args.length) {
-			let reply = `You didn't provide any arguments, ${message.author}!`;
-			if (command.usage) {
-				reply += `\nThe proper usage would be: \`${prefix}${command.name} ${command.usage}\``;
+		if (bot.commands.has(commandName)) {
+			const command = bot.commands.get(commandName);
+			if (command.args && !args.length) {
+				let reply = `You didn't provide any arguments, ${message.author}!`;
+				if (command.usage) {
+					reply += `\nThe proper usage would be: \`${prefix}${command.name} ${command.usage}\``;
+				}
+				return message.channel.send(reply);
 			}
-			return message.channel.send(reply);
-		}
-		if (command.guildOnly && message.channel.type !== 'text') {
-			return message.reply('I can\'t execute that command inside DMs!');
-		}
-		try {
-			command.execute(db, message, args);
-		}
-		catch (error) {
-			console.error(error);
-			return message.reply('there was an error trying to execute that command!');
+			if (command.guildOnly && message.channel.type !== 'text') {
+				return message.reply('I can\'t execute that command inside DMs!');
+			}
+			try {
+				command.execute(teambot, message, args);
+			}
+			catch (error) {
+				console.error(error);
+				return message.reply('there was an error trying to execute that command!');
+			}
+			return;
 		}
 	}
 
@@ -200,7 +209,7 @@ bot.on('guildMemberAdd', async member => {
 	if (!channel) return;
 
 	try {
-		await db.UserDB.upsert({
+		await teambot.db.UserDB.upsert({
 			guild: member.guild.id,
 			user: member.id,
 		});
@@ -214,24 +223,18 @@ bot.on('guildMemberAdd', async member => {
 
 	const startOfDay = moment().tz('Australia/Sydney').startOf('day').tz('UTC').format('YYYY-MM-DD HH:mm:ss.SSS Z');
 
-	const users = await db.UserDB.count({ where: {
+	const users = await teambot.db.UserDB.count({ where: {
 		guild: member.guild.id,
 		createdAt: {
 			[Op.gte]: startOfDay,
 		},
 	} });
 
-	const welcomes = await db.WelcomeDB.findOne({ order: Sequelize.literal('random()') });
+	const welcomes = await teambot.db.WelcomeDB.findOne({ order: Sequelize.literal('random()') });
 
-	// Send the message, mentioning the member
-	// const welcome = welcomes[Math.floor(Math.random() * welcomes.length)];
-
-	if (users === 1) {
-		channel.send(`${welcomes.dataValues.welcome} ${member}. ${users} user has joined today.`);
-	}
-	else {
-		channel.send(`${welcomes.dataValues.welcome} ${member}. ${users} users have joined today.`);
-	}
+	const numUsers = pluralize('user', $users);
+	const have = pluralize('has', $users);
+	channel.send(`${welcomes.dataValues.welcome} ${member}. ${numUsers} ${have} joined today.`);
 });
 
 bot.login(token);
@@ -247,7 +250,7 @@ function saySomething(line) {
 
 function randomLine() {
 	(async () => {
-		const botlines = await db.BotlineDB.findOne({ order: Sequelize.literal('random()') });
+		const botlines = await teambot.db.BotlineDB.findOne({ order: Sequelize.literal('random()') });
 		saySomething(`${botlines.dataValues.botline}`);
 	})();
 }
@@ -345,7 +348,7 @@ async function registerKarma(message, match) {
 	if (match.endsWith('+')) {
 		message.channel.send(`Adding karma to <@!${userId}>`);
 		try {
-			await db.KarmaDB.create({
+			await teambot.db.KarmaDB.create({
 				guild: message.guild.id,
 				user: userId,
 				karma: 1,
@@ -353,14 +356,14 @@ async function registerKarma(message, match) {
 		}
 		catch (error) {
 			if (error.name === 'SequelizeUniqueConstraintError') {
-				await db.KarmaDB.update({ karma: db.sequelize.literal('IFNULL(karma, 0) + 1') }, { where: { user: userId } });
+				await teambot.db.KarmaDB.update({ karma: teambot.db.sequelize.literal('IFNULL(karma, 0) + 1') }, { where: { user: userId } });
 			}
 		}
 	}
 	else {
 		message.channel.send(`Removing karma from <@!${userId}>`);
 		try {
-			await db.KarmaDB.create({
+			await teambot.db.KarmaDB.create({
 				guild: message.guild.id,
 				user: userId,
 				karma: -1,
@@ -368,7 +371,7 @@ async function registerKarma(message, match) {
 		}
 		catch (error) {
 			if (error.name === 'SequelizeUniqueConstraintError') {
-				await db.KarmaDB.update({ karma: db.sequelize.literal('IFNULL(karma, 0) - 1') }, { where: { user: userId } });
+				await teambot.db.KarmaDB.update({ karma: teambot.db.sequelize.literal('IFNULL(karma, 0) - 1') }, { where: { user: userId } });
 			}
 		}
 	}
@@ -376,7 +379,7 @@ async function registerKarma(message, match) {
 
 bot.on('presenceUpdate', async (oldMember, newMember) => {
 	try {
-		await db.UserDB.upsert({
+		await teambot.db.UserDB.upsert({
 			guild: newMember.guild.id,
 			user: newMember.userID,
 		});

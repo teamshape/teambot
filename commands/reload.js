@@ -3,7 +3,7 @@ module.exports = {
 	description: 'Reloads a command',
 	args: true,
 	usage: '<command>',
-	execute(db, message, args) {
+	execute(teambot, message, args) {
 		if (!args.length) return message.channel.send(`You didn't pass any command to reload, ${message.author}!`);
 		const commandName = args[0].toLowerCase();
 		const command = message.client.commands.get(commandName)

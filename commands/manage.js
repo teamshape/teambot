@@ -3,15 +3,7 @@ module.exports = {
 	description: 'Handles user management',
 	args: true,
 	usage: 'setpermission <user> <permission>',
-	async execute(db, message, args) {
-
-		const ADMINISTRATOR = 64;
-		const OPERATOR = 32;
-		const PREMIUM = 16;
-		const STANDARD = 8;
-		const PLEBIAN = 4;
-		const DOUBLEPLEBIAN = 2;
-		const NOPERMS = 0;
+	async execute(teambot, message, args) {
 
 		// Load user sending the command and user being acted upon.
 		const commandUser = message.author.id;
@@ -22,7 +14,7 @@ module.exports = {
 		let loadedTargetUser = [];
 
 		try {
-			loadedCommandUser = await db.UserDB.findOne({ where: {
+			loadedCommandUser = await teambot.db.UserDB.findOne({ where: {
 				guild: guild,
 				user: commandUser,
 			} });
@@ -32,7 +24,7 @@ module.exports = {
 		}
 
 		try {
-			loadedTargetUser = await db.UserDB.findOne({ where: {
+			loadedTargetUser = await teambot.db.UserDB.findOne({ where: {
 				guild: guild,
 				user: targetUser,
 			} });
@@ -42,12 +34,12 @@ module.exports = {
 		}
 
 		if (args[0] === 'setpermission') {
-			if (loadedCommandUser.dataValues.permission >= OPERATOR && loadedCommandUser.dataValues.permission > loadedTargetUser.dataValues.permission) {
+			if (loadedCommandUser.dataValues.permission >= teambot.permissions.OPERATOR && loadedCommandUser.dataValues.permission > loadedTargetUser.dataValues.permission) {
 				const p = args[2];
 				// console.log(p);
-				if (!isNaN(p) && p <= OPERATOR) {
+				if (!isNaN(p) && p <= teambot.permissions.OPERATOR) {
 					if (p && (p & (p - 1)) === 0) {
-						await db.UserDB.update({
+						await teambot.db.UserDB.update({
 							permission: p,
 						},
 						{

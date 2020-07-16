@@ -5,7 +5,7 @@ module.exports = {
 	description: 'Sets a price alert for rising and falling stocks on the ASX.',
 	args: true,
 	usage: '<stock> <operator> <price>',
-	async execute(db, message, args) {
+	async execute(teambot, message, args) {
 		const stock = args[0];
 		const operator = args[1];
 		const price = parseFloat(args[2]);
@@ -32,7 +32,7 @@ module.exports = {
 		}
 
 		try {
-			await db.AlertDB.create({
+			await teambot.db.AlertDB.create({
 				guild: message.guild.id,
 				channel: message.channel.id,
 				user: message.author.id,

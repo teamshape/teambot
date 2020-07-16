@@ -1,13 +1,13 @@
 module.exports = {
 	name: 'karma',
 	description: 'Shows the karma list.',
-	async execute(db, message) {
+	async execute(teambot, message) {
 
 		const data = [];
 
 		data.push('Here\'s the karma list:');
 
-		const karmas = await db.KarmaDB.findAll({
+		const karmas = await teambot.db.KarmaDB.findAll({
 			order: [
 				['karma', 'DESC'],
 			],

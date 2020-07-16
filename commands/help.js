@@ -5,7 +5,7 @@ module.exports = {
 	aliases: ['commands'],
 	usage: '[command name]',
 	cooldown: 5,
-	execute(db, message, args) {
+	execute(teambot, message, args) {
 		const data = [];
 		const { commands } = message.client;
 

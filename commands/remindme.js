@@ -5,14 +5,14 @@ module.exports = {
 	description: 'Reminds users to do a thing they wanted reminding of.',
 	args: true,
 	usage: 'in <time> to <do something>',
-	async execute(db, message, args) {
+	async execute(teambot, message, args) {
 		// !remind me in {time increments} to {message}
 		const myMessage = args.slice(1).join(' ').split(/ to (.+)?/, 2);
 		const timestamp = Date.now() + dateparser.parse(myMessage[0]).value;
 		const reminder = myMessage[1];
 
 		try {
-			await db.RemindDB.create({
+			await teambot.db.RemindDB.create({
 				guild: message.guild.id,
 				channel: message.channel.id,
 				reminder_timestamp: timestamp,

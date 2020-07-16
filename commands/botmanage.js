@@ -3,15 +3,7 @@ module.exports = {
 	description: 'Handles bot management',
 	args: true,
 	usage: 'addwelcome <welcome> | getwelcomes | deletewelcome <id> | addbotline <botline> | getbotlines | deletebotline <id>',
-	async execute(db, message, args) {
-
-		const ADMINISTRATOR = 64;
-		const OPERATOR = 32;
-		const PREMIUM = 16;
-		const STANDARD = 8;
-		const PLEBIAN = 4;
-		const DOUBLEPLEBIAN = 2;
-		const NOPERMS = 0;
+	async execute(teambot, message, args) {
 
 		// Load user sending the command and user being acted upon.
 		const commandUser = message.author.id;
@@ -20,7 +12,7 @@ module.exports = {
 		let loadedCommandUser = [];
 
 		try {
-			loadedCommandUser = await db.UserDB.findOne({ where: {
+			loadedCommandUser = await teambot.db.UserDB.findOne({ where: {
 				guild: guild,
 				user: commandUser,
 			} });
@@ -31,11 +23,11 @@ module.exports = {
 
 		if (args[0] === 'addwelcome') {
 
-			if (loadedCommandUser.dataValues.permission >= PREMIUM) {
+			if (loadedCommandUser.dataValues.permission >= teambot.permissions.PREMIUM) {
 				const welcome = args.slice(1).join(' ');
 
 				try {
-					await db.WelcomeDB.create({
+					await teambot.db.WelcomeDB.create({
 						guild: message.guild.id,
 						user: message.author.id,
 						welcome: welcome,
@@ -55,7 +47,7 @@ module.exports = {
 			}
 		}
 		else if (args[0] === 'getwelcomes') {
-			const welcomes = await db.WelcomeDB.findAll();
+			const welcomes = await teambot.db.WelcomeDB.findAll();
 			const data = [];
 			data.push('Here\'s a list of all welcomes:');
 			data.push(welcomes.map(welcome => `${welcome.id}: ${welcome.welcome}`).join('\n'));
@@ -71,8 +63,8 @@ module.exports = {
 				});
 		}
 		else if (args[0] === 'deletewelcome') {
-			if (loadedCommandUser.dataValues.permission >= OPERATOR && !isNaN(args[1])) {
-				db.WelcomeDB.destroy({
+			if (loadedCommandUser.dataValues.permission >= teambot.permissions.OPERATOR && !isNaN(args[1])) {
+				teambot.db.WelcomeDB.destroy({
 					where: {
 						id: args[1],
 					},
@@ -82,11 +74,11 @@ module.exports = {
 		}
 		else if (args[0] === 'addbotline') {
 
-			if (loadedCommandUser.dataValues.permission >= PREMIUM) {
+			if (loadedCommandUser.dataValues.permission >= teambot.permissions.PREMIUM) {
 				const botline = args.slice(1).join(' ');
 
 				try {
-					await db.BotlineDB.create({
+					await teambot.db.BotlineDB.create({
 						guild: message.guild.id,
 						user: message.author.id,
 						botline: botline,
@@ -106,7 +98,7 @@ module.exports = {
 			}
 		}
 		else if (args[0] === 'getbotlines') {
-			const botlines = await db.BotlineDB.findAll();
+			const botlines = await teambot.db.BotlineDB.findAll();
 			const data = [];
 			data.push('Here\'s a list of all botlines:');
 			data.push(botlines.map(botline => `${botline.id}: ${botline.botline}`).join('\n'));
@@ -122,8 +114,8 @@ module.exports = {
 				});
 		}
 		else if (args[0] === 'deletebotline') {
-			if (loadedCommandUser.dataValues.permission >= OPERATOR && !isNaN(args[1])) {
-				db.BotlineDB.destroy({
+			if (loadedCommandUser.dataValues.permission >= teambot.permissions.OPERATOR && !isNaN(args[1])) {
+				teambot.db.BotlineDB.destroy({
 					where: {
 						id: args[1],
 					},
