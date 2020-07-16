@@ -2,7 +2,7 @@ module.exports = {
 	name: 'pull',
 	description: 'Updates the bot',
 	args: false,
-	async execute(teambot, message, args) {
+	async execute(teambot, message) {
 
 		const commandUser = message.author.id;
 		const guild = message.guild.id;

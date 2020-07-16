@@ -232,8 +232,8 @@ bot.on('guildMemberAdd', async member => {
 
 	const welcomes = await teambot.db.WelcomeDB.findOne({ order: Sequelize.literal('random()') });
 
-	const numUsers = pluralize('user', $users);
-	const have = pluralize('has', $users);
+	const numUsers = pluralize('user', users);
+	const have = pluralize('has', users);
 	channel.send(`${welcomes.dataValues.welcome} ${member}. ${numUsers} ${have} joined today.`);
 });
 
@@ -266,7 +266,7 @@ function randomLine() {
 }());
 
 function goGetStock(message, match) {
-	const prefix = match[0];
+	const stockPrefix = match[0];
 	const stock = match.substr(1).toUpperCase();
 
 	(async () => {
@@ -274,12 +274,12 @@ function goGetStock(message, match) {
 		let yahoo = '';
 		let url = '';
 		try {
-			if (prefix === '$') {
+			if (stockPrefix === '$') {
 				request = await got.get('https://www.asx.com.au/asx/1/share/' + stock).json();
 				yahoo = await got.get('http://d.yimg.com/autoc.finance.yahoo.com/autoc?query=' + stock + '.ax&lang=en');
 				url = 'https://www.bloomberg.com/quote/' + stock + ':AU';
 			}
-			else if (prefix === '!') {
+			else if (stockPrefix === '!') {
 				request = await got.get('https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=' + stock + '&apikey=' + avApiKey).json();
 				if (!request['Global Quote']) return;
 
