@@ -29,6 +29,7 @@
     "interval-to-human": "^0.1.1",
     "moment": "^2.27.0",
     "moment-timezone": "^0.5.31",
+    "pluralize": "^8.0.0",
     "sequelize": "^5.21.12",
     "simple-git": "^2.12.0",
     "sqlite3": "git+https://github.com/mapbox/node-sqlite3.git#c196b05103cc34f33e7292d0578974ccd1fe349a"
