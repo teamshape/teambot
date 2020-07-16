@@ -34,10 +34,12 @@ module.exports = {
 			require('simple-git')()
 			.exec(() => console.log('Starting pull...'))
 			.pull('origin', 'master', {'--rebase': 'true'}, (err, update) => {
-				if(update && update.summary.changes) {
+				if (update && update.summary.changes) {
 					console.log(update);
-					require('child_process').exec('pm2 restart TeamBot');
+					require('child_process').exec('npm install').exec('pm2 restart TeamBot');
 					message.channel.send(`TeamBot has been updated with ${update.summary.changes} change(s), ${update.summary.insertions} insertion(s) and ${update.summary.deletions} deletion(s).`);
+				} else {
+					message.channel.send(`No changes available.`);
 				}
 			})
 			.exec(() => console.log('pull done.'));
