@@ -44,7 +44,7 @@ module.exports = {
 						message.channel.send('No updates available.');
 					}
 				})
-				.exec(() => console.log('pull done.'));
+				.exec(() => console.log('Pull complete.'));
 		}
 	},
 };
