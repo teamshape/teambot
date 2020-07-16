@@ -223,7 +223,7 @@ bot.on('guildMemberAdd', async member => {
 
 	const startOfDay = moment().tz('Australia/Sydney').startOf('day').tz('UTC').format('YYYY-MM-DD HH:mm:ss.SSS Z');
 
-	const users = await teambot.db.UserDB.count({ where: {
+	const userCount = await teambot.db.UserDB.count({ where: {
 		guild: member.guild.id,
 		createdAt: {
 			[Op.gte]: startOfDay,
@@ -232,9 +232,9 @@ bot.on('guildMemberAdd', async member => {
 
 	const welcomes = await teambot.db.WelcomeDB.findOne({ order: Sequelize.literal('random()') });
 
-	const numUsers = pluralize('user', users);
-	const have = pluralize('has', users);
-	channel.send(`${welcomes.dataValues.welcome} ${member}. ${numUsers} ${have} joined today.`);
+	const users = pluralize('user', userCount);
+	const have = pluralize('has', userCount);
+	channel.send(`${welcomes.dataValues.welcome} ${member}. ${userCount} ${users} ${have} joined today.`);
 });
 
 bot.login(token);
