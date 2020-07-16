@@ -39,7 +39,7 @@ module.exports = {
 					require('child_process').exec('npm install').exec('pm2 restart TeamBot');
 					message.channel.send(`TeamBot has been updated with ${update.summary.changes} change(s), ${update.summary.insertions} insertion(s) and ${update.summary.deletions} deletion(s).`);
 				} else {
-					message.channel.send(`No changes available.`);
+					message.channel.send(`No updates available.`);
 				}
 			})
 			.exec(() => console.log('pull done.'));
