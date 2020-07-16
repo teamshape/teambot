@@ -1,4 +1,5 @@
 'use strict';
+const timerStart = Date.now();
 
 const fs = require('fs');
 const got = require('got');
@@ -23,7 +24,8 @@ for (const file of commandFiles) {
 
 bot.once('ready', () => {
 	console.log(`Logged in as ${bot.user.tag}!`);
-	saySomething('Ohai.');
+	const timerEnd = (Date.now()-timerStart) / 1000;
+	saySomething(`${bot.user.tag} v1.0.0 loaded in ${timerEnd} seconds!`);
 
 	const job = new CronJob('0 * * * * *', async function() {
 		const reminders = await db.RemindDB.findAll({ where: {
