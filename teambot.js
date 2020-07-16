@@ -81,6 +81,16 @@ bot.once('ready', () => {
 	}, null, true, 'Australia/Sydney');
 	alertJob.start();
 
+	const marketOpenJob = new CronJob('0 45 9 * * 1-5', async function() {
+		await saySomething('Ladies and Gentlemen start your engines.');
+		await saySomething('Stock codes starting with A-B open at 10:00:00am (+/- 15 seconds)');
+		await saySomething('Stock codes starting with C-F open at 10:02:15am (+/- 15 seconds)');
+		await saySomething('Stock codes starting with N-R at 10:06:45am (+/- 15 seconds)');
+		await saySomething('Stock codes starting with S-Z at 10:09:00am (+/- 15 seconds)');
+
+	}, null, true, 'Australia/Sydney');
+	marketOpenJob.start();
+
 });
 
 bot.on('messageReactionAdd', (reaction) => {
