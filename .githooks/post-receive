@@ -1,0 +1,8 @@
+#!/bin/bash
+echo 'post-receive: Triggered.'
+echo 'post-receive: npm install…'
+npm install \
+&& echo 'post-receive: → done.'
+# && (pm2 delete ‘my-first-app-by-githook’ || true) \
+#&& pm2 start npm --name ‘my-first-app-by-githook’ -- start \
+#&& echo ‘post-receive: app started successfully with pm2.
