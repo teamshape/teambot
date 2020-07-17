@@ -7,7 +7,6 @@ exports.DOUBLEPLEBIAN = 2;
 exports.NOPERMS = 0;
 
 exports.isAdmin = function(permission) {
-	console.log(permission);
 	if (permission >= exports.ADMINISTRATOR) {
 		return true;
 	}

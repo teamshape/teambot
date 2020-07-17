@@ -36,7 +36,6 @@ module.exports = {
 		if (args[0] === 'setpermission') {
 			if (teambot.permissions.isMod(loadedCommandUser.dataValues.permission) && loadedCommandUser.dataValues.permission > loadedTargetUser.dataValues.permission) {
 				const p = args[2];
-				// console.log(p);
 				if (!isNaN(p) && p <= teambot.permissions.OPERATOR) {
 					if (p && (p & (p - 1)) === 0) {
 						await teambot.db.UserDB.update({
