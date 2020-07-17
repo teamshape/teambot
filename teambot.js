@@ -170,26 +170,25 @@ bot.on('message', async message => {
 		const args = message.content.slice(prefix.length).trim().split(/ +/);
 		const commandName = args.shift().toLowerCase();
 
-		if (bot.commands.has(commandName)) {
-			const command = bot.commands.get(commandName);
-			if (command.args && !args.length) {
-				let reply = `You didn't provide any arguments, ${message.author}!`;
-				if (command.usage) {
-					reply += `\nThe proper usage would be: \`${prefix}${command.name} ${command.usage}\``;
-				}
-				return message.channel.send(reply);
+		const command = bot.commands.get(commandName)
+		|| bot.commands.find(cmd => cmd.aliases && cmd.aliases.includes(commandName));
+
+		if (command.args && !args.length) {
+			let reply = `You didn't provide any arguments, ${message.author}!`;
+			if (command.usage) {
+				reply += `\nThe proper usage would be: \`${prefix}${command.name} ${command.usage}\``;
 			}
-			if (command.guildOnly && message.channel.type !== 'text') {
-				return message.reply('I can\'t execute that command inside DMs!');
-			}
-			try {
-				command.execute(teambot, message, args);
-			}
-			catch (error) {
-				console.error(error);
-				return message.reply('there was an error trying to execute that command!');
-			}
-			return;
+			return message.channel.send(reply);
+		}
+		if (command.guildOnly && message.channel.type !== 'text') {
+			return message.reply('I can\'t execute that command inside DMs!');
+		}
+		try {
+			return command.execute(teambot, message, args);
+		}
+		catch (error) {
+			console.error(error);
+			return message.reply('there was an error trying to execute that command!');
 		}
 	}
 

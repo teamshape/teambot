@@ -104,9 +104,24 @@ exports.BotlineDB = exports.sequelize.define('botline', {
 	},
 });
 
+exports.KvDB = exports.sequelize.define('kv', {
+	guild: Sequelize.STRING,
+	key: Sequelize.STRING,
+	value: Sequelize.STRING,
+},
+{
+	indexes: [
+		{
+			unique: true,
+			fields: ['key', 'guild'],
+		},
+	],
+});
+
 exports.RemindDB.sync();
 exports.AlertDB.sync();
 exports.UserDB.sync();
 exports.KarmaDB.sync();
 exports.WelcomeDB.sync();
 exports.BotlineDB.sync();
+exports.KvDB.sync();
