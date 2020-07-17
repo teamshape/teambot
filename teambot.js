@@ -35,12 +35,12 @@ bot.once('ready', () => {
 	saySomething(`${bot.user.tag} v1.0.0 loaded in ${timerEnd} seconds!`);
 
 	bot.user.setUsername('TeamBot Nguyen')
-	.then(user => console.log(`Username set to ${user.username}`))
-	.catch(console.error);
+		.then(user => console.log(`Username set to ${user.username}`))
+		.catch(console.error);
 
 	bot.user.setPresence({ activity: { name: '光復香港，時代革命', type: 'WATCHING' }, status: 'online' })
-	.then(presence => console.log(`Activity set to ${presence.activities[0].name}`))
-	.catch(console.error);
+		.then(presence => console.log(`Activity set to ${presence.activities[0].name}`))
+		.catch(console.error);
 
 	const job = new CronJob('0 * * * * *', async function() {
 		const reminders = await teambot.db.RemindDB.findAll({ where: {
