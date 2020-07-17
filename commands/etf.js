@@ -5,7 +5,7 @@ module.exports = {
 	description: 'Gets holding information about an ETF. Add .ax for Australian ETFs.',
 	args: true,
 	usage: '<stock>',
-	async execute(db, message, args) {
+	async execute(teambot, message, args) {
 		const etf = args[0].toUpperCase();
 
 		try {

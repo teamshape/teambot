@@ -5,13 +5,13 @@ module.exports = {
 	aliases: ['commands'],
 	usage: '[command name]',
 	cooldown: 5,
-	execute(db, message, args) {
+	execute(teambot, message, args) {
 		const data = [];
 		const { commands } = message.client;
 
 		if (!args.length) {
 			data.push('Here\'s a list of all my commands:\n');
-			data.push(commands.map(command => `${prefix}${command.name}: ${command.description}`).join("\n"));
+			data.push(commands.map(command => `${prefix}${command.name}: ${command.description}`).join('\n'));
 			data.push(`\nYou can send \`${prefix}help [command name]\` to get info on a specific command!`);
 
 			return message.author.send(data, { split: true })
