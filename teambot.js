@@ -10,7 +10,7 @@ const { CronJob } = require('cron');
 const { Sequelize, Op } = require('sequelize');
 const AsyncLock = require('async-lock');
 const pluralize = require('pluralize');
-
+const { registerFont, createCanvas, loadImage } = require('canvas')
 const lock = new AsyncLock();
 const bot = new Discord.Client();
 bot.commands = new Discord.Collection();
@@ -173,22 +173,25 @@ bot.on('message', async message => {
 		const command = bot.commands.get(commandName)
 		|| bot.commands.find(cmd => cmd.aliases && cmd.aliases.includes(commandName));
 
-		if (command.args && !args.length) {
-			let reply = `You didn't provide any arguments, ${message.author}!`;
-			if (command.usage) {
-				reply += `\nThe proper usage would be: \`${prefix}${command.name} ${command.usage}\``;
+		if (command) {
+			if (command.args && !args.length) {
+				let reply = `You didn't provide any arguments, ${message.author}!`;
+				if (command.usage) {
+					reply += `\nThe proper usage would be: \`${prefix}${command.name} ${command.usage}\``;
+				}
+				return message.channel.send(reply);
 			}
-			return message.channel.send(reply);
-		}
-		if (command.guildOnly && message.channel.type !== 'text') {
-			return message.reply('I can\'t execute that command inside DMs!');
-		}
-		try {
-			return command.execute(teambot, message, args);
-		}
-		catch (error) {
-			console.error(error);
-			return message.reply('there was an error trying to execute that command!');
+			if (command.guildOnly && message.channel.type !== 'text') {
+				return message.reply('I can\'t execute that command inside DMs!');
+			}
+			try {
+				return command.execute(teambot, message, args);
+			}
+			catch (error) {
+				console.error(error);
+				return message.reply('there was an error trying to execute that command!');
+			}
+			return;
 		}
 	}
 
@@ -239,10 +242,50 @@ bot.on('guildMemberAdd', async member => {
 
 	const welcomes = await teambot.db.WelcomeDB.findOne({ order: Sequelize.literal('random()') });
 
+	// Set up the welcome canvas.
+	registerFont('assets/tommys.ttf', { family: "Tommy" })
+	const canvas = createCanvas(700, 250);
+	const ctx = canvas.getContext('2d');
+
+	const background = await loadImage('./assets/wallpaper.png');
+	ctx.drawImage(background, 0, 0, canvas.width, canvas.height);
+
+	ctx.strokeStyle = '#74037b';
+	ctx.strokeRect(0, 0, canvas.width, canvas.height);
+
+	ctx.font = '120px Tommy'
+	ctx.fillStyle = '#ffffff';
+	ctx.fillText(`HAI`, 20, 90);
+	ctx.font = applyText(canvas, member.displayName);
+	ctx.fillText(`${member.displayName}!`, 20, 200);
+
+	ctx.beginPath();
+	ctx.arc(125, 125, 100, 0, Math.PI * 2, true);
+	ctx.closePath();
+	ctx.clip();
+
+	const attachment = new Discord.MessageAttachment(canvas.toBuffer(), 'welcome-image.png');
+
 	const users = pluralize('user', userCount);
 	const have = pluralize('has', userCount);
-	channel.send(`${welcomes.dataValues.welcome} ${member}. ${userCount} ${users} ${have} joined today.`);
+	channel.send(`${welcomes.dataValues.welcome} ${member}. ${userCount} ${users} ${have} joined today.`, attachment);
 });
+
+const applyText = (canvas, text) => {
+	const ctx = canvas.getContext('2d');
+
+	// Declare a base size of the font
+	let fontSize = 250;
+
+	do {
+		// Assign the font to the context and decrement it so it can be measured again
+		ctx.font = `${fontSize -= 10}px Tommy`;
+		// Compare pixel width of the text to the canvas minus the approximate avatar size
+	} while (ctx.measureText(text).width > canvas.width);
+
+	// Return the result to use in the actual canvas
+	return ctx.font;
+};
 
 bot.login(token);
 
