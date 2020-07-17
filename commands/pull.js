@@ -29,7 +29,7 @@ module.exports = {
 						console.log(update);
 						require('child_process').exec('npm install');
 						require('child_process').exec('pm2 restart TeamBot');
-						message.channel.send(`TeamBot has been updated with ${update.summary.changes} ${pluralize('change', update.summary.changes)} change(s), ${update.summary.insertions} ${ pluralize('update', update.summary.insertions)} insertion(s) and ${update.summary.deletions} ${ pluralize('deletion', update.summary.deletions)} deletion(s).`);
+						message.channel.send(`TeamBot has been updated with ${update.summary.changes} ${pluralize('change', update.summary.changes)}, ${update.summary.insertions} ${ pluralize('update', update.summary.insertions)} and ${update.summary.deletions} ${ pluralize('deletion', update.summary.deletions)}.`);
 					}
 					else {
 						message.channel.send('No updates available.');
