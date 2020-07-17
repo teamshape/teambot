@@ -21,7 +21,7 @@ module.exports = {
 			return message.reply('Something went wrong with finding your user.');
 		}
 
-		if (loadedCommandUser.dataValues.permission >= teambot.permissions.ADMINISTRATOR) {
+		if (teambot.permissions.isAdmin(loadedCommandUser.dataValues.permission)) {
 			require('simple-git')()
 				.exec(() => console.log('Starting pull...'))
 				.pull('origin', 'master', { '--rebase': 'true' }, (err, update) => {

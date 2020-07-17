@@ -23,7 +23,7 @@ module.exports = {
 
 		if (args[0] === 'addwelcome') {
 
-			if (loadedCommandUser.dataValues.permission >= teambot.permissions.PREMIUM) {
+			if (teambot.permissions.isTrusted(loadedCommandUser.dataValues.permission)) {
 				const welcome = args.slice(1).join(' ');
 
 				try {
@@ -63,7 +63,7 @@ module.exports = {
 				});
 		}
 		else if (args[0] === 'deletewelcome') {
-			if (loadedCommandUser.dataValues.permission >= teambot.permissions.OPERATOR && !isNaN(args[1])) {
+			if (teambot.permissions.isMod(loadedCommandUser.dataValues.permission) && !isNaN(args[1])) {
 				teambot.db.WelcomeDB.destroy({
 					where: {
 						id: args[1],
@@ -74,7 +74,7 @@ module.exports = {
 		}
 		else if (args[0] === 'addbotline') {
 
-			if (loadedCommandUser.dataValues.permission >= teambot.permissions.PREMIUM) {
+			if (teambot.permissions.isTrusted(teambot.permissions.PREMIUM)) {
 				const botline = args.slice(1).join(' ');
 
 				try {
@@ -114,7 +114,7 @@ module.exports = {
 				});
 		}
 		else if (args[0] === 'deletebotline') {
-			if (loadedCommandUser.dataValues.permission >= teambot.permissions.OPERATOR && !isNaN(args[1])) {
+			if (teambot.permissions.isMod(loadedCommandUser.dataValues.permission) && !isNaN(args[1])) {
 				teambot.db.BotlineDB.destroy({
 					where: {
 						id: args[1],

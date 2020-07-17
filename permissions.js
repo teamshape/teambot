@@ -6,8 +6,23 @@ exports.PLEBIAN = 4;
 exports.DOUBLEPLEBIAN = 2;
 exports.NOPERMS = 0;
 
-exports.isAdmin = function(msg) {
-	if (msg >= exports.OPERATOR) {
+exports.isAdmin = function(permission) {
+	console.log(permission);
+	if (permission >= exports.ADMINISTRATOR) {
+		return true;
+	}
+	return false;
+};
+
+exports.isMod = function(permission) {
+	if (permission >= exports.OPERATOR) {
+		return true;
+	}
+	return false;
+};
+
+exports.isTrusted = function(permission) {
+	if (permission >= exports.PREMIUM) {
 		return true;
 	}
 	return false;

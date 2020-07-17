@@ -34,7 +34,7 @@ module.exports = {
 		}
 
 		if (args[0] === 'setpermission') {
-			if (loadedCommandUser.dataValues.permission >= teambot.permissions.OPERATOR && loadedCommandUser.dataValues.permission > loadedTargetUser.dataValues.permission) {
+			if (teambot.permissions.isMod(loadedCommandUser.dataValues.permission) && loadedCommandUser.dataValues.permission > loadedTargetUser.dataValues.permission) {
 				const p = args[2];
 				// console.log(p);
 				if (!isNaN(p) && p <= teambot.permissions.OPERATOR) {
