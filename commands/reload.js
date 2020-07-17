@@ -14,7 +14,6 @@ module.exports = {
 		delete require.cache[require.resolve(`./${command.name}.js`)];
 
 
-
 		// Load user sending the command and user being acted upon.
 		const commandUser = message.author.id;
 		const guild = message.guild.id;

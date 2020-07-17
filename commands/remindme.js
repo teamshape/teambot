@@ -2,6 +2,7 @@ const dateparser = require('dateparser');
 
 module.exports = {
 	name: 'remindme',
+	aliases: ['remind'],
 	description: 'Reminds users to do a thing they wanted reminding of.',
 	args: true,
 	usage: 'in <time> to <do something>',

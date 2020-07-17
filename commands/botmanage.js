@@ -1,5 +1,6 @@
 module.exports = {
 	name: 'botmanage',
+	aliases: ['bot'],
 	description: 'Handles bot management',
 	args: true,
 	usage: 'addwelcome <welcome> | getwelcomes | deletewelcome <id> | addbotline <botline> | getbotlines | deletebotline <id>',
