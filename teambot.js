@@ -14,7 +14,8 @@ const { registerFont, createCanvas, loadImage } = require('canvas')
 const lock = new AsyncLock();
 
 // Set up the bot and its intents.
-const bot = new Client({ ws: { intents: Intents.ALL } });
+const bot = new Client();
+// const bot = new Client({ ws: { intents: Intents.ALL } });
 
 // Load local files to define required features for the bot.
 const db = require('./db.js');
