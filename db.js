@@ -44,10 +44,7 @@ exports.UserDB = exports.sequelize.define('users', {
 		primaryKey: true,
 	},
 	guild: Sequelize.STRING,
-	user: {
-		type: Sequelize.STRING,
-		unique: true,
-	},
+	user: Sequelize.STRING,
 	permission: {
 		type: Sequelize.INTEGER,
 	},
@@ -118,6 +115,34 @@ exports.KvDB = exports.sequelize.define('kv', {
 	],
 });
 
+exports.ChatDB = exports.sequelize.define('chat', {
+	id: {
+		type: Sequelize.INTEGER,
+		unique: true,
+		primaryKey: true,
+	},
+	messageId: {
+		type: Sequelize.INTEGER,
+		unique: true,
+	},
+	guild: Sequelize.INTEGER,
+	channel: Sequelize.INTEGER,
+	user: Sequelize.INTEGER,
+	chatline: Sequelize.STRING,
+	deleted: Sequelize.BOOLEAN,
+	edited: Sequelize.BOOLEAN
+},
+{
+	indexes: [
+		{
+			fields: ['guild', 'channel'],
+		},
+		{
+			fields: ['guild', 'user'],
+		},
+	],
+});
+
 exports.RemindDB.sync();
 exports.AlertDB.sync();
 exports.UserDB.sync();
@@ -125,3 +150,4 @@ exports.KarmaDB.sync();
 exports.WelcomeDB.sync();
 exports.BotlineDB.sync();
 exports.KvDB.sync();
+exports.ChatDB.sync();

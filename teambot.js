@@ -4,7 +4,7 @@ const timerStart = Date.now();
 const fs = require('fs');
 const got = require('got');
 const moment = require('moment-timezone');
-const Discord = require('discord.js');
+const { Client, Collection, Intents, MessageAttachment, MessageEmbed } = require('discord.js');
 const { token, allowedChannels, avApiKey, timer, prefix } = require('./config.json');
 const { CronJob } = require('cron');
 const { Sequelize, Op } = require('sequelize');
@@ -12,23 +12,30 @@ const AsyncLock = require('async-lock');
 const pluralize = require('pluralize');
 const { registerFont, createCanvas, loadImage } = require('canvas')
 const lock = new AsyncLock();
-const bot = new Discord.Client();
-bot.commands = new Discord.Collection();
-const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
 
+// Set up the bot and its intents.
+const bot = new Client({ ws: { intents: Intents.ALL } });
+
+// Load local files to define required features for the bot.
 const db = require('./db.js');
 const permissions = require('./permissions.js');
-
 const teambot = {
 	db: db,
 	permissions: permissions,
 };
 
+// Set up bot commands.
+bot.commands = new Collection();
+const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
 for (const file of commandFiles) {
 	const command = require(`./commands/${file}`);
 	bot.commands.set(command.name, command);
 }
 
+// Register the font once upfront.
+registerFont('assets/tommys.ttf', { family: "Tommy" })
+
+// Load the bot.
 bot.once('ready', () => {
 	const timerEnd = (Date.now() - timerStart) / 1000;
 	console.log(`${bot.user.tag} v1.0.0 loaded in ${timerEnd} seconds!`);
@@ -118,6 +125,21 @@ bot.on('messageReactionAdd', (reaction) => {
 
 bot.on('message', async message => {
 
+	// Log chat
+	try {
+		await teambot.db.ChatDB.create({
+			guild: message.guild.id,
+			channel: message.channel.id,
+			messageId: message.id,
+			deleted: message.deleted,
+			user: message.author.id,
+			chatline: message.content,
+		});
+	}
+	catch (error) {
+		console.log(error);
+	}
+
 	if (message.content.toLowerCase().includes('brother')) {
 		const emoji = message.guild.emojis.cache.find(emoji => emoji.name === 'Brother');
 		if (emoji) {
@@ -185,6 +207,8 @@ bot.on('message', async message => {
 				return message.reply('I can\'t execute that command inside DMs!');
 			}
 			try {
+				// Inject/update the bot variable before the command is executed.
+				teambot.bot = bot;
 				return command.execute(teambot, message, args);
 			}
 			catch (error) {
@@ -243,7 +267,6 @@ bot.on('guildMemberAdd', async member => {
 	const welcomes = await teambot.db.WelcomeDB.findOne({ order: Sequelize.literal('random()') });
 
 	// Set up the welcome canvas.
-	registerFont('assets/tommys.ttf', { family: "Tommy" })
 	const canvas = createCanvas(700, 250);
 	const ctx = canvas.getContext('2d');
 
@@ -264,7 +287,7 @@ bot.on('guildMemberAdd', async member => {
 	ctx.closePath();
 	ctx.clip();
 
-	const attachment = new Discord.MessageAttachment(canvas.toBuffer(), 'welcome-image.png');
+	const attachment = new MessageAttachment(canvas.toBuffer(), 'welcome-image.png');
 
 	const users = pluralize('user', userCount);
 	const have = pluralize('has', userCount);
@@ -367,7 +390,7 @@ function goGetStock(message, match) {
 			color = '#d44942';
 		}
 
-		const stockEmbed = new Discord.MessageEmbed()
+		const stockEmbed = new MessageEmbed()
 			.setColor(color)
 			.setTitle(stockName)
 			.setURL(url)
