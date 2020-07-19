@@ -1,4 +1,3 @@
-const human = require('interval-to-human');
 module.exports = {
 	name: 'info',
 	description: 'Gets user info.',
@@ -8,7 +7,7 @@ module.exports = {
 		const commandUser = message.author.id;
 		const guild = message.guild.id;
 		let loadedCommandUser = [];
-		
+
 		try {
 			loadedCommandUser = await teambot.db.UserDB.findOne({ where: {
 				guild: guild,
@@ -18,7 +17,7 @@ module.exports = {
 		catch (e) {
 			return message.reply('Something went wrong with finding your user.');
 		}
-		
+
 		const data = [];
 		if (!args.length) {
 			data.push('Here\'s your info:\n');

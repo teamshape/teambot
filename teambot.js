@@ -10,7 +10,7 @@ const { CronJob } = require('cron');
 const { Sequelize, Op } = require('sequelize');
 const AsyncLock = require('async-lock');
 const pluralize = require('pluralize');
-const { registerFont, createCanvas, loadImage } = require('canvas')
+const { registerFont, createCanvas, loadImage } = require('canvas');
 const lock = new AsyncLock();
 
 // Set up the bot and its intents.
@@ -34,7 +34,7 @@ for (const file of commandFiles) {
 }
 
 // Register the font once upfront.
-registerFont('assets/tommys.ttf', { family: "Tommy" })
+registerFont('assets/tommys.ttf', { family: 'Tommy' });
 
 // Load the bot.
 bot.once('ready', () => {
@@ -128,7 +128,7 @@ bot.on('message', async message => {
 
 	// Log chat
 	try {
-		await teambot.db.ChatDB.create({
+		teambot.db.ChatDB.create({
 			guild: message.guild.id,
 			channel: message.channel.id,
 			messageId: message.id,
@@ -216,7 +216,6 @@ bot.on('message', async message => {
 				console.error(error);
 				return message.reply('there was an error trying to execute that command!');
 			}
-			return;
 		}
 	}
 
@@ -277,9 +276,9 @@ bot.on('guildMemberAdd', async member => {
 	ctx.strokeStyle = '#74037b';
 	ctx.strokeRect(0, 0, canvas.width, canvas.height);
 
-	ctx.font = '120px Tommy'
+	ctx.font = '120px Tommy';
 	ctx.fillStyle = '#ffffff';
-	ctx.fillText(`HAI`, 20, 90);
+	ctx.fillText('HAI', 20, 90);
 	ctx.font = applyText(canvas, member.displayName);
 	ctx.fillText(`${member.displayName}!`, 20, 200);
 

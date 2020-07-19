@@ -130,7 +130,7 @@ exports.ChatDB = exports.sequelize.define('chat', {
 	user: Sequelize.INTEGER,
 	chatline: Sequelize.STRING,
 	deleted: Sequelize.BOOLEAN,
-	edited: Sequelize.BOOLEAN
+	edited: Sequelize.BOOLEAN,
 },
 {
 	indexes: [
