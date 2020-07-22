@@ -303,6 +303,16 @@ bot.on('channelCreate', (channel) => {
 	auditLine(`The channel ${channel.name} has been created by <@${channel.ownerId}>.`);
 });
 
+bot.on('channelDelete', async channel => {
+	const log = await auditLookup('CHANNEL_DELETE', channel.guild);
+	console.log(log);
+
+	if (!log) return console.log(`${channel.name} has been deleted, but no audit log could be found.`);
+	const { executor } = log;
+
+	auditLine(`${channel.name} has been deleted by ${executor.tag}.`);
+});
+
 bot.on('guildMemberRemove', async member => {
 	const log = await auditLookup('MEMBER_KICK', member.guild);
 
@@ -310,7 +320,7 @@ bot.on('guildMemberRemove', async member => {
 	const { executor, target } = log;
 
 	if (target.id === member.id) {
-		auditLine(`${member.user.tag} left the server; kicked by ${executor.tag}?`);
+		auditLine(`${member.user.tag} left the server; kicked by ${executor.tag}.`);
 	} else {
 		auditLine(`${member.user.tag} left the server, audit log fetch was inconclusive.`);
 	}
