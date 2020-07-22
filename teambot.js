@@ -301,7 +301,6 @@ bot.on('guildMemberUpdate', (oldMember, newMember) => {
 
 bot.on('channelCreate', async channel => {
 	const log = await auditLookup('CHANNEL_CREATE', channel.guild);
-	console.log(log);
 
 	if (!log) return console.log(`${channel.name} has been created, but no audit log could be found.`);
 	const { executor } = log;
@@ -311,7 +310,6 @@ bot.on('channelCreate', async channel => {
 
 bot.on('channelDelete', async channel => {
 	const log = await auditLookup('CHANNEL_DELETE', channel.guild);
-	console.log(log);
 
 	if (!log) return console.log(`${channel.name} has been deleted, but no audit log could be found.`);
 	const { executor } = log;
@@ -349,19 +347,17 @@ bot.on('messageDelete', async message => {
 	if (!message.guild) return;
 	const log = await auditLookup('MESSAGE_DELETE', message.guild);
 
-	if (!log) return auditLine(`A message by ${message.author.tag} was deleted, but no relevant audit logs were found.`);
+	if (!log) return auditLine(`A message by ${message.author.tag} in #${message.channel.name} was deleted, but no relevant audit logs were found. The message was "${message.content}"`);
 	const { executor, target } = log;
 
 	if (target.id === message.author.id) {
-		auditLine(`A message by ${message.author.tag} was deleted by ${executor.tag}.`);
+		auditLine(`A message by ${message.author.tag} in #${message.channel.name} was deleted by ${executor.tag}. The message was "${message.content}"`);
 	}	else {
-		auditLine(`A message by ${message.author.tag} was deleted, but we don't know by who.`);
+		auditLine(`A message by ${message.author.tag} in #${message.channel.name} was deleted by themselves. The message was "${message.content}"`);
 	}
 });
 
 bot.on('presenceUpdate', async (oldMember, newMember) => {
-	// console.log(oldMember);
-	// console.log(newMember);
 	try {
 		await teambot.db.UserDB.upsert({
 			guild: newMember.guild.id,
@@ -404,6 +400,7 @@ function auditLine(line) {
 	if (chan) {
 		chan.send(`${line}`);
 	}
+	console.log(line);
 }
 
 function saySomething(line) {
