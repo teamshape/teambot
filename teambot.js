@@ -155,13 +155,6 @@ bot.on('message', async message => {
 		}
 	}
 
-	if (message.content === 'What does everyone think of bdogg?') {
-		message.react('🇬')
-			.then(() => message.react('🇦'))
-			.then(() => message.react('🇾'))
-			.catch(() => console.error('One of the emojis failed to react.'));
-	}
-
 	// Only for specific bot channels after this.
 	if (!(allowedChannels.includes(message.channel.id) || message.channel.type === 'dm') || message.author.bot) return;
 
@@ -287,7 +280,6 @@ bot.on('guildMemberAdd', async member => {
 	ctx.closePath();
 	ctx.clip();
 
-	console.log(member.user.displayAvatarURL({ format: 'jpg' }));
 	const avatar = await loadImage(member.user.displayAvatarURL({ format: 'jpg' }));
 	ctx.drawImage(avatar, 25, 25, 200, 200);
 
