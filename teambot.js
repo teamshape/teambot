@@ -299,8 +299,14 @@ bot.on('guildMemberUpdate', (oldMember, newMember) => {
 	if (addedRoles.size > 0) auditLine(`The roles ${addedRoles.map(r => r.name)} were added to ${oldMember.displayName}.`);
 });
 
-bot.on('channelCreate', (channel) => {
-	auditLine(`The channel ${channel.name} has been created by <@${channel.ownerId}>.`);
+bot.on('channelCreate', async channel => {
+	const log = await auditLookup('CHANNEL_CREATE', channel.guild);
+	console.log(log);
+
+	if (!log) return console.log(`${channel.name} has been created, but no audit log could be found.`);
+	const { executor } = log;
+
+	auditLine(`${channel.name} has been created by ${executor.tag}.`);
 });
 
 bot.on('channelDelete', async channel => {
