@@ -5,7 +5,7 @@ const fs = require('fs');
 const got = require('got');
 const moment = require('moment-timezone');
 const { Client, Collection, Intents, MessageAttachment, MessageEmbed } = require('discord.js');
-const { token, allowedChannels, avApiKey, timer, prefix } = require('./config.json');
+const { token, allowedChannels, avApiKey, timer, prefix, auditChannel } = require('./config.json');
 const { CronJob } = require('cron');
 const { Sequelize, Op } = require('sequelize');
 const AsyncLock = require('async-lock');
@@ -290,6 +290,75 @@ bot.on('guildMemberAdd', async member => {
 	channel.send(`${welcomes.dataValues.welcome} ${member}. ${userCount} ${users} ${have} joined today.`, attachment);
 });
 
+bot.on('guildMemberUpdate', (oldMember, newMember) => {
+	// If the role(s) are present on the old member object but no longer on the new one (i.e role(s) were removed)
+	const removedRoles = oldMember.roles.cache.filter(role => !newMember.roles.cache.has(role.id));
+	if (removedRoles.size > 0) auditLine(`The roles ${removedRoles.map(r => r.name)} were removed from ${oldMember.displayName}.`);
+	// If the role(s) are present on the new member object but are not on the old one (i.e role(s) were added)
+	const addedRoles = newMember.roles.cache.filter(role => !oldMember.roles.cache.has(role.id));
+	if (addedRoles.size > 0) auditLine(`The roles ${addedRoles.map(r => r.name)} were added to ${oldMember.displayName}.`);
+});
+
+bot.on('channelCreate', (channel) => {
+	auditLine(`The channel ${channel.name} has been created by <@${channel.ownerId}>.`);
+});
+
+bot.on('guildMemberRemove', async member => {
+	const log = await auditLookup('MEMBER_KICK', member.guild);
+
+	if (!log) return console.log(`${member.user.tag} left the server, most likely of their own will.`);
+	const { executor, target } = log;
+
+	if (target.id === member.id) {
+		auditLine(`${member.user.tag} left the server; kicked by ${executor.tag}?`);
+	} else {
+		auditLine(`${member.user.tag} left the server, audit log fetch was inconclusive.`);
+	}
+});
+
+bot.on('guildBanAdd', async (guild, user) => {
+	const log = await auditLookup('MEMBER_BAN_ADD', guild);
+
+	if (!log) return auditLine(`${user.tag} was banned from ${guild.name} but no audit log could be found.`);
+	const { executor, target } = log;
+
+	if (target.id === user.id) {
+		auditLine(`${user.tag} got banned in the server ${guild.name}, by ${executor.tag}`);
+	} else {
+		auditLine(`${user.tag} got banned in the server ${guild.name}, audit log fetch was inconclusive.`);
+	}
+});
+
+bot.on('messageDelete', async message => {
+	if (!message.guild) return;
+	const log = await auditLookup('MESSAGE_DELETE', message.guild);
+
+	if (!log) return auditLine(`A message by ${message.author.tag} was deleted, but no relevant audit logs were found.`);
+	const { executor, target } = log;
+
+	if (target.id === message.author.id) {
+		auditLine(`A message by ${message.author.tag} was deleted by ${executor.tag}.`);
+	}	else {
+		auditLine(`A message by ${message.author.tag} was deleted, but we don't know by who.`);
+	}
+});
+
+bot.on('presenceUpdate', async (oldMember, newMember) => {
+	// console.log(oldMember);
+	// console.log(newMember);
+	try {
+		await teambot.db.UserDB.upsert({
+			guild: newMember.guild.id,
+			user: newMember.userID,
+		});
+	}
+	catch (e) {
+		console.log(e);
+	}
+});
+
+bot.login(token);
+
 const applyText = (canvas, text) => {
 	const ctx = canvas.getContext('2d');
 
@@ -306,7 +375,20 @@ const applyText = (canvas, text) => {
 	return ctx.font;
 };
 
-bot.login(token);
+async function auditLookup(type, guild) {
+	const fetchedLogs = await guild.fetchAuditLogs({
+		limit: 1,
+		type: type,
+	});
+	return fetchedLogs.entries.first();
+}
+
+function auditLine(line) {
+	const chan = bot.channels.cache.get(auditChannel);
+	if (chan) {
+		chan.send(`${line}`);
+	}
+}
 
 function saySomething(line) {
 	allowedChannels.forEach(function(channel) {
@@ -445,16 +527,3 @@ async function registerKarma(message, match) {
 		}
 	}
 }
-
-bot.on('presenceUpdate', async (oldMember, newMember) => {
-	try {
-		await teambot.db.UserDB.upsert({
-			guild: newMember.guild.id,
-			user: newMember.userID,
-		});
-	}
-	catch (e) {
-		console.log(e);
-	}
-
-});
