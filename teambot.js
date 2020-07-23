@@ -325,7 +325,8 @@ bot.on('guildMemberRemove', async member => {
 
 	if (target.id === member.id) {
 		auditLine(`${member.user.tag} left the server; kicked by ${executor.tag}.`);
-	} else {
+	}
+	else {
 		auditLine(`${member.user.tag} left the server, audit log fetch was inconclusive.`);
 	}
 });
@@ -338,7 +339,8 @@ bot.on('guildBanAdd', async (guild, user) => {
 
 	if (target.id === user.id) {
 		auditLine(`${user.tag} got banned in the server ${guild.name}, by ${executor.tag}`);
-	} else {
+	}
+	else {
 		auditLine(`${user.tag} got banned in the server ${guild.name}, audit log fetch was inconclusive.`);
 	}
 });
@@ -352,8 +354,16 @@ bot.on('messageDelete', async message => {
 
 	if (target.id === message.author.id) {
 		auditLine(`A message by ${message.author.tag} in #${message.channel.name} was deleted by ${executor.tag}. The message was "${message.content}"`);
-	}	else {
+	}
+	else {
 		auditLine(`A message by ${message.author.tag} in #${message.channel.name} was deleted by themselves. The message was "${message.content}"`);
+	}
+
+	try {
+		await teambot.db.ChatDB.update({ deleted: true, }, { where: { messageId: message.id } });
+	}
+	catch (error) {
+		console.log(error);
 	}
 });
 
