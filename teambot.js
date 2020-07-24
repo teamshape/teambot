@@ -12,6 +12,7 @@ const AsyncLock = require('async-lock');
 const pluralize = require('pluralize');
 const { registerFont, createCanvas, loadImage } = require('canvas');
 const lock = new AsyncLock();
+const git = require('simple-git');
 
 // Set up the bot and its intents.
 const bot = new Client();
@@ -37,10 +38,11 @@ for (const file of commandFiles) {
 registerFont('assets/Lato-Black.ttf', { family: 'Lato' });
 
 // Load the bot.
-bot.once('ready', () => {
+bot.once('ready', async () => {
+	const hash = await git().revparse([ '--short', 'HEAD']);
 	const timerEnd = (Date.now() - timerStart) / 1000;
-	console.log(`${bot.user.tag} v1.0.0 loaded in ${timerEnd} seconds!`);
-	saySomething(`${bot.user.tag} v1.0.0 loaded in ${timerEnd} seconds!`);
+	console.log(`${bot.user.tag} v1.0.0#${hash} loaded in ${timerEnd} seconds!`);
+	saySomething(`${bot.user.tag} v1.0.0#${hash} loaded in ${timerEnd} seconds!`);
 
 	bot.user.setUsername('TeamBot Nguyen')
 		.then(user => console.log(`Username set to ${user.username}`))
