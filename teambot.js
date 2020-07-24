@@ -366,6 +366,21 @@ bot.on('guildBanAdd', async (guild, user) => {
 	}
 });
 
+// Fires when a ban is revoked.
+bot.on('guildBanRemove', async (guild, user) => {
+	const log = await auditLookup('MEMBER_BAN_REMOVE', guild);
+
+	if (!log) return auditLine(`${user.tag} was unbanned from ${guild.name} but no audit log could be found.`);
+	const { executor, target } = log;
+
+	if (target.id === user.id) {
+		auditLine(`${user.tag} got unbanned in the server ${guild.name}, by ${executor.tag}`);
+	}
+	else {
+		auditLine(`${user.tag} got unbanned in the server ${guild.name}, audit log fetch was inconclusive.`);
+	}
+});
+
 // Fires when messages are deleted - either by the user or by another person.
 bot.on('messageDelete', async message => {
 	if (!message.guild) return;
