@@ -132,21 +132,6 @@ bot.on('messageReactionAdd', (reaction) => {
 
 bot.on('message', async message => {
 
-	// Log chat
-	try {
-		teambot.db.ChatDB.create({
-			guild: message.guild.id,
-			channel: message.channel.id,
-			messageId: message.id,
-			deleted: message.deleted,
-			user: message.author.id,
-			chatline: message.content,
-		});
-	}
-	catch (error) {
-		console.log(error);
-	}
-
 	if (message.content.toLowerCase().includes('brother')) {
 		const emoji = message.guild.emojis.cache.find(emoji => emoji.name === 'Brother');
 		if (emoji) {
@@ -161,8 +146,24 @@ bot.on('message', async message => {
 		}
 	}
 
-	// Only for specific bot channels after this.
-	if (!(allowedChannels.includes(message.channel.id) || message.channel.type === 'dm') || message.author.bot) return;
+	// Log chat.
+	try {
+		if (!message.guild) return;
+		teambot.db.ChatDB.create({
+			guild: message.guild.id,
+			channel: message.channel.id,
+			messageId: message.id,
+			deleted: message.deleted,
+			user: message.author.id,
+			chatline: message.content,
+		});
+	}
+	catch (error) {
+		console.log(error);
+	}
+
+	// Only for specific bot channels after this, remove listening from DMs, and prevent actions if the bot spoke.
+	if (!(allowedChannels.includes(message.channel.id)) || message.channel.type === 'dm' || message.author.bot) return;
 
 	// Karma matches
 	const karma = /<@!\d+>\s?\+\+|<@!\d+>\s?--/gm;
@@ -198,6 +199,8 @@ bot.on('message', async message => {
 		|| bot.commands.find(cmd => cmd.aliases && cmd.aliases.includes(commandName));
 
 		if (command) {
+			// @TODO Either load the user from the DB or check a static array.
+			// if (command.permission & user.permission)
 			if (command.args && !args.length) {
 				let reply = `You didn't provide any arguments, ${message.author}!`;
 				if (command.usage) {
@@ -318,6 +321,8 @@ bot.on('guildMemberUpdate', async (oldMember, newMember) => {
 
 // Fires when new channels are created.
 bot.on('channelCreate', async channel => {
+	// Return here for dm as they are also counted as channelCreate events.
+	if (channel.type === 'dm') return;
 	const log = await auditLookup('CHANNEL_CREATE', channel.guild);
 
 	if (!log) return console.log(`${channel.name} has been created, but no audit log could be found.`);
