@@ -50,6 +50,7 @@ bot.once('ready', () => {
 		.then(presence => console.log(`Activity set to ${presence.activities[0].name}`))
 		.catch(console.error);
 
+	// Reminder cron job that runs every minute.
 	const job = new CronJob('0 * * * * *', async function() {
 		const reminders = await teambot.db.RemindDB.findAll({ where: {
 			reminder_timestamp: {
@@ -57,6 +58,7 @@ bot.once('ready', () => {
 			},
 		} });
 
+		// Take all loaded reminders and send to the channel/user that registered it.
 		reminders.forEach(function(rm) {
 			const reminder_channel = bot.channels.cache.get(rm.dataValues.channel);
 			const member = rm.dataValues.user;
@@ -73,6 +75,7 @@ bot.once('ready', () => {
 	}, null, true, 'Australia/Sydney');
 	job.start();
 
+	// Cron job that runs every minute (during market hours) to alert of stock price movements.
 	const alertJob = new CronJob('0 * 10-16 * * 1-5', async function() {
 		const alerts = await teambot.db.AlertDB.findAll();
 
@@ -82,6 +85,7 @@ bot.once('ready', () => {
 			const operator = a.dataValues.operator;
 			const price = a.dataValues.price;
 
+			// @TODO look for a single function to call this API as we use it in other areas too.
 			const asx = await got.get('https://www.asx.com.au/asx/1/share/' + stock).json();
 
 			if (operator === '>' && asx.last_price >= price) {
@@ -182,10 +186,12 @@ bot.on('message', async message => {
 		});
 	}
 
+	// Check messages start with prefix (defaults to !).
 	if (message.content.startsWith(prefix)) {
 		const args = message.content.slice(prefix.length).trim().split(/ +/);
 		const commandName = args.shift().toLowerCase();
 
+		// Only respond if the command matches a command loaded at the top of this file (or one of its aliases).
 		const command = bot.commands.get(commandName)
 		|| bot.commands.find(cmd => cmd.aliases && cmd.aliases.includes(commandName));
 
@@ -228,13 +234,14 @@ bot.on('message', async message => {
 	}
 });
 
+// Fire when new members join the server.
 bot.on('guildMemberAdd', async member => {
 
-	// Send the message to a designated channel on a server:
+	// Send the message to a designated channel on a server. @TODO change this to configuration managed.
 	const channel = member.guild.channels.cache.find(ch => ch.name === 'welcome-channel');
 	// Do nothing if the channel wasn't found on this server
-	if (!channel) return;
 
+	// Update their record within the user database.
 	try {
 		await teambot.db.UserDB.upsert({
 			guild: member.guild.id,
@@ -247,6 +254,8 @@ bot.on('guildMemberAdd', async member => {
 		}
 		return channel.send('Something went wrong with adding a user.');
 	}
+
+	if (!channel) return;
 
 	const startOfDay = moment().tz('Australia/Sydney').startOf('day').tz('UTC').format('YYYY-MM-DD HH:mm:ss.SSS Z');
 
@@ -290,15 +299,22 @@ bot.on('guildMemberAdd', async member => {
 	channel.send(`${welcomes.dataValues.welcome} ${member}. ${userCount} ${users} ${have} joined today.`, attachment);
 });
 
-bot.on('guildMemberUpdate', (oldMember, newMember) => {
+// Fire when users have their role updated.
+bot.on('guildMemberUpdate', async (oldMember, newMember) => {
+
+	const log = await auditLookup('GUILD_MEMBER_UPDATE', newMember.guild);
+
+	const { executor, target } = log;
+
 	// If the role(s) are present on the old member object but no longer on the new one (i.e role(s) were removed)
 	const removedRoles = oldMember.roles.cache.filter(role => !newMember.roles.cache.has(role.id));
-	if (removedRoles.size > 0) auditLine(`The roles ${removedRoles.map(r => r.name)} were removed from ${oldMember.displayName}.`);
+	if (removedRoles.size > 0) auditLine(`The role(s) ${removedRoles.map(r => r.name)} were removed from ${oldMember.displayName} by ${executor.tag}.`);
 	// If the role(s) are present on the new member object but are not on the old one (i.e role(s) were added)
 	const addedRoles = newMember.roles.cache.filter(role => !oldMember.roles.cache.has(role.id));
-	if (addedRoles.size > 0) auditLine(`The roles ${addedRoles.map(r => r.name)} were added to ${oldMember.displayName}.`);
+	if (addedRoles.size > 0) auditLine(`The role(s) ${addedRoles.map(r => r.name)} were added to ${oldMember.displayName} by ${executor.tag}.`);
 });
 
+// Fires when new channels are created.
 bot.on('channelCreate', async channel => {
 	const log = await auditLookup('CHANNEL_CREATE', channel.guild);
 
@@ -308,6 +324,7 @@ bot.on('channelCreate', async channel => {
 	auditLine(`${channel.name} has been created by ${executor.tag}.`);
 });
 
+// Fires when channels are deleted.
 bot.on('channelDelete', async channel => {
 	const log = await auditLookup('CHANNEL_DELETE', channel.guild);
 
@@ -317,6 +334,7 @@ bot.on('channelDelete', async channel => {
 	auditLine(`${channel.name} has been deleted by ${executor.tag}.`);
 });
 
+// Fires when users are removed from the server - either by themselves or by another person.
 bot.on('guildMemberRemove', async member => {
 	const log = await auditLookup('MEMBER_KICK', member.guild);
 
@@ -331,6 +349,7 @@ bot.on('guildMemberRemove', async member => {
 	}
 });
 
+// Fires when a ban occurs.
 bot.on('guildBanAdd', async (guild, user) => {
 	const log = await auditLookup('MEMBER_BAN_ADD', guild);
 
@@ -345,6 +364,7 @@ bot.on('guildBanAdd', async (guild, user) => {
 	}
 });
 
+// Fires when messages are deleted - either by the user or by another person.
 bot.on('messageDelete', async message => {
 	if (!message.guild) return;
 	const log = await auditLookup('MESSAGE_DELETE', message.guild);
@@ -360,13 +380,16 @@ bot.on('messageDelete', async message => {
 	}
 
 	try {
-		await teambot.db.ChatDB.update({ deleted: true, }, { where: { messageId: message.id } });
+		await teambot.db.ChatDB.update({ deleted: true }, { where: { messageId: message.id } });
 	}
 	catch (error) {
 		console.log(error);
 	}
 });
 
+// Fires when a user's presence changes e.g. status change, music change etc.
+// This function can be removed when we reach parity with what's in the UserDB.
+// There may be other uses for this function e.g. updating users on name changes.
 bot.on('presenceUpdate', async (oldMember, newMember) => {
 	try {
 		await teambot.db.UserDB.upsert({
