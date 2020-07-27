@@ -139,6 +139,13 @@ bot.on('message', async message => {
 		}
 	}
 
+	if (message.content.toLowerCase().includes('monster')) {
+		const emoji = message.guild.emojis.cache.find(emoji => emoji.name === 'monsterposition');
+		if (emoji) {
+			message.react(emoji);
+		}
+	}
+
 	if (message.content.toLowerCase().includes('twitter.com/bhagdip143')) {
 		const emoji = message.guild.emojis.cache.find(emoji => emoji.name === 'baghdeep');
 		if (emoji) {
