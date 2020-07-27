@@ -1,4 +1,4 @@
-const { ADMINISTRATOR, OPERATOR, PREMIUM} = require('../permissions');
+const { ADMINISTRATOR, OPERATOR, PREMIUM } = require('../permissions');
 const human = require('interval-to-human');
 
 module.exports = {
@@ -11,15 +11,17 @@ module.exports = {
 		const chatCount = await teambot.db.ChatDB.count({ where: { guild: message.guild.id } });
 		const used = process.memoryUsage().heapUsed / 1024 / 1024;
 
-		// const channels = teambot.bot.channels.cache.size;
-		// const roles = teambot.bot.guilds.cache;
-		// console.log(roles);
-		// console.log(channels);
+		const guildId = message.channel.guild.id;
+		const guild = teambot.bot.guilds.cache.get(guildId);
+		const roles = guild.roles.cache.size;
+		const channels = guild.channels.cache.size;
 
 		const data = [];
 		data.push(`Uptime: ${human(message.client.uptime)}`);
 		data.push(`Heap Memory: ${used}`);
-		data.push(`Commands: ${message.client.commands.size}`)
+		data.push(`Channels: ${channels}`);
+		data.push(`Roles: ${roles}`);
+		data.push(`Commands: ${message.client.commands.size}`);
 		data.push(`User count: ${userCount}`);
 		data.push(`Chat lines: ${chatCount}`);
 
