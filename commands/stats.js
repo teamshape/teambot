@@ -9,9 +9,16 @@ module.exports = {
 
 		const userCount = await teambot.db.UserDB.count({ where: { guild: message.guild.id } });
 		const chatCount = await teambot.db.ChatDB.count({ where: { guild: message.guild.id } });
+		const used = process.memoryUsage().heapUsed / 1024 / 1024;
+
+		// const channels = teambot.bot.channels.cache.size;
+		// const roles = teambot.bot.guilds.cache;
+		// console.log(roles);
+		// console.log(channels);
 
 		const data = [];
 		data.push(`Uptime: ${human(message.client.uptime)}`);
+		data.push(`Heap Memory: ${used}`);
 		data.push(`Commands: ${message.client.commands.size}`)
 		data.push(`User count: ${userCount}`);
 		data.push(`Chat lines: ${chatCount}`);
