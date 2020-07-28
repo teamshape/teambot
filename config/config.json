@@ -1,0 +1,11 @@
+{
+  "development": {
+    "storage": "db/teambot.sqlite",
+    "dialect": "sqlite"
+  },
+  "production": {
+    "storage": "db/teambot.sqlite",
+    "dialect": "sqlite",
+    "logging": false
+  }
+}
