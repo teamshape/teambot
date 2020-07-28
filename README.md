@@ -33,10 +33,10 @@ Users can be @'d followed by ++ or -- to add or remove points. This functionalit
 
 ```
 # Use the following in production.
-pm2 startOrRestart ecosystem.config.js --env production
+pm2 startOrRestart config/ecosystem.config.js --env production
 
 # Use the following in development.
-pm2-dev ecosystem.config.js
+pm2-dev config/ecosystem.config.js
 
 # Check the environment is right.
 pm2 info TeamBot
