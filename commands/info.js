@@ -9,7 +9,7 @@ module.exports = {
 		let loadedCommandUser = [];
 
 		try {
-			loadedCommandUser = await teambot.db.UserDB.findOne({ where: {
+			loadedCommandUser = await teambot.db.users.findOne({ where: {
 				guild: guild,
 				user: commandUser,
 			} });

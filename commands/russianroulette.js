@@ -6,7 +6,7 @@ module.exports = {
 
 		let shots = null;
 		try {
-			shots = await teambot.db.KvDB.findOne({ where: {
+			shots = await teambot.db.kvs.findOne({ where: {
 				guild: message.guild.id,
 				key: 'rr.shots',
 			} });
@@ -18,7 +18,7 @@ module.exports = {
 		// Seed the table.
 		if (shots === null) {
 			try {
-				await teambot.db.KvDB.create({
+				await teambot.db.kvs.create({
 					guild: message.guild.id,
 					key: 'rr.shots',
 					value: 6,
@@ -35,7 +35,7 @@ module.exports = {
 
 		if (Math.floor(Math.random() * chance) === 0) {
 			try {
-				await teambot.db.KvDB.update({
+				await teambot.db.kvs.update({
 					value: 6,
 				},
 				{
@@ -53,7 +53,7 @@ module.exports = {
 		else {
 			chance -= 1;
 			try {
-				await teambot.db.KvDB.update({
+				await teambot.db.kvs.update({
 					value: chance,
 				},
 				{

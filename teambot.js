@@ -19,7 +19,9 @@ const bot = new Client();
 // const bot = new Client({ ws: { intents: Intents.ALL } });
 
 // Load local files to define required features for the bot.
-const db = require('./db.js');
+// const db = require('./db.js');
+const db = require('./models/index.js');
+
 const permissions = require('./permissions.js');
 const teambot = {
 	db: db,
@@ -54,7 +56,7 @@ bot.once('ready', async () => {
 
 	// Reminder cron job that runs every minute.
 	const job = new CronJob('0 * * * * *', async function() {
-		const reminders = await teambot.db.RemindDB.findAll({ where: {
+		const reminders = await teambot.db.reminders.findAll({ where: {
 			reminder_timestamp: {
 				[Op.lte]: Date.now(),
 			},
@@ -67,7 +69,7 @@ bot.once('ready', async () => {
 			const reminder_message = rm.dataValues.reminder;
 			if (reminder_channel) {
 				reminder_channel.send(`<@${member}>: ${reminder_message}`);
-				teambot.db.RemindDB.destroy({
+				teambot.db.reminders.destroy({
 					where: {
 						id: rm.dataValues.id,
 					},
@@ -79,7 +81,7 @@ bot.once('ready', async () => {
 
 	// Cron job that runs every minute (during market hours) to alert of stock price movements.
 	const alertJob = new CronJob('0 * 10-16 * * 1-5', async function() {
-		const alerts = await teambot.db.AlertDB.findAll();
+		const alerts = await teambot.db.alerts.findAll();
 
 		alerts.forEach(async function(a) {
 			const member = a.dataValues.user;
@@ -92,7 +94,7 @@ bot.once('ready', async () => {
 
 			if (operator === '>' && asx.last_price >= price) {
 				saySomething(`<@${member}>: ${stock} rose to/above your alert price of ${price} and is now trading at ${asx.last_price}`);
-				teambot.db.AlertDB.destroy({
+				teambot.db.alerts.destroy({
 					where: {
 						id: a.dataValues.id,
 					},
@@ -100,7 +102,7 @@ bot.once('ready', async () => {
 			}
 			else if (operator === '<' && asx.last_price <= price) {
 				saySomething(`<@${member}>: ${stock} dropped to/below your alert price of ${price} and is now trading at ${asx.last_price}`);
-				teambot.db.AlertDB.destroy({
+				teambot.db.alerts.destroy({
 					where: {
 						id: a.dataValues.id,
 					},
@@ -156,7 +158,7 @@ bot.on('message', async message => {
 	// Log chat.
 	try {
 		if (!message.guild) return;
-		teambot.db.ChatDB.create({
+		teambot.db.chats.create({
 			guild: message.guild.id,
 			channel: message.channel.id,
 			messageId: message.id,
@@ -255,7 +257,7 @@ bot.on('guildMemberAdd', async member => {
 
 	// Update their record within the user database.
 	try {
-		await teambot.db.UserDB.upsert({
+		await teambot.db.users.upsert({
 			guild: member.guild.id,
 			user: member.id,
 		});
@@ -271,14 +273,14 @@ bot.on('guildMemberAdd', async member => {
 
 	const startOfDay = moment().tz('Australia/Sydney').startOf('day').tz('UTC').format('YYYY-MM-DD HH:mm:ss.SSS Z');
 
-	const userCount = await teambot.db.UserDB.count({ where: {
+	const userCount = await teambot.db.users.count({ where: {
 		guild: member.guild.id,
 		createdAt: {
 			[Op.gte]: startOfDay,
 		},
 	} });
 
-	const welcomes = await teambot.db.WelcomeDB.findOne({ order: Sequelize.literal('random()') });
+	const welcomes = await teambot.db.welcomes.findOne({ order: Sequelize.literal('random()') });
 
 	// Set up the welcome canvas.
 	const canvas = createCanvas(700, 250);
@@ -409,7 +411,7 @@ bot.on('messageDelete', async message => {
 	}
 
 	try {
-		await teambot.db.ChatDB.update({ deleted: true }, { where: { messageId: message.id } });
+		await teambot.db.chats.update({ deleted: true }, { where: { messageId: message.id } });
 	}
 	catch (error) {
 		console.log(error);
@@ -421,7 +423,7 @@ bot.on('messageDelete', async message => {
 // There may be other uses for this function e.g. updating users on name changes.
 bot.on('presenceUpdate', async (oldMember, newMember) => {
 	try {
-		await teambot.db.UserDB.upsert({
+		await teambot.db.users.upsert({
 			guild: newMember.guild.id,
 			user: newMember.userID,
 		});
@@ -476,7 +478,7 @@ function saySomething(line) {
 
 function randomLine() {
 	(async () => {
-		const botlines = await teambot.db.BotlineDB.findOne({ order: Sequelize.literal('random()') });
+		const botlines = await teambot.db.botlines.findOne({ order: Sequelize.literal('random()') });
 		saySomething(`${botlines.dataValues.botline}`);
 	})();
 }
@@ -574,7 +576,7 @@ async function registerKarma(message, match) {
 	if (match.endsWith('+')) {
 		message.channel.send(`Adding karma to <@!${userId}>`);
 		try {
-			await teambot.db.KarmaDB.create({
+			await teambot.db.karmas.create({
 				guild: message.guild.id,
 				user: userId,
 				karma: 1,
@@ -582,14 +584,14 @@ async function registerKarma(message, match) {
 		}
 		catch (error) {
 			if (error.name === 'SequelizeUniqueConstraintError') {
-				await teambot.db.KarmaDB.update({ karma: teambot.db.sequelize.literal('IFNULL(karma, 0) + 1') }, { where: { user: userId } });
+				await teambot.db.karmas.update({ karma: teambot.db.sequelize.literal('IFNULL(karma, 0) + 1') }, { where: { user: userId } });
 			}
 		}
 	}
 	else {
 		message.channel.send(`Removing karma from <@!${userId}>`);
 		try {
-			await teambot.db.KarmaDB.create({
+			await teambot.db.karmas.create({
 				guild: message.guild.id,
 				user: userId,
 				karma: -1,
@@ -597,7 +599,7 @@ async function registerKarma(message, match) {
 		}
 		catch (error) {
 			if (error.name === 'SequelizeUniqueConstraintError') {
-				await teambot.db.KarmaDB.update({ karma: teambot.db.sequelize.literal('IFNULL(karma, 0) - 1') }, { where: { user: userId } });
+				await teambot.db.karmas.update({ karma: teambot.db.sequelize.literal('IFNULL(karma, 0) - 1') }, { where: { user: userId } });
 			}
 		}
 	}

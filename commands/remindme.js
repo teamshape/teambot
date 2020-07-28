@@ -13,7 +13,7 @@ module.exports = {
 		const reminder = myMessage[1];
 
 		try {
-			await teambot.db.RemindDB.create({
+			await teambot.db.reminders.create({
 				guild: message.guild.id,
 				channel: message.channel.id,
 				reminder_timestamp: timestamp,

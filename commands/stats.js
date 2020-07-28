@@ -7,11 +7,11 @@ module.exports = {
 	permission: ADMINISTRATOR | OPERATOR | PREMIUM,
 	async execute(teambot, message) {
 
-		const userCount = await teambot.db.UserDB.count({ where: { guild: message.guild.id } });
-		const chatCount = await teambot.db.ChatDB.count({ where: { guild: message.guild.id } });
+		const guildId = message.guild.id;
+		const userCount = await teambot.db.users.count({ where: { guild: guildId } });
+		const chatCount = await teambot.db.chats.count({ where: { guild: guildId } });
 		const used = process.memoryUsage().heapUsed / 1024 / 1024;
 
-		const guildId = message.channel.guild.id;
 		const guild = teambot.bot.guilds.cache.get(guildId);
 		const roles = guild.roles.cache.size;
 		const channels = guild.channels.cache.size;

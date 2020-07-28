@@ -14,7 +14,7 @@ module.exports = {
 		let loadedTargetUser = [];
 
 		try {
-			loadedCommandUser = await teambot.db.UserDB.findOne({ where: {
+			loadedCommandUser = await teambot.db.users.findOne({ where: {
 				guild: guild,
 				user: commandUser,
 			} });
@@ -24,7 +24,7 @@ module.exports = {
 		}
 
 		try {
-			loadedTargetUser = await teambot.db.UserDB.findOne({ where: {
+			loadedTargetUser = await teambot.db.users.findOne({ where: {
 				guild: guild,
 				user: targetUser,
 			} });
@@ -38,7 +38,7 @@ module.exports = {
 				const p = args[2];
 				if (!isNaN(p) && p <= teambot.permissions.OPERATOR) {
 					if (p && (p & (p - 1)) === 0) {
-						await teambot.db.UserDB.update({
+						await teambot.db.users.update({
 							permission: p,
 						},
 						{

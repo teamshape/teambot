@@ -13,7 +13,7 @@ module.exports = {
 		let loadedCommandUser = [];
 
 		try {
-			loadedCommandUser = await teambot.db.UserDB.findOne({ where: {
+			loadedCommandUser = await teambot.db.users.findOne({ where: {
 				guild: guild,
 				user: commandUser,
 			} });
@@ -28,7 +28,7 @@ module.exports = {
 				const welcome = args.slice(1).join(' ');
 
 				try {
-					await teambot.db.WelcomeDB.create({
+					await teambot.db.welcomes.create({
 						guild: message.guild.id,
 						user: message.author.id,
 						welcome: welcome,
@@ -48,7 +48,7 @@ module.exports = {
 			}
 		}
 		else if (args[0] === 'getwelcomes') {
-			const welcomes = await teambot.db.WelcomeDB.findAll();
+			const welcomes = await teambot.db.welcomes.findAll();
 			const data = [];
 			data.push('Here\'s a list of all welcomes:');
 			data.push(welcomes.map(welcome => `${welcome.id}: ${welcome.welcome}`).join('\n'));
@@ -65,7 +65,7 @@ module.exports = {
 		}
 		else if (args[0] === 'deletewelcome') {
 			if (teambot.permissions.isMod(loadedCommandUser.dataValues.permission) && !isNaN(args[1])) {
-				teambot.db.WelcomeDB.destroy({
+				teambot.db.welcomes.destroy({
 					where: {
 						id: args[1],
 					},
@@ -79,7 +79,7 @@ module.exports = {
 				const botline = args.slice(1).join(' ');
 
 				try {
-					await teambot.db.BotlineDB.create({
+					await teambot.db.botlines.create({
 						guild: message.guild.id,
 						user: message.author.id,
 						botline: botline,
@@ -99,7 +99,7 @@ module.exports = {
 			}
 		}
 		else if (args[0] === 'getbotlines') {
-			const botlines = await teambot.db.BotlineDB.findAll();
+			const botlines = await teambot.db.botlines.findAll();
 			const data = [];
 			data.push('Here\'s a list of all botlines:');
 			data.push(botlines.map(botline => `${botline.id}: ${botline.botline}`).join('\n'));
@@ -116,7 +116,7 @@ module.exports = {
 		}
 		else if (args[0] === 'deletebotline') {
 			if (teambot.permissions.isMod(loadedCommandUser.dataValues.permission) && !isNaN(args[1])) {
-				teambot.db.BotlineDB.destroy({
+				teambot.db.botlines.destroy({
 					where: {
 						id: args[1],
 					},

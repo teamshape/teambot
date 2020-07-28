@@ -32,7 +32,7 @@ module.exports = {
 		}
 
 		try {
-			await teambot.db.AlertDB.create({
+			await teambot.db.alerts.create({
 				guild: message.guild.id,
 				channel: message.channel.id,
 				user: message.author.id,

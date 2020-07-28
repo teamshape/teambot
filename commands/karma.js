@@ -7,7 +7,7 @@ module.exports = {
 
 		data.push('Here\'s the karma list:');
 
-		const karmas = await teambot.db.KarmaDB.findAll({
+		const karmas = await teambot.db.karmas.findAll({
 			order: [
 				['karma', 'DESC'],
 			],
