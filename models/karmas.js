@@ -14,7 +14,8 @@ module.exports = function(sequelize, DataTypes) {
 		},
 		user: {
 			type: DataTypes.STRING(255),
-			allowNull: true
+			allowNull: true,
+			unique: true
 		},
 		score: {
 			type: DataTypes.INTEGER,

@@ -10,7 +10,8 @@ module.exports = function(sequelize, DataTypes) {
 		},
 		messageId: {
 			type: DataTypes.INTEGER,
-			allowNull: true
+			allowNull: true,
+			unique: true
 		},
 		guild: {
 			type: DataTypes.INTEGER,

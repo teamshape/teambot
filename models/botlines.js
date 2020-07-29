@@ -18,7 +18,8 @@ module.exports = function(sequelize, DataTypes) {
 		},
 		botline: {
 			type: DataTypes.STRING(255),
-			allowNull: true
+			allowNull: true,
+			unique: true
 		},
 		createdAt: {
 			type: DataTypes.DATE,

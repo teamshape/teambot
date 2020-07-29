@@ -1,7 +1,7 @@
 /* jshint indent: 1 */
 
 module.exports = function(sequelize, DataTypes) {
-	return sequelize.define('welcomes', {
+	return sequelize.define('reports', {
 		id: {
 			autoIncrement: true,
 			type: DataTypes.INTEGER,
@@ -12,25 +12,20 @@ module.exports = function(sequelize, DataTypes) {
 			type: DataTypes.STRING(255),
 			allowNull: true
 		},
-		user: {
+		channel: {
 			type: DataTypes.STRING(255),
 			allowNull: true
 		},
-		welcome: {
+		reporter: {
 			type: DataTypes.STRING(255),
-			allowNull: true,
-			unique: true
+			allowNull: true
 		},
-		createdAt: {
-			type: DataTypes.DATE,
-			allowNull: false
-		},
-		updatedAt: {
-			type: DataTypes.DATE,
-			allowNull: false
+		reported: {
+			type: DataTypes.STRING(255),
+			allowNull: true
 		}
 	}, {
 		sequelize,
-		tableName: 'welcomes'
+		tableName: 'reports'
 	});
 };
