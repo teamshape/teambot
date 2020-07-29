@@ -18,7 +18,8 @@ module.exports = {
 
 		const data = [];
 		data.push(`Uptime: ${human(message.client.uptime)}`);
-		data.push(`Heap Memory: ${used}`);
+		data.push(`Heap Memory: ${used.toFixed(2)} MB`);
+		data.push(`Node: ${process.version}`);
 		data.push(`Channels: ${channels}`);
 		data.push(`Roles: ${roles}`);
 		data.push(`Commands: ${message.client.commands.size}`);
