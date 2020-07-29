@@ -206,9 +206,18 @@ bot.on('message', async message => {
 		const command = bot.commands.get(commandName)
 		|| bot.commands.find(cmd => cmd.aliases && cmd.aliases.includes(commandName));
 
-		if (command) {
-			// @TODO Either load the user from the DB or check a static array.
-			// if (command.permission & user.permission)
+		let loadedUser = [];
+		try {
+			loadedUser = await teambot.db.users.findOne({ where: {
+				guild: message.guild.id,
+				user: message.author.id,
+			} });
+		}
+		catch (e) {
+			return message.reply('Something went wrong with finding user.');
+		}
+
+		if (command && (command.permission & loadedUser.dataValues.permission)) {
 			if (command.args && !args.length) {
 				let reply = `You didn't provide any arguments, ${message.author}!`;
 				if (command.usage) {
@@ -259,6 +268,7 @@ bot.on('guildMemberAdd', async member => {
 		await teambot.db.users.upsert({
 			guild: member.guild.id,
 			user: member.id,
+			permission: permissions.STANDARD,
 		});
 	}
 	catch (e) {

@@ -1,8 +1,10 @@
+const { ADMINISTRATOR } = require("../permissions");
 module.exports = {
 	name: 'reload',
 	description: 'Reloads a command',
 	args: true,
 	usage: '<command>',
+	permission: ADMINISTRATOR,
 	async execute(teambot, message, args) {
 		if (!args.length) return message.channel.send(`You didn't pass any command to reload, ${message.author}!`);
 		const commandName = args[0].toLowerCase();

@@ -1,8 +1,11 @@
+const { OPERATOR, ADMINISTRATOR } = require("../permissions");
+
 module.exports = {
 	name: 'manage',
 	description: 'Handles user management',
 	args: true,
 	usage: 'setpermission <user> <permission>',
+	permission: ADMINISTRATOR | OPERATOR,
 	async execute(teambot, message, args) {
 
 		// Load user sending the command and user being acted upon.

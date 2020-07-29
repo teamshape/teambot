@@ -1,10 +1,12 @@
 const got = require('got');
+const { ADMINISTRATOR, OPERATOR, PREMIUM, STANDARD } = require("../permissions");
 
 module.exports = {
 	name: 'alert',
 	description: 'Sets a price alert for rising and falling stocks on the ASX.',
 	args: true,
 	usage: '<stock> <operator> <price>',
+	permission: ADMINISTRATOR | OPERATOR | PREMIUM | STANDARD,
 	async execute(teambot, message, args) {
 		const stock = args[0];
 		const operator = args[1];

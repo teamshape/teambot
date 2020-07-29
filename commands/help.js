@@ -1,10 +1,12 @@
 const { prefix } = require('../config/teambot.json');
+const { ADMINISTRATOR, OPERATOR, PREMIUM, STANDARD } = require("../permissions");
 module.exports = {
 	name: 'help',
 	description: 'List all of my commands or info about a specific command.',
 	aliases: ['commands'],
 	usage: '[command name]',
 	cooldown: 5,
+	permission: ADMINISTRATOR | OPERATOR | PREMIUM | STANDARD,
 	execute(teambot, message, args) {
 		const data = [];
 		const { commands } = message.client;

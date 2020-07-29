@@ -1,10 +1,10 @@
-const { ADMINISTRATOR, OPERATOR, PREMIUM } = require('../permissions');
+const { ADMINISTRATOR, OPERATOR, PREMIUM, STANDARD } = require("../permissions");
 const human = require('interval-to-human');
 
 module.exports = {
 	name: 'stats',
 	description: 'Gets server stats.',
-	permission: ADMINISTRATOR | OPERATOR | PREMIUM,
+	permission: ADMINISTRATOR | OPERATOR | PREMIUM | STANDARD,
 	async execute(teambot, message) {
 
 		const guildId = message.guild.id;

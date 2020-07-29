@@ -1,11 +1,11 @@
-const { ADMINISTRATOR, OPERATOR, PREMIUM, STANDARD } = require('../permissions');
+const { ADMINISTRATOR, OPERATOR } = require('../permissions');
 
 module.exports = {
 	name: 'report',
 	description: 'Reports users for rule breaking',
 	args: true,
 	usage: 'report <user>',
-	permission: ADMINISTRATOR | OPERATOR | PREMIUM | STANDARD,
+	permission: ADMINISTRATOR | OPERATOR,
 	async execute(teambot, message) {
 
 		const reported = message.mentions.users.first();

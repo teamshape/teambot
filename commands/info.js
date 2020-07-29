@@ -1,6 +1,8 @@
+const { ADMINISTRATOR, OPERATOR, PREMIUM, STANDARD } = require("../permissions");
 module.exports = {
 	name: 'info',
 	description: 'Gets user info.',
+	permission: ADMINISTRATOR | OPERATOR | PREMIUM | STANDARD,
 	async execute(teambot, message, args) {
 
 		// Load user sending the command.

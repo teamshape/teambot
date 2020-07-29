@@ -1,7 +1,9 @@
+const { ADMINISTRATOR, OPERATOR, PREMIUM, STANDARD } = require("../permissions");
 module.exports = {
 	name: 'russianroulette',
 	aliases: ['rr'],
 	description: 'Plays with fire.',
+	permission: ADMINISTRATOR | OPERATOR | PREMIUM | STANDARD,
 	async execute(teambot, message) {
 
 		let shots = null;

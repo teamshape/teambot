@@ -1,9 +1,11 @@
 const pluralize = require('pluralize');
+const { ADMINISTRATOR } = require('../permissions');
 
 module.exports = {
 	name: 'pull',
 	description: 'Updates the bot',
 	args: false,
+	permission: ADMINISTRATOR,
 	async execute(teambot, message) {
 
 		const commandUser = message.author.id;

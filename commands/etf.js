@@ -1,10 +1,11 @@
 const got = require('got');
-
+const { ADMINISTRATOR, OPERATOR, PREMIUM, STANDARD } = require("../permissions");
 module.exports = {
 	name: 'etf',
 	description: 'Gets holding information about an ETF. Add .ax for Australian ETFs.',
 	args: true,
 	usage: '<stock>',
+	permission: ADMINISTRATOR | OPERATOR | PREMIUM | STANDARD,
 	async execute(teambot, message, args) {
 		const etf = args[0].toUpperCase();
 

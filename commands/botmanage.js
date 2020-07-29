@@ -1,9 +1,12 @@
+const { ADMINISTRATOR, OPERATOR, PREMIUM } = require("../permissions");
+
 module.exports = {
 	name: 'botmanage',
 	aliases: ['bot'],
 	description: 'Handles bot management',
 	args: true,
 	usage: 'addwelcome <welcome> | getwelcomes | deletewelcome <id> | addbotline <botline> | getbotlines | deletebotline <id>',
+	permission: ADMINISTRATOR | OPERATOR | PREMIUM,
 	async execute(teambot, message, args) {
 
 		// Load user sending the command and user being acted upon.

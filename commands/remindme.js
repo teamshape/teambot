@@ -1,4 +1,5 @@
 const dateparser = require('dateparser');
+const { ADMINISTRATOR, OPERATOR, PREMIUM, STANDARD } = require("../permissions");
 
 module.exports = {
 	name: 'remindme',
@@ -6,6 +7,7 @@ module.exports = {
 	description: 'Reminds users to do a thing they wanted reminding of.',
 	args: true,
 	usage: 'in <time> to <do something>',
+	permission: ADMINISTRATOR | OPERATOR | PREMIUM | STANDARD,
 	async execute(teambot, message, args) {
 		// !remind me in {time increments} to {message}
 		const myMessage = args.slice(1).join(' ').split(/ to (.+)?/, 2);
