@@ -23,6 +23,14 @@ module.exports = function(sequelize, DataTypes) {
 		reported: {
 			type: DataTypes.STRING(255),
 			allowNull: true
+		},
+		createdAt: {
+			type: DataTypes.DATE,
+			allowNull: false
+		},
+		updatedAt: {
+			type: DataTypes.DATE,
+			allowNull: false
 		}
 	}, {
 		sequelize,

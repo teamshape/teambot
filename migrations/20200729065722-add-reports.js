@@ -25,6 +25,14 @@ module.exports = {
         type: Sequelize.DataTypes.STRING(255),
         allowNull: true
       },
+      createdAt: {
+        type: Sequelize.DataTypes.DATE,
+        allowNull: false
+      },
+      updatedAt: {
+        type: Sequelize.DataTypes.DATE,
+        allowNull: false
+      }
     });
   },
 
