@@ -19,7 +19,6 @@ const bot = new Client();
 // const bot = new Client({ ws: { intents: Intents.ALL } });
 
 // Load local files to define required features for the bot.
-// const db = require('./db.js');
 const db = require('./models/index.js');
 
 const permissions = require('./permissions.js');
@@ -271,7 +270,7 @@ bot.on('guildMemberAdd', async member => {
 
 	if (!channel) return;
 
-	const startOfDay = moment().tz('Australia/Sydney').startOf('day').tz('UTC').format('YYYY-MM-DD HH:mm:ss.SSS Z');
+	const startOfDay = moment().tz('Australia/Sydney').startOf('day').tz('UTC').format();
 
 	const userCount = await teambot.db.users.count({ where: {
 		guild: member.guild.id,
