@@ -451,6 +451,7 @@ bot.on('presenceUpdate', async (oldMember, newMember) => {
 		await teambot.db.users.upsert({
 			guild: newMember.guild.id,
 			user: newMember.userID,
+			permission: permissions.STANDARD,
 		});
 	}
 	catch (e) {
@@ -470,7 +471,8 @@ const applyText = (canvas, text) => {
 		// Assign the font to the context and decrement it so it can be measured again
 		ctx.font = `${fontSize -= 10}px Lato`;
 		// Compare pixel width of the text to the canvas minus the approximate avatar size
-	} while (ctx.measureText(text).width > canvas.width - 300);
+		// Add 1 for the exclamation point.
+	} while ((ctx.measureText(text).width + 1) > canvas.width - 300);
 
 	// Return the result to use in the actual canvas
 	return ctx.font;
