@@ -312,10 +312,17 @@ bot.on('guildMemberAdd', async member => {
 	ctx.font = `30px Lato`;
 	ctx.fillText(`Member #${totalUsers}`, canvas.width / 2.5, (canvas.height / 9) * 8);
 
+	// Puts the border around the avatar.
 	ctx.beginPath();
 	ctx.arc(125, canvas.height / 2, 100, 0, 2 * Math.PI, false);
 	ctx.lineWidth = 8;
 	ctx.stroke();
+
+	// Removes edges from the avatar.
+	ctx.beginPath();
+	ctx.arc(125, 125, 100, 0, Math.PI * 2, true);
+	ctx.closePath();
+	ctx.clip();
 
 	const avatar = await loadImage(member.user.displayAvatarURL({ format: 'jpg' }));
 	// DEBUG only.
