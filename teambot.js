@@ -298,7 +298,8 @@ bot.on('guildMemberAdd', async member => {
 	const background = await loadImage('./assets/wallpaper.jpg');
 	ctx.drawImage(background, 0, 0, canvas.width, canvas.height);
 
-	ctx.strokeStyle = '#74037b';
+	ctx.strokeStyle = '#ffffff';
+	ctx.lineWidth = 5;
 	ctx.strokeRect(0, 0, canvas.width, canvas.height);
 
 	ctx.font = '80px Lato';
@@ -307,12 +308,18 @@ bot.on('guildMemberAdd', async member => {
 	ctx.font = applyText(canvas, member.displayName);
 	ctx.fillText(`${member.displayName}!`, canvas.width / 2.5, canvas.height / 1.5);
 
+	const totalUsers = member.guild.members.cache.filter(member => !member.user.bot).size;
+	ctx.font = `30px Lato`;
+	ctx.fillText(`Member #${totalUsers}`, canvas.width / 2.5, (canvas.height / 9) * 8);
+
 	ctx.beginPath();
-	ctx.arc(125, 125, 100, 0, Math.PI * 2, true);
-	ctx.closePath();
-	ctx.clip();
+	ctx.arc(125, canvas.height / 2, 100, 0, 2 * Math.PI, false);
+	ctx.lineWidth = 8;
+	ctx.stroke();
 
 	const avatar = await loadImage(member.user.displayAvatarURL({ format: 'jpg' }));
+	// DEBUG only.
+	// const avatar = await loadImage('./assets/avatar.png');
 	ctx.drawImage(avatar, 25, 25, 200, 200);
 
 	const attachment = new MessageAttachment(canvas.toBuffer(), 'welcome-image.png');
