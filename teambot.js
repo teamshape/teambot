@@ -163,7 +163,7 @@ bot.on('message', async message => {
 			messageId: message.id,
 			deleted: message.deleted,
 			user: message.author.id,
-			chatline: message.content,
+			chatline: 1, // Protect privacy by entering a '1' into the database for the chatline rather than content.
 		});
 	}
 	catch (error) {
@@ -326,7 +326,6 @@ bot.on('guildMemberAdd', async member => {
 bot.on('guildMemberUpdate', async (oldMember, newMember) => {
 
 	const log = await auditLookup('GUILD_MEMBER_UPDATE', newMember.guild);
-
 	const { executor, target } = log;
 
 	// If the role(s) are present on the old member object but no longer on the new one (i.e role(s) were removed)
@@ -406,25 +405,26 @@ bot.on('guildBanRemove', async (guild, user) => {
 
 // Fires when messages are deleted - either by the user or by another person.
 bot.on('messageDelete', async message => {
-	if (!message.guild) return;
-	const log = await auditLookup('MESSAGE_DELETE', message.guild);
+	// Uncomment these lines to audit message deletions.
+	// if (!message.guild) return;
+	// const log = await auditLookup('MESSAGE_DELETE', message.guild);
 
-	if (!log) return auditLine(`A message by ${message.author.tag} in #${message.channel.name} was deleted, but no relevant audit logs were found. The message was "${message.content}"`);
-	const { executor, target } = log;
+	// if (!log) return auditLine(`A message by ${message.author.tag} in #${message.channel.name} was deleted, but no relevant audit logs were found. The message was "${message.content}"`);
+	// const { executor, target } = log;
 
-	if (target.id === message.author.id) {
-		auditLine(`A message by ${message.author.tag} in #${message.channel.name} was deleted by ${executor.tag}. The message was "${message.content}"`);
-	}
-	else {
-		auditLine(`A message by ${message.author.tag} in #${message.channel.name} was deleted by themselves. The message was "${message.content}"`);
-	}
+	// if (target.id === message.author.id) {
+	// 	auditLine(`A message by ${message.author.tag} in #${message.channel.name} was deleted by ${executor.tag}. The message was "${message.content}"`);
+	// }
+	// else {
+	// 	auditLine(`A message by ${message.author.tag} in #${message.channel.name} was deleted by themselves. The message was "${message.content}"`);
+	// }
 
-	try {
-		await teambot.db.chats.update({ deleted: true }, { where: { messageId: message.id } });
-	}
-	catch (error) {
-		console.log(error);
-	}
+	// try {
+	// 	await teambot.db.chats.update({ deleted: true }, { where: { messageId: message.id } });
+	// }
+	// catch (error) {
+	// 	console.log(error);
+	// }
 });
 
 // Fires when a user's presence changes e.g. status change, music change etc.
