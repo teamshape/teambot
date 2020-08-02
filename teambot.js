@@ -308,7 +308,9 @@ bot.on('guildMemberAdd', async member => {
 	ctx.font = applyText(canvas, member.displayName);
 	ctx.fillText(`${member.displayName}!`, canvas.width / 2.5, canvas.height / 1.5);
 
-	const totalUsers = member.guild.members.cache.filter(member => !member.user.bot).size;
+	const totalUsers = (await member.guild.members.fetch()).filter(member => !member.user.bot).size;
+	// console.log(totalUsers); //.filter(member => !member.user.bot).size;
+	// const totalUsers = member.guild.members.cache.filter(member => !member.user.bot).size;
 	ctx.font = `30px Lato`;
 	ctx.fillText(`Member #${totalUsers}`, canvas.width / 2.5, (canvas.height / 9) * 8);
 
