@@ -1,7 +1,7 @@
 /* jshint indent: 1 */
 
 module.exports = function(sequelize, DataTypes) {
-	return sequelize.define('kvs', {
+	return sequelize.define('asx', {
 		id: {
 			autoIncrement: true,
 			type: DataTypes.INTEGER,
@@ -10,15 +10,19 @@ module.exports = function(sequelize, DataTypes) {
 		},
 		guild: {
 			type: DataTypes.STRING(255),
-			allowNull: true,
+			allowNull: false
 		},
-		key: {
+		user: {
 			type: DataTypes.STRING(255),
-			allowNull: true,
+			allowNull: false,
 		},
-		value: {
+		ticker: {
 			type: DataTypes.STRING(255),
-			allowNull: true
+			allowNull: false,
+		},
+		date: {
+			type: DataTypes.STRING(20),
+			allowNull: false,
 		},
 		createdAt: {
 			type: DataTypes.DATE,
@@ -30,6 +34,6 @@ module.exports = function(sequelize, DataTypes) {
 		}
 	}, {
 		sequelize,
-		tableName: 'kvs'
+		tableName: 'asx'
 	});
 };

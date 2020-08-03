@@ -123,6 +123,45 @@ bot.once('ready', async () => {
 	}, null, true, 'Australia/Sydney');
 	marketOpenJob.start();
 
+	const asxGame = new CronJob('0 0 1 1 * *', async function() {
+		// Add cron job here to runs at 1am on the first day of every month.
+		// This will record the closing prices of all stocks for next month's game.
+		const thisMonth = moment().format("MMMM YYYY");
+		const tickers = await teambot.db.asx.findAll({ where: { date: thisMonth } });
+
+		tickers.forEach(async function(t) {
+			const ticker = t.dataValues.ticker;
+			const guild = t.dataValues.guild;
+			// Call the ASX API for each of the tickers and insert the price into the asxtickers table.
+			const asx = await got.get('https://www.asx.com.au/asx/1/share/' + ticker).json();
+			teambot.db.asxtickers.create({
+				guild: guild,
+				ticker: ticker,
+				startPrice: asx.last_price,
+				date: thisMonth,
+			});
+		});
+
+		const lastMonth = moment().subtract(1, 'months').format("MMMM YYYY");
+		const oldTickers = await teambot.db.asx.findAll({ where: { date: lastMonth } });
+
+		oldTickers.forEach(async function(t) {
+			const ticker = t.dataValues.ticker;
+			const guild = t.dataValues.guild;
+			// Call the ASX API for each of the tickers and insert the price into the asxtickers table.
+			const asx = await got.get('https://www.asx.com.au/asx/1/share/' + ticker).json();
+			teambot.db.asxtickers.create({
+				guild: guild,
+				ticker: ticker,
+				startPrice: asx.last_price,
+				date: thisMonth,
+			});
+		});
+
+
+	}, null, true, 'Australia/Sydney');
+	asxGame.start();
+
 });
 
 bot.on('messageReactionAdd', (reaction) => {
