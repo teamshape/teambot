@@ -1,5 +1,5 @@
 const human = require('interval-to-human');
-const { ADMINISTRATOR, OPERATOR, PREMIUM, STANDARD } = require("../permissions");
+const { ADMINISTRATOR, OPERATOR, PREMIUM, STANDARD } = require('../permissions');
 module.exports = {
 	name: 'uptime',
 	description: 'Gets the bot uptime.',

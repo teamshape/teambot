@@ -6,46 +6,46 @@ module.exports = function(sequelize, DataTypes) {
 			autoIncrement: true,
 			type: DataTypes.INTEGER,
 			allowNull: true,
-			primaryKey: true
+			primaryKey: true,
 		},
 		guild: {
 			type: DataTypes.STRING(255),
-			allowNull: true
+			allowNull: true,
 		},
 		channel: {
 			type: DataTypes.STRING(255),
-			allowNull: true
+			allowNull: true,
 		},
 		user: {
 			type: DataTypes.STRING(255),
-			allowNull: true
+			allowNull: true,
 		},
 		stock: {
 			type: DataTypes.STRING(255),
-			allowNull: true
+			allowNull: true,
 		},
 		operator: {
 			type: DataTypes.STRING(255),
-			allowNull: true
+			allowNull: true,
 		},
 		price: {
 			type: DataTypes.STRING(255),
-			allowNull: true
+			allowNull: true,
 		},
 		status: {
 			type: DataTypes.INTEGER(1),
-			allowNull: true
+			allowNull: true,
 		},
 		createdAt: {
 			type: DataTypes.DATE,
-			allowNull: false
+			allowNull: false,
 		},
 		updatedAt: {
 			type: DataTypes.DATE,
-			allowNull: false
-		}
+			allowNull: false,
+		},
 	}, {
 		sequelize,
-		tableName: 'alerts'
+		tableName: 'alerts',
 	});
 };

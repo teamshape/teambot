@@ -1,5 +1,5 @@
 const got = require('got');
-const { ADMINISTRATOR, OPERATOR, PREMIUM, STANDARD } = require("../permissions");
+const { ADMINISTRATOR, OPERATOR, PREMIUM, STANDARD } = require('../permissions');
 
 module.exports = {
 	name: 'alert',

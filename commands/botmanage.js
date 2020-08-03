@@ -1,4 +1,4 @@
-const { ADMINISTRATOR, OPERATOR, PREMIUM } = require("../permissions");
+const { ADMINISTRATOR, OPERATOR, PREMIUM } = require('../permissions');
 
 module.exports = {
 	name: 'botmanage',
@@ -78,7 +78,7 @@ module.exports = {
 		}
 		else if (args[0] === 'addbotline') {
 
-			if (teambot.permissions.isTrusted(oadedCommandUser.dataValues.permission)) {
+			if (teambot.permissions.isTrusted(loadedCommandUser.dataValues.permission)) {
 				const botline = args.slice(1).join(' ');
 
 				try {

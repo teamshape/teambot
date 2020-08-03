@@ -6,11 +6,11 @@ module.exports = function(sequelize, DataTypes) {
 			autoIncrement: true,
 			type: DataTypes.INTEGER,
 			allowNull: true,
-			primaryKey: true
+			primaryKey: true,
 		},
 		guild: {
 			type: DataTypes.STRING(255),
-			allowNull: false
+			allowNull: false,
 		},
 		user: {
 			type: DataTypes.STRING(255),
@@ -26,14 +26,14 @@ module.exports = function(sequelize, DataTypes) {
 		},
 		createdAt: {
 			type: DataTypes.DATE,
-			allowNull: false
+			allowNull: false,
 		},
 		updatedAt: {
 			type: DataTypes.DATE,
-			allowNull: false
-		}
+			allowNull: false,
+		},
 	}, {
 		sequelize,
-		tableName: 'asx'
+		tableName: 'asx',
 	});
 };

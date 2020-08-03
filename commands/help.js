@@ -1,5 +1,5 @@
 const { prefix } = require('../config/teambot.json');
-const { ADMINISTRATOR, OPERATOR, PREMIUM, STANDARD } = require("../permissions");
+const { ADMINISTRATOR, OPERATOR, PREMIUM, STANDARD } = require('../permissions');
 module.exports = {
 	name: 'help',
 	description: 'List all of my commands or info about a specific command.',

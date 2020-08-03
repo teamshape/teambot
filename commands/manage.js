@@ -1,4 +1,4 @@
-const { OPERATOR, ADMINISTRATOR } = require("../permissions");
+const { OPERATOR, ADMINISTRATOR } = require('../permissions');
 
 module.exports = {
 	name: 'manage',
