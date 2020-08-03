@@ -78,7 +78,7 @@ module.exports = {
 		}
 		else if (args[0] === 'addbotline') {
 
-			if (teambot.permissions.isTrusted(teambot.permissions.PREMIUM)) {
+			if (teambot.permissions.isTrusted(oadedCommandUser.dataValues.permission)) {
 				const botline = args.slice(1).join(' ');
 
 				try {
