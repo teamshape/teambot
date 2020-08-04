@@ -3,7 +3,7 @@ const moment = require('moment-timezone');
 
 module.exports = {
 	name: 'asx',
-	aliases: ['asxgame'],
+	aliases: ['asxgame', 'rocket'],
 	description: 'Provides a stock market game. One entry per person per month with all entries locked on the last day of the month prior.',
 	args: true,
 	usage: 'add <ticker> | remove | list <current|next>',
@@ -14,6 +14,7 @@ module.exports = {
 		const guild = message.guild.id;
 		const thisMonth = moment().format('MMMM YYYY');
 		const nextMonth = moment().add(1, 'months').format('MMMM YYYY');
+		let asx = '';
 
 		if (args[0] === 'add') {
 			if (args[1] === 'undefined') {

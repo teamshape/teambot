@@ -308,6 +308,7 @@ bot.on('guildMemberAdd', async member => {
 			guild: member.guild.id,
 			user: member.id,
 			permission: permissions.STANDARD,
+			dollars: 50000
 		});
 	}
 	catch (e) {

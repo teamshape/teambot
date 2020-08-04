@@ -6,31 +6,31 @@ module.exports = function(sequelize, DataTypes) {
 			autoIncrement: true,
 			type: DataTypes.INTEGER,
 			allowNull: true,
-			primaryKey: true,
+			primaryKey: true
 		},
 		guild: {
 			type: DataTypes.STRING(255),
-			allowNull: true,
+			allowNull: true
 		},
 		user: {
 			type: DataTypes.STRING(255),
-			allowNull: true,
+			allowNull: true
 		},
 		botline: {
 			type: DataTypes.STRING(255),
 			allowNull: true,
-			unique: true,
+			unique: true
 		},
 		createdAt: {
 			type: DataTypes.DATE,
-			allowNull: false,
+			allowNull: false
 		},
 		updatedAt: {
 			type: DataTypes.DATE,
-			allowNull: false,
-		},
+			allowNull: false
+		}
 	}, {
 		sequelize,
-		tableName: 'botlines',
+		tableName: 'botlines'
 	});
 };

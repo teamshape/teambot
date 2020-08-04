@@ -1,7 +1,7 @@
 /* jshint indent: 1 */
 
 module.exports = function(sequelize, DataTypes) {
-	return sequelize.define('reminders', {
+	return sequelize.define('holdings', {
 		id: {
 			autoIncrement: true,
 			type: DataTypes.INTEGER,
@@ -10,23 +10,21 @@ module.exports = function(sequelize, DataTypes) {
 		},
 		guild: {
 			type: DataTypes.STRING(255),
-			allowNull: true
+			allowNull: false
 		},
-		channel: {
+		userId: {
 			type: DataTypes.STRING(255),
-			allowNull: true
+			model: 'users',
+			key: 'user',
+			allowNull: false,
 		},
-		reminder_timestamp: {
-			type: DataTypes.DATE,
-			allowNull: true
-		},
-		user: {
+		ticker: {
 			type: DataTypes.STRING(255),
-			allowNull: true
+			allowNull: false
 		},
-		reminder: {
-			type: DataTypes.STRING(255),
-			allowNull: true
+		amount: {
+			type: DataTypes.INTEGER,
+			allowNull: false
 		},
 		createdAt: {
 			type: DataTypes.DATE,
@@ -38,6 +36,6 @@ module.exports = function(sequelize, DataTypes) {
 		}
 	}, {
 		sequelize,
-		tableName: 'reminders'
+		tableName: 'holdings'
 	});
 };

@@ -35,4 +35,7 @@ Object.keys(db).forEach(modelName => {
 db.sequelize = sequelize;
 db.Sequelize = Sequelize;
 
+// Add associations
+db.users.hasMany(db.holdings, {foreignKey: 'userId', sourceKey: 'user'});
+
 module.exports = db;
