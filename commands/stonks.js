@@ -4,7 +4,7 @@ const { Op } = require('sequelize');
 
 module.exports = {
 	name: 'stonks',
-	aliases: ['stocks'],
+	aliases: ['stocks', 'stock'],
 	description: 'Provides a stock market game. Buy and sell your stocks on paper, but in Discord.',
 	args: true,
 	usage: 'buy <ticker> <amount> | sell <ticker> <amount> | holdings | score',
@@ -162,7 +162,7 @@ module.exports = {
 					data.push(`${h.ticker}: ${h.amount} at $${stockPrice}`);
 					userBalance += stockPrice;
 				}
-				return userBalance;
+				return Number(userBalance).toFixed(2);
 			};
 
 			const userBalance = await lookUp();
@@ -173,7 +173,7 @@ module.exports = {
 			return message.reply(data, { split: true });
 		}
 		else if (args[0] === 'scores') {
-			if (teambot.permissions.isMod(loadedCommandUser.dataValues.permission)) {
+			if (teambot.permissions.isAdmin(loadedCommandUser.dataValues.permission)) {
 				try {
 					const allUsers = await teambot.db.users.findAll({
 						include: [
