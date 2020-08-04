@@ -7,7 +7,7 @@ module.exports = {
 	aliases: ['stocks', 'stock'],
 	description: 'Provides a stock market game. Buy and sell your stocks on paper, but in Discord.',
 	args: true,
-	usage: 'buy <ticker> <amount> | sell <ticker> <amount> | holdings | score',
+	usage: 'buy <ticker> <amount> | sell <ticker> <amount> | holdings | scores',
 	permission: ADMINISTRATOR | OPERATOR | PREMIUM | STANDARD,
 	async execute(teambot, message, args) {
 
@@ -57,6 +57,10 @@ module.exports = {
 			// @TODO round totalPrice to 2DP.
 			const totalPrice = +(asx.last_price * shares).toFixed(2);
 
+			if (totalPrice === 0) {
+				return message.reply(`Please buy more of that.`);
+			}
+
 			// Check if the user has this many dollars in their account.
 			if (dollars < totalPrice) {
 				return message.reply(`You don't have that much money. You only have $${dollars}`);
@@ -96,7 +100,7 @@ module.exports = {
 				// @TODO round balance to 2DP.
 				const balance = +(dollars - totalPrice).toFixed(2);
 				await teambot.db.users.update({ dollars: balance }, { where: { id: loadedCommandUser.dataValues.id } });
-				return message.reply(`You bought ${shares} of ${ticker} at ${asx.last_price} for ${totalPrice}. Your new balance is $${balance}`);
+				return message.reply(`You bought ${shares} of ${ticker} at $${asx.last_price} for $${totalPrice}. Your new balance is $${balance}`);
 			}
 			catch (e) {
 				return message.reply('Something went wrong with buying these stocks.');
@@ -141,7 +145,7 @@ module.exports = {
 			try {
 				await teambot.db.holdings.update({ amount: newAmount }, { where: { userId: message.author.id, ticker: ticker } });
 				await teambot.db.users.update({ dollars: balance }, { where: { id: loadedCommandUser.dataValues.id } });
-				return message.reply(`You sold ${shares} of ${ticker} at ${asx.last_price} for ${totalPrice}. Your new balance is $${balance}`);
+				return message.reply(`You sold ${shares} of ${ticker} at $${asx.last_price} for $${totalPrice}. Your new balance is $${balance}`);
 			}
 			catch (error) {
 				return message.reply('Something went wrong selling this stock');
@@ -209,7 +213,7 @@ module.exports = {
 								const stockPrice = +(asx.last_price * h.dataValues.amount).toFixed(2);
 								userBalance += stockPrice;
 							}
-							return userBalance;
+							return Number(userBalance).toFixed(2);
 						};
 
 						const userBalance = await lookUp();
