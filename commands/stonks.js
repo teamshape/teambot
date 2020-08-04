@@ -47,7 +47,7 @@ module.exports = {
 			const shares = Number(args[2]);
 			const dollars = Number(loadedCommandUser.dataValues.dollars);
 
-			if (moment().tz('Australia/Sydney').isBetween(marketOpen, marketClose)) {
+			if (!(moment().tz('Australia/Sydney').isBetween(marketOpen, marketClose))) {
 				return message.reply(`You can't trade while the market is closed.`);
 			}
 
@@ -123,7 +123,7 @@ module.exports = {
 			const shares = Number(args[2]);
 			const dollars = Number(loadedCommandUser.dataValues.dollars);
 
-			if (moment().tz('Australia/Sydney').isBetween(marketOpen, marketClose)) {
+			if (!(moment().tz('Australia/Sydney').isBetween(marketOpen, marketClose))) {
 				return message.reply(`You can't trade while the market is closed.`);
 			}
 
