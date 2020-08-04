@@ -159,19 +159,14 @@ module.exports = {
 				for (const h of holdings) {
 					asx = await got.get('https://www.asx.com.au/asx/1/share/' + h.dataValues.ticker).json();
 					const stockPrice = +(asx.last_price * h.dataValues.amount).toFixed(2);
-					data.push(`${h.ticker}: ${stockPrice}`);
+					data.push(`${h.ticker}: ${h.amount} at $${stockPrice}`);
 					userBalance += stockPrice;
 				}
 				return userBalance;
 			};
 
 			const userBalance = await lookUp();
-			// const userId = u.user
 
-			// data.push({userId, userBalance})
-
-
-			// data.push(loadedCommandUser.dataValues.holdings.map(holding => `${holding.ticker}: ${holding.amount}`).join('\n'));
 			data.push(`Your bank balance: $${loadedCommandUser.dataValues.dollars}`);
 			data.push(`Your total balance: $${userBalance}`);
 
