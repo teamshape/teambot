@@ -38,7 +38,7 @@ module.exports = {
 			if (args[2] === 'undefined') {
 				return message.reply('Please add a ticker and the number of shares.');
 			}
-			const ticker = args[1];
+			const ticker = args[1].toUpperCase();
 			const shares = Number(args[2]);
 			const dollars = Number(loadedCommandUser.dataValues.dollars);
 
@@ -106,7 +106,7 @@ module.exports = {
 			if (args[2] === 'undefined') {
 				return message.reply('Please add a ticker and a dollar value of shares.');
 			}
-			const ticker = args[1];
+			const ticker = args[1].toUpperCase();
 			const shares = Number(args[2]);
 			const dollars = Number(loadedCommandUser.dataValues.dollars);
 
@@ -157,6 +157,9 @@ module.exports = {
 				let userBalance = Number(loadedCommandUser.dataValues.dollars);
 
 				for (const h of holdings) {
+					if (h.amount == 0) {
+						continue;
+					}
 					asx = await got.get('https://www.asx.com.au/asx/1/share/' + h.dataValues.ticker).json();
 					const stockPrice = +(asx.last_price * h.dataValues.amount).toFixed(2);
 					data.push(`${h.ticker}: ${h.amount} at $${stockPrice}`);
@@ -199,6 +202,9 @@ module.exports = {
 							let userBalance = Number(u.dollars);
 
 							for (const h of holdings) {
+								if (h.amount == 0) {
+									continue;
+								}
 								asx = await got.get('https://www.asx.com.au/asx/1/share/' + h.dataValues.ticker).json();
 								const stockPrice = +(asx.last_price * h.dataValues.amount).toFixed(2);
 								userBalance += stockPrice;
