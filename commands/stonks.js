@@ -13,8 +13,8 @@ module.exports = {
 	async execute(teambot, message, args) {
 
 		// Set market open and close times.
-		const marketOpen = moment().set({"hour": 10, "minute": 00});
-		const marketClose = moment().set({"hour": 16, "minute": 00});
+		const marketOpen = moment().tz('Australia/Sydney').set({"hour": 10, "minute": 00});
+		const marketClose = moment().tz('Australia/Sydney').set({"hour": 16, "minute": 00});
 
 		// Load user sending the command and user being acted upon.
 		const commandUser = message.author.id;
@@ -47,7 +47,7 @@ module.exports = {
 			const shares = Number(args[2]);
 			const dollars = Number(loadedCommandUser.dataValues.dollars);
 
-			if (moment().isBetween(marketOpen, marketClose)) {
+			if (moment().tz('Australia/Sydney').isBetween(marketOpen, marketClose)) {
 				return message.reply(`You can't trade while the market is closed.`);
 			}
 
@@ -123,7 +123,7 @@ module.exports = {
 			const shares = Number(args[2]);
 			const dollars = Number(loadedCommandUser.dataValues.dollars);
 
-			if (moment().isBetween(marketOpen, marketClose)) {
+			if (moment().tz('Australia/Sydney').isBetween(marketOpen, marketClose)) {
 				return message.reply(`You can't trade while the market is closed.`);
 			}
 
