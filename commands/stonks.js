@@ -1,6 +1,7 @@
 const { ADMINISTRATOR, OPERATOR, PREMIUM, STANDARD } = require('../permissions');
 const got = require('got');
 const { Op } = require('sequelize');
+const moment = require('moment-timezone');
 
 module.exports = {
 	name: 'stonks',
@@ -10,6 +11,10 @@ module.exports = {
 	usage: 'buy <ticker> <amount> | sell <ticker> <amount> | holdings | scores',
 	permission: ADMINISTRATOR | OPERATOR | PREMIUM | STANDARD,
 	async execute(teambot, message, args) {
+
+		// Set market open and close times.
+		const marketOpen = moment().set({"hour": 10, "minute": 00});
+		const marketClose = moment().set({"hour": 16, "minute": 00});
 
 		// Load user sending the command and user being acted upon.
 		const commandUser = message.author.id;
@@ -42,6 +47,10 @@ module.exports = {
 			const shares = Number(args[2]);
 			const dollars = Number(loadedCommandUser.dataValues.dollars);
 
+			if (moment().isBetween(marketOpen, marketClose)) {
+				return message.reply(`You can't trade while the market is closed.`);
+			}
+
 			if (!Number.isInteger(shares)) {
 				return message.reply('This is not a number.');
 			}
@@ -58,7 +67,7 @@ module.exports = {
 			const totalPrice = +(asx.last_price * shares).toFixed(2);
 
 			if (totalPrice === 0) {
-				return message.reply(`Please buy more of that.`);
+				return message.reply(`Please buy more of that. Minimum purchase is 1 cent.`);
 			}
 
 			// Check if the user has this many dollars in their account.
@@ -113,6 +122,10 @@ module.exports = {
 			const ticker = args[1].toUpperCase();
 			const shares = Number(args[2]);
 			const dollars = Number(loadedCommandUser.dataValues.dollars);
+
+			if (moment().isBetween(marketOpen, marketClose)) {
+				return message.reply(`You can't trade while the market is closed.`);
+			}
 
 			if (!Number.isInteger(shares)) {
 				return message.reply('This is not a number.');
