@@ -210,31 +210,7 @@ bot.on('message', async message => {
 	}
 
 	// Only for specific bot channels after this, remove listening from DMs, and prevent actions if the bot spoke.
-	if (!(allowedChannels.includes(message.channel.id)) || message.channel.type === 'dm' || message.author.bot) return;
-
-	// Karma matches
-	const karma = /<@!\d+>\s?\+\+|<@!\d+>\s?--/gm;
-	let l;
-
-	while ((l = karma.exec(message.content)) !== null) {
-		// This is necessary to avoid infinite loops with zero-width matches
-		if (l.index === karma.lastIndex) {
-			karma.lastIndex++;
-		}
-		// The result can be accessed through the `m`-variable.
-		l.forEach((match) => {
-			if (lock.isBusy()) return;
-			lock.acquire('karma', function(done) {
-				registerKarma(message, match);
-				setTimeout(function() {
-					done();
-				}, timer);
-			}, function(err, ret) {
-				console.log(err);
-				console.log(ret);
-			});
-		});
-	}
+	if (!(allowedChannels.includes(message.channel.id)) || message.author.bot) return;
 
 	// Check messages start with prefix (defaults to !).
 	if (message.content.startsWith(prefix)) {
@@ -277,6 +253,30 @@ bot.on('message', async message => {
 				return message.reply('there was an error trying to execute that command!');
 			}
 		}
+	}
+
+	// Karma matches
+	const karma = /<@!\d+>\s?\+\+|<@!\d+>\s?--/gm;
+	let l;
+	
+	while ((l = karma.exec(message.content)) !== null) {
+		// This is necessary to avoid infinite loops with zero-width matches
+		if (l.index === karma.lastIndex) {
+			karma.lastIndex++;
+		}
+		// The result can be accessed through the `m`-variable.
+		l.forEach((match) => {
+			if (lock.isBusy()) return;
+			lock.acquire('karma', function(done) {
+				registerKarma(message, match);
+				setTimeout(function() {
+					done();
+				}, timer);
+			}, function(err, ret) {
+				console.log(err);
+				console.log(ret);
+			});
+		});
 	}
 
 	// Fall through to matching stocks.
