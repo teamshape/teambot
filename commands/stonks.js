@@ -146,8 +146,8 @@ module.exports = {
 				return message.reply('You do not own this stock.');
 			}
 
-			if (moment(heldStock.dataValues.updatedAt).tz('Australia/Sydney').add(1, 'days') > moment().tz('Australia/Sydney')) {
-				return message.reply('You must hold a stock for at least one day before selling.');
+			if (moment(heldStock.dataValues.updatedAt).tz('Australia/Sydney').add(30, 'minutes') > moment().tz('Australia/Sydney')) {
+				return message.reply('You must hold a stock for at least 30 minutes before selling.');
 			}
 
 			// Check the user has more than they want to get rid of.
