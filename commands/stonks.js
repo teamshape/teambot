@@ -146,6 +146,10 @@ module.exports = {
 				return message.reply('You do not own this stock.');
 			}
 
+			if (moment(heldStock.dataValues.updatedAt).tz('Australia/Sydney').add(1, 'days') > moment().tz('Australia/Sydney')) {
+				return message.reply('You must hold a stock for at least one day before selling.');
+			}
+
 			// Check the user has more than they want to get rid of.
 			if (shares > Number(heldStock.dataValues.amount)) {
 				return message.reply(`You do not own enough of ${ticker}. You own ${heldStock.dataValues.amount} units.`);
@@ -159,6 +163,11 @@ module.exports = {
 			try {
 				await teambot.db.holdings.update({ amount: newAmount }, { where: { userId: message.author.id, ticker: ticker } });
 				await teambot.db.users.update({ dollars: balance }, { where: { id: loadedCommandUser.dataValues.id } });
+				await teambot.db.log.create({
+					guild: guild,
+					userId: message.author.id,
+					message: `Sold ${shares} of ${ticker}`,
+				});
 				return message.reply(`You sold ${shares} of ${ticker} at $${asx.last_price} for $${totalPrice}. Your new balance is $${balance}`);
 			}
 			catch (error) {
