@@ -210,7 +210,7 @@ bot.on('message', async message => {
 	}
 
 	// Only for specific bot channels after this, remove listening from DMs, and prevent actions if the bot spoke.
-	if (!(allowedChannels.includes(message.channel.id)) || message.author.bot) return;
+	if (!(allowedChannels.includes(message.channel.id)) || message.channel.type === 'dm' || message.author.bot) return;
 
 	// Check messages start with prefix (defaults to !).
 	if (message.content.startsWith(prefix)) {
