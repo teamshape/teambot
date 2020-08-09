@@ -345,14 +345,16 @@ bot.on('guildMemberAdd', async member => {
 	ctx.font = '80px Lato';
 	ctx.fillStyle = '#ffffff';
 	ctx.fillText('ohai', canvas.width / 2.5, canvas.height / 3);
-	ctx.font = applyText(canvas, member.displayName);
+	// Pass the ! here too.
+	ctx.font = applyText(canvas, `${member.displayName}!`);
 	ctx.fillText(`${member.displayName}!`, canvas.width / 2.5, canvas.height / 1.5);
 
 	const totalUsers = (await member.guild.members.fetch()).filter(member => !member.user.bot).size;
-	// console.log(totalUsers); //.filter(member => !member.user.bot).size;
-	// const totalUsers = member.guild.members.cache.filter(member => !member.user.bot).size;
-	ctx.font = `30px Lato`;
-	ctx.fillText(`Member #${totalUsers}`, canvas.width / 2.5, (canvas.height / 9) * 8);
+	ctx.font = `20px Lato`;
+
+	// Use 'x' as the format for unix time in milliseconds.
+	const userCreated = moment(member.user.createdTimestamp, "x").fromNow();
+	ctx.fillText(`Member #${totalUsers} ⋆ Joined ${userCreated}`, canvas.width / 2.5, (canvas.height / 9) * 8);
 
 	// Puts the border around the avatar.
 	ctx.beginPath();
@@ -510,9 +512,7 @@ const applyText = (canvas, text) => {
 	do {
 		// Assign the font to the context and decrement it so it can be measured again
 		ctx.font = `${fontSize -= 10}px Lato`;
-		// Compare pixel width of the text to the canvas minus the approximate avatar size
-		// Add 1 for the exclamation point.
-	} while ((ctx.measureText(text).width + 1) > canvas.width - 300);
+	} while ((ctx.measureText(text).width) > canvas.width - 300);
 
 	// Return the result to use in the actual canvas
 	return ctx.font;
