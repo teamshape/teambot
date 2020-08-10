@@ -15,7 +15,7 @@ module.exports = {
 
 		if (args[0] === 'addwelcome') {
 
-			if (teambot.permissions.isTrusted(bot.user.dataValues.permission)) {
+			if (teambot.permissions.isTrusted(teambot.user.dataValues.permission)) {
 				const welcome = args.slice(1).join(' ');
 
 				try {
@@ -55,7 +55,7 @@ module.exports = {
 				});
 		}
 		else if (args[0] === 'deletewelcome') {
-			if (teambot.permissions.isMod(bot.user.dataValues.permission) && !isNaN(args[1])) {
+			if (teambot.permissions.isMod(teambot.user.dataValues.permission) && !isNaN(args[1])) {
 				teambot.db.welcomes.destroy({
 					where: {
 						id: args[1],
@@ -66,7 +66,7 @@ module.exports = {
 		}
 		else if (args[0] === 'addbotline') {
 
-			if (teambot.permissions.isTrusted(bot.user.dataValues.permission)) {
+			if (teambot.permissions.isTrusted(teambot.user.dataValues.permission)) {
 				const botline = args.slice(1).join(' ');
 
 				try {
@@ -106,7 +106,7 @@ module.exports = {
 				});
 		}
 		else if (args[0] === 'deletebotline') {
-			if (teambot.permissions.isMod(bot.user.dataValues.permission) && !isNaN(args[1])) {
+			if (teambot.permissions.isMod(teambot.user.dataValues.permission) && !isNaN(args[1])) {
 				teambot.db.botlines.destroy({
 					where: {
 						id: args[1],

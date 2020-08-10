@@ -24,7 +24,7 @@ module.exports = {
 		}
 
 		if (args[0] === 'setpermission') {
-			if (teambot.permissions.isMod(bot.user.dataValues.permission) && bot.user.dataValues.permission > loadedTargetUser.dataValues.permission) {
+			if (teambot.permissions.isMod(teambot.user.dataValues.permission) && teambot.user.dataValues.permission > loadedTargetUser.dataValues.permission) {
 				const p = args[2];
 				if (!isNaN(p) && p <= teambot.permissions.OPERATOR) {
 					if (p && (p & (p - 1)) === 0) {

@@ -13,8 +13,8 @@ module.exports = {
 		if (!args.length) {
 			data.push('Here\'s your info:\n');
 			data.push(`Your username is: ${message.author.username}`);
-			data.push(`You joined on: ${bot.user.dataValues.createdAt}`);
-			data.push(`Your permission # is: ${bot.user.dataValues.permission}`);
+			data.push(`You joined on: ${teambot.user.dataValues.createdAt}`);
+			data.push(`Your permission # is: ${teambot.user.dataValues.permission}`);
 
 			return message.author.send(data, { split: true })
 				.then(() => {
