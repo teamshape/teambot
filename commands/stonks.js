@@ -63,6 +63,10 @@ module.exports = {
 			catch (error) {
 				return message.reply('Stock not found.');
 			}
+                        // Sometimes the API returns results without price information.
+                        if (!asx.last_price) {
+                                return message.reply('No price information available.');
+                        }
 
 			// @TODO round totalPrice to 2DP.
 			const totalPrice = +(asx.last_price * shares).toFixed(2);
@@ -139,6 +143,10 @@ module.exports = {
 			catch (error) {
 				return message.reply('Stock not found.');
 			}
+                        // Sometimes the API returns results without price information.
+                        if (!asx.last_price) {
+                                return message.reply('No price information available.');
+                        }
 
 			// Does the user hold the stock?
 			const heldStock = loadedCommandUser.dataValues.holdings.find(element => element.ticker === ticker);
