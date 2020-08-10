@@ -6,47 +6,47 @@ module.exports = function(sequelize, DataTypes) {
 			autoIncrement: true,
 			type: DataTypes.INTEGER,
 			allowNull: true,
-			primaryKey: true
+			primaryKey: true,
 		},
 		messageId: {
 			type: DataTypes.INTEGER,
 			allowNull: true,
-			unique: true
+			unique: true,
 		},
 		guild: {
 			type: DataTypes.INTEGER,
-			allowNull: true
+			allowNull: true,
 		},
 		channel: {
 			type: DataTypes.INTEGER,
-			allowNull: true
+			allowNull: true,
 		},
 		user: {
 			type: DataTypes.INTEGER,
-			allowNull: true
+			allowNull: true,
 		},
 		chatline: {
 			type: DataTypes.STRING(255),
-			allowNull: true
+			allowNull: true,
 		},
 		deleted: {
 			type: DataTypes.INTEGER(1),
-			allowNull: true
+			allowNull: true,
 		},
 		edited: {
 			type: DataTypes.INTEGER(1),
-			allowNull: true
+			allowNull: true,
 		},
 		createdAt: {
 			type: DataTypes.DATE,
-			allowNull: false
+			allowNull: false,
 		},
 		updatedAt: {
 			type: DataTypes.DATE,
-			allowNull: false
-		}
+			allowNull: false,
+		},
 	}, {
 		sequelize,
-		tableName: 'chats'
+		tableName: 'chats',
 	});
 };

@@ -13,19 +13,6 @@ module.exports = {
 		const targetUser = args[1].slice(3, -1).trim();
 		const guild = message.guild.id;
 
-		let loadedCommandUser = [];
-		let loadedTargetUser = [];
-
-		try {
-			loadedCommandUser = await teambot.db.users.findOne({ where: {
-				guild: guild,
-				user: commandUser,
-			} });
-		}
-		catch (e) {
-			return message.reply('Something went wrong with finding your user.');
-		}
-
 		try {
 			loadedTargetUser = await teambot.db.users.findOne({ where: {
 				guild: guild,
@@ -37,7 +24,7 @@ module.exports = {
 		}
 
 		if (args[0] === 'setpermission') {
-			if (teambot.permissions.isMod(loadedCommandUser.dataValues.permission) && loadedCommandUser.dataValues.permission > loadedTargetUser.dataValues.permission) {
+			if (teambot.permissions.isMod(bot.user.dataValues.permission) && bot.user.dataValues.permission > loadedTargetUser.dataValues.permission) {
 				const p = args[2];
 				if (!isNaN(p) && p <= teambot.permissions.OPERATOR) {
 					if (p && (p & (p - 1)) === 0) {

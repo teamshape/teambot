@@ -13,21 +13,9 @@ module.exports = {
 		const commandUser = message.author.id;
 		const guild = message.guild.id;
 
-		let loadedCommandUser = [];
-
-		try {
-			loadedCommandUser = await teambot.db.users.findOne({ where: {
-				guild: guild,
-				user: commandUser,
-			} });
-		}
-		catch (e) {
-			return message.reply('Something went wrong with finding your user.');
-		}
-
 		if (args[0] === 'addwelcome') {
 
-			if (teambot.permissions.isTrusted(loadedCommandUser.dataValues.permission)) {
+			if (teambot.permissions.isTrusted(bot.user.dataValues.permission)) {
 				const welcome = args.slice(1).join(' ');
 
 				try {
@@ -67,7 +55,7 @@ module.exports = {
 				});
 		}
 		else if (args[0] === 'deletewelcome') {
-			if (teambot.permissions.isMod(loadedCommandUser.dataValues.permission) && !isNaN(args[1])) {
+			if (teambot.permissions.isMod(bot.user.dataValues.permission) && !isNaN(args[1])) {
 				teambot.db.welcomes.destroy({
 					where: {
 						id: args[1],
@@ -78,7 +66,7 @@ module.exports = {
 		}
 		else if (args[0] === 'addbotline') {
 
-			if (teambot.permissions.isTrusted(loadedCommandUser.dataValues.permission)) {
+			if (teambot.permissions.isTrusted(bot.user.dataValues.permission)) {
 				const botline = args.slice(1).join(' ');
 
 				try {
@@ -118,7 +106,7 @@ module.exports = {
 				});
 		}
 		else if (args[0] === 'deletebotline') {
-			if (teambot.permissions.isMod(loadedCommandUser.dataValues.permission) && !isNaN(args[1])) {
+			if (teambot.permissions.isMod(bot.user.dataValues.permission) && !isNaN(args[1])) {
 				teambot.db.botlines.destroy({
 					where: {
 						id: args[1],

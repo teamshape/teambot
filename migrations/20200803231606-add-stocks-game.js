@@ -2,7 +2,7 @@
 
 module.exports = {
 	up: async (queryInterface, Sequelize) => {
-    return Promise.all([
+		return Promise.all([
 		  queryInterface.createTable('holdings', {
 			  id: {
 				  autoIncrement: true,
@@ -15,19 +15,19 @@ module.exports = {
 				  allowNull: false,
 			  },
 			  userId: {
-          type: Sequelize.DataTypes.STRING(255),
-          model: 'users',
-          key: 'user',
+					type: Sequelize.DataTypes.STRING(255),
+					model: 'users',
+					key: 'user',
 				  allowNull: false,
 			  },
 			  ticker: {
 				  type: Sequelize.DataTypes.STRING(255),
 				  allowNull: false,
-        },
-        amount: {
+				},
+				amount: {
 				  type: Sequelize.DataTypes.INTEGER,
 				  allowNull: false,
-        },
+				},
 			  createdAt: {
 				   type: Sequelize.DataTypes.DATE,
 				  allowNull: false,
@@ -36,8 +36,8 @@ module.exports = {
 				  type: Sequelize.DataTypes.DATE,
 				  allowNull: false,
 			  },
-      }),
-      queryInterface.createTable('log', {
+			}),
+			queryInterface.createTable('log', {
 			  id: {
 				  autoIncrement: true,
 				  type: Sequelize.DataTypes.INTEGER,
@@ -50,14 +50,14 @@ module.exports = {
 			  },
 			  userId: {
 				  type: Sequelize.DataTypes.STRING(255),
-          allowNull: false,
-          model: 'users',
-          key: 'user',
+					allowNull: false,
+					model: 'users',
+					key: 'user',
 			  },
 			  message: {
 				  type: Sequelize.DataTypes.STRING(255),
 				  allowNull: false,
-        },
+				},
 			  createdAt: {
 				   type: Sequelize.DataTypes.DATE,
 				  allowNull: false,
@@ -66,13 +66,13 @@ module.exports = {
 				  type: Sequelize.DataTypes.DATE,
 				  allowNull: false,
 			  },
-      })
-    ])
+			}),
+		]);
 	},
 	down: async (queryInterface, Sequelize) => {
-    return Promise.all([
-      queryInterface.dropTable('holdings'),
-      queryInterface.dropTable('log')
-    ]);
+		return Promise.all([
+			queryInterface.dropTable('holdings'),
+			queryInterface.dropTable('log'),
+		]);
 	},
 };

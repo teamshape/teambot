@@ -13,8 +13,8 @@ module.exports = {
 	async execute(teambot, message, args) {
 
 		// Set market open and close times.
-		const marketOpen = moment().tz('Australia/Sydney').set({"hour": 10, "minute": 00});
-		const marketClose = moment().tz('Australia/Sydney').set({"hour": 16, "minute": 00});
+		const marketOpen = moment().tz('Australia/Sydney').set({ 'hour': 10, 'minute': 00 });
+		const marketClose = moment().tz('Australia/Sydney').set({ 'hour': 16, 'minute': 00 });
 		const weekend = (moment().day() === 0 || moment().day() === 7);
 
 		// Load user sending the command and user being acted upon.
@@ -49,7 +49,7 @@ module.exports = {
 			const dollars = Number(loadedCommandUser.dataValues.dollars);
 
 			if (!moment().tz('Australia/Sydney').isBetween(marketOpen, marketClose) || weekend) {
-				return message.reply(`You can't trade while the market is closed.`);
+				return message.reply('You can\'t trade while the market is closed.');
 			}
 
 			if (!Number.isInteger(shares)) {
@@ -63,16 +63,16 @@ module.exports = {
 			catch (error) {
 				return message.reply('Stock not found.');
 			}
-                        // Sometimes the API returns results without price information.
-                        if (!asx.last_price) {
-                                return message.reply('No price information available.');
-                        }
+			// Sometimes the API returns results without price information.
+			if (!asx.last_price) {
+				return message.reply('No price information available.');
+			}
 
 			// @TODO round totalPrice to 2DP.
 			const totalPrice = +(asx.last_price * shares).toFixed(2);
 
 			if (totalPrice === 0) {
-				return message.reply(`Please buy more of that. Minimum purchase is 1 cent.`);
+				return message.reply('Please buy more of that. Minimum purchase is 1 cent.');
 			}
 
 			// Check if the user has this many dollars in their account.
@@ -129,7 +129,7 @@ module.exports = {
 			const dollars = Number(loadedCommandUser.dataValues.dollars);
 
 			if (!moment().tz('Australia/Sydney').isBetween(marketOpen, marketClose) || weekend) {
-				return message.reply(`You can't trade while the market is closed.`);
+				return message.reply('You can\'t trade while the market is closed.');
 			}
 
 			if (!Number.isInteger(shares)) {
@@ -143,10 +143,10 @@ module.exports = {
 			catch (error) {
 				return message.reply('Stock not found.');
 			}
-                        // Sometimes the API returns results without price information.
-                        if (!asx.last_price) {
-                                return message.reply('No price information available.');
-                        }
+			// Sometimes the API returns results without price information.
+			if (!asx.last_price) {
+				return message.reply('No price information available.');
+			}
 
 			// Does the user hold the stock?
 			const heldStock = loadedCommandUser.dataValues.holdings.find(element => element.ticker === ticker);

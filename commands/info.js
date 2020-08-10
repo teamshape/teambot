@@ -8,24 +8,13 @@ module.exports = {
 		// Load user sending the command.
 		const commandUser = message.author.id;
 		const guild = message.guild.id;
-		let loadedCommandUser = [];
-
-		try {
-			loadedCommandUser = await teambot.db.users.findOne({ where: {
-				guild: guild,
-				user: commandUser,
-			} });
-		}
-		catch (e) {
-			return message.reply('Something went wrong with finding your user.');
-		}
 
 		const data = [];
 		if (!args.length) {
 			data.push('Here\'s your info:\n');
 			data.push(`Your username is: ${message.author.username}`);
-			data.push(`You joined on: ${loadedCommandUser.dataValues.createdAt}`);
-			data.push(`Your permission # is: ${loadedCommandUser.dataValues.permission}`);
+			data.push(`You joined on: ${bot.user.dataValues.createdAt}`);
+			data.push(`Your permission # is: ${bot.user.dataValues.permission}`);
 
 			return message.author.send(data, { split: true })
 				.then(() => {

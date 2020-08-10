@@ -6,38 +6,38 @@ module.exports = function(sequelize, DataTypes) {
 			autoIncrement: true,
 			type: DataTypes.INTEGER,
 			allowNull: true,
-			primaryKey: true
+			primaryKey: true,
 		},
 		guild: {
 			type: DataTypes.STRING(255),
-			allowNull: true
+			allowNull: true,
 		},
 		channel: {
 			type: DataTypes.STRING(255),
-			allowNull: true
+			allowNull: true,
 		},
 		reminder_timestamp: {
 			type: DataTypes.DATE,
-			allowNull: true
+			allowNull: true,
 		},
 		user: {
 			type: DataTypes.STRING(255),
-			allowNull: true
+			allowNull: true,
 		},
 		reminder: {
 			type: DataTypes.STRING(255),
-			allowNull: true
+			allowNull: true,
 		},
 		createdAt: {
 			type: DataTypes.DATE,
-			allowNull: false
+			allowNull: false,
 		},
 		updatedAt: {
 			type: DataTypes.DATE,
-			allowNull: false
-		}
+			allowNull: false,
+		},
 	}, {
 		sequelize,
-		tableName: 'reminders'
+		tableName: 'reminders',
 	});
 };

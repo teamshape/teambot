@@ -5,8 +5,8 @@ module.exports = {
 		return queryInterface.sequelize.transaction(t => {
 			return Promise.all([
 				queryInterface.addColumn('users', 'dollars', {
-          type: Sequelize.DataTypes.STRING,
-          defaultValue: 50000,
+					type: Sequelize.DataTypes.STRING,
+					defaultValue: 50000,
 				}, { transaction: t }),
 			]);
 		});

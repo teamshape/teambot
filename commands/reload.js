@@ -15,24 +15,6 @@ module.exports = {
 
 		delete require.cache[require.resolve(`./${command.name}.js`)];
 
-
-		// Load user sending the command and user being acted upon.
-		const commandUser = message.author.id;
-		const guild = message.guild.id;
-
-		let loadedCommandUser = [];
-
-		try {
-			loadedCommandUser = await teambot.db.users.findOne({ where: {
-				guild: guild,
-				user: commandUser,
-			} });
-		}
-		catch (e) {
-			return message.reply('Something went wrong with finding your user.');
-		}
-
-		if (!teambot.permissions.isAdmin(loadedCommandUser.dataValues.permission)) return message.channel.send(`You are unable to use reload, ${message.author}. I suggest you find an adult.`);
 		try {
 			const newCommand = require(`./${command.name}.js`);
 			message.client.commands.set(newCommand.name, newCommand);

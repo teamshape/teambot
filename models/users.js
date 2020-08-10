@@ -6,39 +6,39 @@ module.exports = function(sequelize, DataTypes) {
 			autoIncrement: true,
 			type: DataTypes.INTEGER,
 			allowNull: true,
-			primaryKey: true
+			primaryKey: true,
 		},
 		guild: {
 			type: DataTypes.STRING(255),
-			allowNull: true
+			allowNull: true,
 		},
 		user: {
 			type: DataTypes.STRING(255),
-			allowNull: true
+			allowNull: true,
 		},
 		permission: {
 			type: DataTypes.INTEGER,
-			allowNull: true
+			allowNull: true,
 		},
 		createdAt: {
 			type: DataTypes.DATE,
-			allowNull: false
+			allowNull: false,
 		},
 		updatedAt: {
 			type: DataTypes.DATE,
-			allowNull: false
+			allowNull: false,
 		},
 		name: {
 			type: DataTypes.STRING(255),
-			allowNull: true
+			allowNull: true,
 		},
 		dollars: {
 			type: DataTypes.STRING(255),
 			allowNull: true,
-			defaultValue: "50000"
-		}
+			defaultValue: '50000',
+		},
 	}, {
 		sequelize,
-		tableName: 'users'
+		tableName: 'users',
 	});
 };
