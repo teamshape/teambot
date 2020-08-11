@@ -117,7 +117,7 @@ bot.once('ready', async () => {
 				attributes: ['id', 'userId', 'guild', 'ticker', 'amount', 'buy', 'sell', 'executed'],
 				where: {
 					createdAt: {
-						[Op.lte]: moment().tz('Australia/Sydney').subtract(1, 'minutes').tz('UTC').format(),
+						[Op.lte]: moment().tz('Australia/Sydney').subtract(15, 'minutes').tz('UTC').format(),
 					},
 					executed: false,
 				},
