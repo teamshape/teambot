@@ -1,5 +1,5 @@
 const pluralize = require('pluralize');
-const { ADMINISTRATOR } = require('../permissions');
+const { ADMINISTRATOR } = require('../util/permissions');
 
 module.exports = {
 	name: 'pull',

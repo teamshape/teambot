@@ -1,5 +1,5 @@
 const dateparser = require('dateparser');
-const { ADMINISTRATOR, OPERATOR, PREMIUM, STANDARD } = require('../permissions');
+const { ADMINISTRATOR, OPERATOR, PREMIUM, STANDARD } = require('../util/permissions');
 
 module.exports = {
 	name: 'remindme',

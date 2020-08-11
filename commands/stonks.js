@@ -1,4 +1,4 @@
-const { ADMINISTRATOR, OPERATOR, PREMIUM, STANDARD } = require('../permissions');
+const { ADMINISTRATOR, OPERATOR, PREMIUM, STANDARD } = require('../util/permissions');
 const got = require('got');
 const { Op } = require('sequelize');
 const moment = require('moment-timezone');
@@ -104,8 +104,7 @@ module.exports = {
 			}
 			const ticker = args[1].toUpperCase();
 			const shares = Number(args[2]);
-			const dollars = Number(loadedCommandUser.dataValues.dollars);
-
+z
 			if (!moment().tz('Australia/Sydney').isBetween(marketOpen, marketClose) || weekend) {
 				return message.reply('You can\'t trade while the market is closed.');
 			}

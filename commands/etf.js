@@ -1,5 +1,5 @@
 const got = require('got');
-const { ADMINISTRATOR, OPERATOR, PREMIUM, STANDARD } = require('../permissions');
+const { ADMINISTRATOR, OPERATOR, PREMIUM, STANDARD } = require('../util/permissions');
 module.exports = {
 	name: 'etf',
 	description: 'Gets holding information about an ETF. Add .ax for Australian ETFs.',

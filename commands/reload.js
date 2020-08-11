@@ -1,4 +1,4 @@
-const { ADMINISTRATOR } = require('../permissions');
+const { ADMINISTRATOR } = require('../util/permissions');
 module.exports = {
 	name: 'reload',
 	description: 'Reloads a command',

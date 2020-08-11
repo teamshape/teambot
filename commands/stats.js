@@ -1,4 +1,4 @@
-const { ADMINISTRATOR, OPERATOR, PREMIUM, STANDARD } = require('../permissions');
+const { ADMINISTRATOR, OPERATOR, PREMIUM, STANDARD } = require('../util/permissions');
 const human = require('interval-to-human');
 
 module.exports = {

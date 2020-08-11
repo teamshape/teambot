@@ -19,9 +19,9 @@ const bot = new Client();
 // const bot = new Client({ ws: { intents: Intents.ALL } });
 
 // Load local files to define required features for the bot.
-const db = require('./models/index.js');
+const db = require('./models/index');
+const permissions = require('./util/permissions');
 
-const permissions = require('./permissions.js');
 const teambot = {
 	db: db,
 	permissions: permissions,

@@ -1,4 +1,4 @@
-const { ADMINISTRATOR, OPERATOR, PREMIUM, STANDARD } = require('../permissions');
+const { ADMINISTRATOR, OPERATOR, PREMIUM, STANDARD } = require('../util/permissions');
 const moment = require('moment-timezone');
 
 module.exports = {

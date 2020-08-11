@@ -1,4 +1,4 @@
-const { ADMINISTRATOR, OPERATOR, PREMIUM, STANDARD } = require('../permissions');
+const { ADMINISTRATOR, OPERATOR, PREMIUM, STANDARD } = require('../util/permissions');
 module.exports = {
 	name: 'karma',
 	description: 'Shows the karma list.',

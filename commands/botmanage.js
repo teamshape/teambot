@@ -1,4 +1,4 @@
-const { ADMINISTRATOR, OPERATOR, PREMIUM } = require('../permissions');
+const { ADMINISTRATOR, OPERATOR, PREMIUM } = require('../util/permissions');
 
 module.exports = {
 	name: 'botmanage',
