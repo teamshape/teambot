@@ -8,11 +8,12 @@ module.exports = {
 
 		const data = [];
 		const permissionName = Object.keys(permissions).find(key => permissions[key] === teambot.user.dataValues.permission);
+		const tenure = moment(teambot.user.dataValues.createdAt).fromNow(true).format();
 
 		if (!args.length) {
 			data.push('Here\'s your info:\n');
 			data.push(`Your username is: ${message.author.username}`);
-			data.push(`You joined on: ${teambot.user.dataValues.createdAt}, which means you've been a member for about ${moment(teambot.user.dataValues.createdAt).fromNow(true).format()}`);
+			data.push(`You joined on: ${teambot.user.dataValues.createdAt}, which means you've been a member for about ${tenure}`);
 			data.push(`You've got $${teambot.user.dataValues.dollars} dollars in your account.`);
 			data.push(`Your permission # is: ${teambot.user.dataValues.permission} (${permissionName})`);
 
