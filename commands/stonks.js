@@ -14,7 +14,7 @@ module.exports = {
 
 		// Set market open and close times.
 		const marketOpen = moment().tz('Australia/Sydney').set({ 'hour': 10, 'minute': 00 });
-		const marketClose = moment().tz('Australia/Sydney').set({ 'hour': 16, 'minute': 00 });
+		const marketClose = moment().tz('Australia/Sydney').set({ 'hour': 16, 'minute': 10 });
 		const weekend = (moment().day() === 0 || moment().day() === 7);
 
 		// Load user sending the command and user being acted upon.
