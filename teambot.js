@@ -78,8 +78,8 @@ bot.once('ready', async () => {
 	}, null, true, 'Australia/Sydney');
 	job.start();
 
-	// Cron job that runs every minute (during market hours) to alert of stock price movements.
-	const alertJob = new CronJob('0 * 10-16 * * 1-5', async function() {
+	const marketMinuteJob = new CronJob('0 * 10-16 * * 1-5', async function() {
+		// Cron job that runs every minute (during market hours) to alert of stock price movements.
 		const alerts = await teambot.db.alerts.findAll();
 
 		alerts.forEach(async function(a) {
@@ -109,9 +109,129 @@ bot.once('ready', async () => {
 			}
 		});
 
+		// Cron job that runs every minute (during market hours) to execute trades created by stocks command/game.
+
+		let logsToProcess = [];
+		try {
+			logsToProcess = await teambot.db.log.findAll({
+				attributes: ['id', 'userId', 'guild', 'ticker', 'amount', 'buy', 'sell', 'executed'],
+				where: {
+					createdAt: {
+						[Op.lte]: moment().tz('Australia/Sydney').subtract(1, 'minutes').tz('UTC').format(),
+					},
+					executed: false,
+				},
+			});
+		}
+		catch (e) {
+			console.log('Something went wrong with finding logs.');
+		}
+
+		for (const l of logsToProcess) {
+			const id = l.dataValues.id;
+			const guild = l.dataValues.guild;
+			const user = l.dataValues.userId;
+			const ticker = l.dataValues.ticker;
+			const amount = Number(l.dataValues.amount);
+			const buy = l.dataValues.buy;
+			const sell = l.dataValues.sell;
+
+			let asx = [];
+			try {
+				asx = await got.get('https://www.asx.com.au/asx/1/share/' + ticker).json();
+			}
+			catch (error) {
+				return console.log(`Stock not found (${ticker}).`);
+			}
+			// Sometimes the API returns results without price information.
+			if (!asx.last_price) {
+				console.log(`No price information available (${ticker}).`);
+			}
+
+			// Round totalPrice to 2DP.
+			const totalPrice = +(asx.last_price * l.dataValues.amount).toFixed(2);
+
+			// Load the user, their holdings, and their balance.
+			let logProcessUser = [];
+			try {
+				logProcessUser = await teambot.db.users.findOne({
+					include: [{ model: teambot.db.holdings }],
+					where: { guild: guild, user: user },
+				});
+
+				// Store the user's current bank balance.
+				const dollars = Number(logProcessUser.dataValues.dollars);
+
+				if (buy) {
+					// Check to see if the user has enough balance to purchase if prices have changed.
+					if (dollars < totalPrice) {
+						saySomething(`<@${user}>, prices have changed since you placed your order and you don't have enough money to complete your purchase of ${amount} units of ${ticker}. You only have $${dollars}. This trade has been cancelled.`);
+						await teambot.db.log.update({ executed: 1 }, { where: { id: id } });
+						continue;
+					}
+
+					const heldStock = logProcessUser.dataValues.holdings.find(element => element.ticker === ticker);
+					// Add the shares to their holdings and remove the dollars from their account.
+					if (!heldStock) {
+						// User doesn't have the stock so create a new holding.
+						try {
+							// Does the user already have this stock?
+							await teambot.db.holdings.create({
+								guild: guild,
+								userId: user,
+								ticker: ticker,
+								amount: amount,
+							});
+						}
+						catch (e) {
+							return console.log(`Something went wrong buying ${ticker} for ${user} (ID ${id}).`);
+						}
+					}
+					else {
+						// User has the stock so update their holding and update the executed field in the log table.
+						const heldAmount = Number(heldStock.dataValues.amount);
+						const newAmount = heldAmount + amount;
+						await teambot.db.holdings.update({ amount: newAmount }, { where: { userId: user, ticker: ticker } });
+					}
+					const balance = +(dollars - totalPrice).toFixed(2);
+					await teambot.db.users.update({ dollars: balance }, { where: { id: logProcessUser.dataValues.id } });
+					await teambot.db.log.update({ executed: 1 }, { where: { id: id } });
+					saySomething(`<@${user}>, your trade to buy ${amount} of ${ticker} has been executed for ${totalPrice}. You currently have a balance of ${balance}.`);
+					console.log(`${logProcessUser.dataValues.user} bought ${ticker} for ${totalPrice} and now has balance of ${balance}.`);
+				}
+				if (sell) {
+					// Remove the shares from the user and update their account.
+					const balance = +(dollars + totalPrice).toFixed(2);
+					const heldStock = logProcessUser.dataValues.holdings.find(element => element.ticker === ticker);
+					const heldAmount = Number(heldStock.dataValues.amount);
+
+					// Check to see if the user has enough shares to sell as they may have sold some during the wait.
+					if (amount > heldAmount) {
+						saySomething(`<@${user}>, you have sold off more shares in ${ticker} since you placed your order and you don't have enough shares to complete your sale of ${amount} units of ${ticker}. This trade has been cancelled.`);
+						await teambot.db.log.update({ executed: 1 }, { where: { id: id } });
+						continue;
+					}
+					const newAmount = heldAmount - amount;
+
+					try {
+						await teambot.db.holdings.update({ amount: newAmount }, { where: { userId: user, ticker: ticker } });
+						await teambot.db.users.update({ dollars: balance }, { where: { id: logProcessUser.dataValues.id } });
+						await teambot.db.log.update({ executed: 1 }, { where: { id: id } });
+						saySomething(`<@${user}>, your trade to sell ${amount} of ${ticker} has been executed for ${totalPrice}. You currently have a balance of ${balance}.`);
+						console.log(`${logProcessUser.dataValues.user} sold ${ticker} for ${totalPrice} and now has balance of ${balance} and this many shares: ${newAmount}`);
+					}
+					catch (error) {
+						return console.log(`Something went wrong selling ${ticker} for ${user} (ID ${id}).`);
+					}
+				}
+			}
+			catch (e) {
+				console.log(`Something went wrong with finding user ${user}.`);
+			}
+		}
 
 	}, null, true, 'Australia/Sydney');
-	alertJob.start();
+	marketMinuteJob.start();
 
 	const marketOpenJob = new CronJob('0 45 9 * * 1-5', async function() {
 		await saySomething('Ladies and Gentlemen start your engines.');
@@ -126,7 +246,7 @@ bot.once('ready', async () => {
 	const asxGame = new CronJob('0 0 1 1 * *', async function() {
 		// Add cron job here to runs at 1am on the first day of every month.
 		// This will record the closing prices of all stocks for next month's game.
-		const thisMonth = moment().format("MMMM YYYY");
+		const thisMonth = moment().format('MMMM YYYY');
 		const tickers = await teambot.db.asx.findAll({ where: { date: thisMonth } });
 
 		tickers.forEach(async function(t) {
@@ -142,7 +262,7 @@ bot.once('ready', async () => {
 			});
 		});
 
-		const lastMonth = moment().subtract(1, 'months').format("MMMM YYYY");
+		const lastMonth = moment().subtract(1, 'months').format('MMMM YYYY');
 		const oldTickers = await teambot.db.asx.findAll({ where: { date: lastMonth } });
 
 		oldTickers.forEach(async function(t) {
@@ -193,7 +313,7 @@ bot.on('message', async message => {
 		}
 	}
 
-	// Log chat.
+	// Log chat but protect privacy by entering a '1' into the database for the chatline rather than content.
 	try {
 		if (!message.guild) return;
 		teambot.db.chats.create({
@@ -202,7 +322,7 @@ bot.on('message', async message => {
 			messageId: message.id,
 			deleted: message.deleted,
 			user: message.author.id,
-			chatline: 1, // Protect privacy by entering a '1' into the database for the chatline rather than content.
+			chatline: 1,
 		});
 	}
 	catch (error) {
@@ -259,7 +379,7 @@ bot.on('message', async message => {
 	// Karma matches
 	const karma = /<@!\d+>\s?\+\+|<@!\d+>\s?--/gm;
 	let l;
-	
+
 	while ((l = karma.exec(message.content)) !== null) {
 		// This is necessary to avoid infinite loops with zero-width matches
 		if (l.index === karma.lastIndex) {
@@ -309,7 +429,7 @@ bot.on('guildMemberAdd', async member => {
 			guild: member.guild.id,
 			user: member.id,
 			permission: permissions.STANDARD,
-			dollars: 50000
+			dollars: 50000,
 		});
 	}
 	catch (e) {
@@ -351,10 +471,10 @@ bot.on('guildMemberAdd', async member => {
 	ctx.fillText(`${member.displayName}!`, canvas.width / 2.5, canvas.height / 1.5);
 
 	const totalUsers = (await member.guild.members.fetch()).filter(member => !member.user.bot).size;
-	ctx.font = `20px Lato`;
+	ctx.font = '20px Lato';
 
 	// Use 'x' as the format for unix time in milliseconds.
-	const userCreated = moment(member.user.createdTimestamp, "x").fromNow();
+	const userCreated = moment(member.user.createdTimestamp, 'x').fromNow();
 	ctx.fillText(`Member #${totalUsers} ⋆ Joined ${userCreated}`, canvas.width / 2.5, (canvas.height / 9) * 8);
 
 	// Puts the border around the avatar.
@@ -463,28 +583,28 @@ bot.on('guildBanRemove', async (guild, user) => {
 });
 
 // Fires when messages are deleted - either by the user or by another person.
-bot.on('messageDelete', async message => {
-	// Uncomment these lines to audit message deletions.
-	// if (!message.guild) return;
-	// const log = await auditLookup('MESSAGE_DELETE', message.guild);
+// bot.on('messageDelete', async message => {
+// Uncomment these lines to audit message deletions.
+// if (!message.guild) return;
+// const log = await auditLookup('MESSAGE_DELETE', message.guild);
 
-	// if (!log) return auditLine(`A message by ${message.author.tag} in #${message.channel.name} was deleted, but no relevant audit logs were found. The message was "${message.content}"`);
-	// const { executor, target } = log;
+// if (!log) return auditLine(`A message by ${message.author.tag} in #${message.channel.name} was deleted, but no relevant audit logs were found. The message was "${message.content}"`);
+// const { executor, target } = log;
 
-	// if (target.id === message.author.id) {
-	// 	auditLine(`A message by ${message.author.tag} in #${message.channel.name} was deleted by ${executor.tag}. The message was "${message.content}"`);
-	// }
-	// else {
-	// 	auditLine(`A message by ${message.author.tag} in #${message.channel.name} was deleted by themselves. The message was "${message.content}"`);
-	// }
+// if (target.id === message.author.id) {
+// 	auditLine(`A message by ${message.author.tag} in #${message.channel.name} was deleted by ${executor.tag}. The message was "${message.content}"`);
+// }
+// else {
+// 	auditLine(`A message by ${message.author.tag} in #${message.channel.name} was deleted by themselves. The message was "${message.content}"`);
+// }
 
-	// try {
-	// 	await teambot.db.chats.update({ deleted: true }, { where: { messageId: message.id } });
-	// }
-	// catch (error) {
-	// 	console.log(error);
-	// }
-});
+// try {
+// 	await teambot.db.chats.update({ deleted: true }, { where: { messageId: message.id } });
+// }
+// catch (error) {
+// 	console.log(error);
+// }
+// });
 
 // Fires when a user's presence changes e.g. status change, music change etc.
 // This function can be removed when we reach parity with what's in the UserDB.

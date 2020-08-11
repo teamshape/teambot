@@ -80,41 +80,19 @@ module.exports = {
 				return message.reply(`You don't have that much money. You only have $${dollars}`);
 			}
 
-			// Add the shares to their holdings and remove the dollars from their account.
-			const heldStock = loadedCommandUser.dataValues.holdings.find(element => element.ticker === ticker);
-			if (!heldStock) {
-				// User doesn't have the stock so create a new holding.
-				try {
-					// Does the user already have this stock?
-					await teambot.db.holdings.create({
-						guild: guild,
-						userId: message.author.id,
-						ticker: ticker,
-						amount: shares,
-					});
-				}
-				catch (e) {
-					return message.reply('Something went wrong with buying these stocks.');
-				}
-			}
-			else {
-				// User has the stock so update their holding
-				const newAmount = heldStock.dataValues.amount + shares;
-				await teambot.db.holdings.update({ amount: newAmount }, { where: { userId: message.author.id, ticker: ticker } });
-			}
-
 			// Log the transaction and update the user's balance.
 			try {
 				await teambot.db.log.create({
 					guild: guild,
 					userId: message.author.id,
 					message: `Bought ${shares} of ${ticker}`,
+					buy: 1,
+					ticker: ticker,
+					amount: shares,
+					executed: 0,
 				});
 
-				// @TODO round balance to 2DP.
-				const balance = +(dollars - totalPrice).toFixed(2);
-				await teambot.db.users.update({ dollars: balance }, { where: { id: loadedCommandUser.dataValues.id } });
-				return message.reply(`You bought ${shares} of ${ticker} at $${asx.last_price} for $${totalPrice}. Your new balance is $${balance}`);
+				return message.reply(`You have queued the buy of ${shares} of ${ticker}.`);
 			}
 			catch (e) {
 				return message.reply('Something went wrong with buying these stocks.');
@@ -163,23 +141,20 @@ module.exports = {
 				return message.reply(`You do not own enough of ${ticker}. You own ${heldStock.dataValues.amount} units.`);
 			}
 
-			// Remove the shares from the user and update their account.
-			const totalPrice = +(asx.last_price * shares).toFixed(2);
-			const balance = +(dollars + totalPrice).toFixed(2);
-			const newAmount = +(heldStock.dataValues.amount - shares).toFixed(2);
-
 			try {
-				await teambot.db.holdings.update({ amount: newAmount }, { where: { userId: message.author.id, ticker: ticker } });
-				await teambot.db.users.update({ dollars: balance }, { where: { id: loadedCommandUser.dataValues.id } });
 				await teambot.db.log.create({
 					guild: guild,
 					userId: message.author.id,
-					message: `Sold ${shares} of ${ticker}`,
+					message: `Bought ${shares} of ${ticker}`,
+					sell: 1,
+					ticker: ticker,
+					amount: shares,
+					executed: 0,
 				});
-				return message.reply(`You sold ${shares} of ${ticker} at $${asx.last_price} for $${totalPrice}. Your new balance is $${balance}`);
+				return message.reply(`You have queued the sale of ${shares} of ${ticker}.`);
 			}
 			catch (error) {
-				return message.reply('Something went wrong selling this stock');
+				return message.reply('Something went wrong queueing this stock for sale');
 			}
 		}
 		else if (args[0] === 'holdings') {

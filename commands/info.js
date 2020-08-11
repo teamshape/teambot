@@ -5,10 +5,6 @@ module.exports = {
 	permission: ADMINISTRATOR | OPERATOR | PREMIUM | STANDARD,
 	async execute(teambot, message, args) {
 
-		// Load user sending the command.
-		const commandUser = message.author.id;
-		const guild = message.guild.id;
-
 		const data = [];
 		if (!args.length) {
 			data.push('Here\'s your info:\n');

@@ -9,9 +9,9 @@ module.exports = {
 	async execute(teambot, message, args) {
 
 		// Load user sending the command and user being acted upon.
-		const commandUser = message.author.id;
 		const targetUser = args[1].slice(3, -1).trim();
 		const guild = message.guild.id;
+		let loadedTargetUser = [];
 
 		try {
 			loadedTargetUser = await teambot.db.users.findOne({ where: {

@@ -9,10 +9,6 @@ module.exports = {
 	permission: ADMINISTRATOR | OPERATOR | PREMIUM,
 	async execute(teambot, message, args) {
 
-		// Load user sending the command and user being acted upon.
-		const commandUser = message.author.id;
-		const guild = message.guild.id;
-
 		if (args[0] === 'addwelcome') {
 
 			if (teambot.permissions.isTrusted(teambot.user.dataValues.permission)) {

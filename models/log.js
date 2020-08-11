@@ -7,6 +7,7 @@ module.exports = function(sequelize, DataTypes) {
 			type: DataTypes.INTEGER,
 			allowNull: true,
 			primaryKey: true,
+			unique: true,
 		},
 		guild: {
 			type: DataTypes.STRING(255),
@@ -21,6 +22,23 @@ module.exports = function(sequelize, DataTypes) {
 		message: {
 			type: DataTypes.STRING(255),
 			allowNull: false,
+		},
+		amount: {
+			type: DataTypes.STRING(255),
+			allowNull: false,
+		},
+		ticker: {
+			type: DataTypes.STRING(255),
+			allowNull: false,
+		},
+		buy: {
+			type: DataTypes.INTEGER(1),
+		},
+		sell: {
+			type: DataTypes.INTEGER(1),
+		},
+		executed: {
+			type: DataTypes.INTEGER(1),
 		},
 		createdAt: {
 			type: DataTypes.DATE,

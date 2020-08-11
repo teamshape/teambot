@@ -37,5 +37,9 @@ db.Sequelize = Sequelize;
 
 // Add associations
 db.users.hasMany(db.holdings, { foreignKey: 'userId', sourceKey: 'user' });
+db.users.hasMany(db.log, { foreignKey: 'userId', sourceKey: 'user' });
+
+db.log.belongsTo(db.users);
+db.holdings.belongsTo(db.users);
 
 module.exports = db;
