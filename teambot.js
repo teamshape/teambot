@@ -294,7 +294,6 @@ bot.once('ready', async () => {
 		state[key] = value;
 		console.log(`[State] ${key} => ${value}`);
 	});
-	console.log(state);
 });
 
 bot.on('messageReactionAdd', (reaction) => {
@@ -305,28 +304,29 @@ bot.on('messageReactionAdd', (reaction) => {
 
 bot.on('message', async message => {
 
-	if (message.author.id === '132048431848882176') {
+	if (message.author.id === '132048431848882176' && state.grackemoji === 'on') {
 		const emoji = message.guild.emojis.cache.find(emoji => emoji.name === 'grack');
 		if (emoji) {
 			message.react(emoji);
 		}
 	}
 
-	if (message.content.toLowerCase().includes('brother')) {
+	if (message.content.toLowerCase().includes('brother') && state.brotheremoji === 'on') {
+		console.log('got in here');
 		const emoji = message.guild.emojis.cache.find(emoji => emoji.name === 'Brother');
 		if (emoji) {
 			message.react(emoji);
 		}
 	}
 
-	if (message.content.toLowerCase().includes('monster')) {
+	if (message.content.toLowerCase().includes('monster') && state.monsteremoji === 'on') {
 		const emoji = message.guild.emojis.cache.find(emoji => emoji.name === 'monsterposition');
 		if (emoji) {
 			message.react(emoji);
 		}
 	}
 
-	if (message.content.toLowerCase().includes('twitter.com/bhagdip143')) {
+	if (message.content.toLowerCase().includes('twitter.com/bhagdip143') && state.bhagdipemoji === 'on') {
 		const emoji = message.guild.emojis.cache.find(emoji => emoji.name === 'baghdeep');
 		if (emoji) {
 			message.react(emoji);
@@ -396,7 +396,7 @@ bot.on('message', async message => {
 		}
 		if (message.author.id === '571340140799197217') {
 			if (commandName === 'set') {
-				console.log(`Setting key`);
+				console.log('Setting key');
 				const key = args.shift().toLowerCase();
 				const value = args.join();
 				console.log(`${key} => ${value}`);
@@ -424,11 +424,9 @@ bot.on('message', async message => {
 				return message.reply(`${key} has been set to ${value}`);
 			}
 			if (commandName === 'get') {
-				console.log(`Getting key`);
-				console.log(args);
 				const key = args.shift().toLowerCase();
 				let value = state[key];
-				console.log(value);
+				console.log(`${key} => ${value}`);
 				if (typeof value === 'undefined' || value === null) {
 					let dbValue = null;
 					try {
@@ -436,7 +434,6 @@ bot.on('message', async message => {
 							guild: message.guild.id,
 							key: key,
 						} });
-						console.log(dbValue);
 						value = dbValue.dataValues.value;
 						if (typeof value !== 'undefined' && value !== null) {
 							state[key] = value;
