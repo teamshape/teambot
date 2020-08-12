@@ -424,6 +424,7 @@ bot.on('message', async message => {
 				return message.reply(`${key} has been set to ${value}`);
 			}
 			if (commandName === 'get') {
+				console.log(state);
 				const key = args.shift().toLowerCase();
 				let value = state[key];
 				console.log(`${key} => ${value}`);
