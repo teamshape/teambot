@@ -401,7 +401,7 @@ bot.on('message', async message => {
 				// Save it in the database for persistence.
 				try {
 					await teambot.db.kvs.upsert({
-						guild: member.guild.id,
+						guild: message.guild.id,
 						key: key,
 						value: value,
 					});
