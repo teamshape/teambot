@@ -297,8 +297,11 @@ bot.once('ready', async () => {
 });
 
 bot.on('messageReactionAdd', (reaction) => {
-	if (reaction.emoji.name === '👍') {
+	if (reaction.emoji.name === '👍' && state.agreeablebot === 'on') {
 		reaction.message.react('👍');
+	}
+	if (reaction.emoji.name === '👎' && state.disagreeablebot === 'on') {
+		reaction.message.react('👎');
 	}
 });
 
