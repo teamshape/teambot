@@ -288,8 +288,13 @@ bot.once('ready', async () => {
 
 	// Load keys and values into the state variable for use around TeamBot.
 	const kv = await teambot.db.kvs.findAll();
-	console.log(kv);
-
+	kv.forEach(async function(t) {
+		const key = t.dataValues.key;
+		const value = t.dataValues.value;
+		state[key] = value;
+		console.log(`[State] ${key} => ${value}`);
+	});
+	console.log(state);
 });
 
 bot.on('messageReactionAdd', (reaction) => {
@@ -400,32 +405,47 @@ bot.on('message', async message => {
 				console.log(state);
 				// Save it in the database for persistence.
 				try {
-					await teambot.db.kvs.upsert({
+					await teambot.db.kvs.create({
 						guild: message.guild.id,
 						key: key,
 						value: value,
 					});
 				}
-				catch (e) {
-					console.log(e);
-					return channel.send(`Set ${key} =>${value}`);
+				catch (error) {
+					if (error.name === 'SequelizeUniqueConstraintError') {
+						try {
+							await teambot.db.kvs.update({ value: value }, { where: { guild: message.guild.id, key: key } });
+						}
+						catch (e) {
+							console.log(e);
+						}
+					}
 				}
-				return;
+				return message.reply(`${key} has been set to ${value}`);
 			}
 			if (commandName === 'get') {
 				console.log(`Getting key`);
-				key = args.shift().toLowerCase();
-				const value = state[key];
+				console.log(args);
+				const key = args.shift().toLowerCase();
+				let value = state[key];
 				console.log(value);
-				if (typeof(value) === 'undefined') {
+				if (typeof value === 'undefined' || value === null) {
 					let dbValue = null;
 					try {
 						dbValue = await teambot.db.kvs.findOne({ where: {
 							guild: message.guild.id,
 							key: key,
 						} });
+						console.log(dbValue);
+						value = dbValue.dataValues.value;
+						if (typeof value !== 'undefined' && value !== null) {
+							state[key] = value;
+							console.log(state);
+							return message.reply(`Value is ${value}`);
+						}
 					}
 					catch (e) {
+						console.log(e);
 						return message.reply(`No stored value for ${key}`);
 					}
 				}
