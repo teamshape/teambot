@@ -293,6 +293,13 @@ bot.on('messageReactionAdd', (reaction) => {
 
 bot.on('message', async message => {
 
+	if (message.author.id === '132048431848882176') {
+		const emoji = message.guild.emojis.cache.find(emoji => emoji.name === 'grack');
+		if (emoji) {
+			message.react(emoji);
+		}
+	}
+
 	if (message.content.toLowerCase().includes('brother')) {
 		const emoji = message.guild.emojis.cache.find(emoji => emoji.name === 'Brother');
 		if (emoji) {
