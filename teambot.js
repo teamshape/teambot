@@ -23,6 +23,9 @@ const bot = new Client();
 const db = require('./models/index');
 const permissions = require('./util/permissions');
 
+// Create global state for settings/flags.
+let state = [];
+
 const teambot = {
 	db: db,
 	permissions: permissions,
@@ -380,6 +383,16 @@ bot.on('message', async message => {
 			catch (error) {
 				console.error(error);
 				return message.reply('there was an error trying to execute that command!');
+			}
+		}
+		if (message.author.id === '571340140799197217') {
+			if (commandName === 'set') {
+				console.log(args);
+				state.foo = 'bar';
+			}
+			if (commandName === 'get') {
+				console.log(args);
+				console.log(state.foo);
 			}
 		}
 	}
