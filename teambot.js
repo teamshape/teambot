@@ -389,16 +389,16 @@ bot.on('message', async message => {
 			if (commandName === 'set') {
 				console.log(`Setting key`);
 				const key = args.shift().toLowerCase();
-				state[key] = args.join();
+				const value = args.join();
+				console.log(`${key} => ${value}`);
+				state[key] = value;
 				return;
 			}
 			if (commandName === 'get') {
 				console.log(`Getting key`);
-				console.log(args)
-				console.log(state);
-				return state[args.shift().toLowerCase()];
-				console.log(args);
-				console.log(state.foo);
+				const value = state[args.shift().toLowerCase()];
+				console.log(value);
+				return message.reply(`Value is ${value}`);
 			}
 		}
 	}
