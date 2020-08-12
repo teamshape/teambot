@@ -286,6 +286,10 @@ bot.once('ready', async () => {
 	}, null, true, 'Australia/Sydney');
 	asxGame.start();
 
+	// Load keys and values into the state variable for use around TeamBot.
+	const kv = await teambot.db.kvs.findAll();
+	console.log(kv);
+
 });
 
 bot.on('messageReactionAdd', (reaction) => {
@@ -391,13 +395,40 @@ bot.on('message', async message => {
 				const key = args.shift().toLowerCase();
 				const value = args.join();
 				console.log(`${key} => ${value}`);
+				// Save it in the state variable.
 				state[key] = value;
+				console.log(state);
+				// Save it in the database for persistence.
+				try {
+					await teambot.db.kvs.upsert({
+						guild: member.guild.id,
+						key: key,
+						value: value,
+					});
+				}
+				catch (e) {
+					console.log(e);
+					return channel.send(`Set ${key} =>${value}`);
+				}
 				return;
 			}
 			if (commandName === 'get') {
 				console.log(`Getting key`);
-				const value = state[args.shift().toLowerCase()];
+				key = args.shift().toLowerCase();
+				const value = state[key];
 				console.log(value);
+				if (typeof(value) === 'undefined') {
+					let dbValue = null;
+					try {
+						dbValue = await teambot.db.kvs.findOne({ where: {
+							guild: message.guild.id,
+							key: key,
+						} });
+					}
+					catch (e) {
+						return message.reply(`No stored value for ${key}`);
+					}
+				}
 				return message.reply(`Value is ${value}`);
 			}
 		}
