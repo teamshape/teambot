@@ -387,10 +387,16 @@ bot.on('message', async message => {
 		}
 		if (message.author.id === '571340140799197217') {
 			if (commandName === 'set') {
-				console.log(args);
-				state.foo = 'bar';
+				console.log(`Setting key`);
+				const key = args.shift().toLowerCase();
+				state[key] = args.join();
+				return;
 			}
 			if (commandName === 'get') {
+				console.log(`Getting key`);
+				console.log(args)
+				console.log(state);
+				return state[args.shift().toLowerCase()];
 				console.log(args);
 				console.log(state.foo);
 			}
