@@ -305,7 +305,7 @@ bot.on('messageReactionAdd', (reaction) => {
 bot.on('message', async message => {
 
 	if (message.author.id === '132048431848882176' && state.grackemoji === 'on') {
-		const emoji = message.guild.emojis.cache.find(emoji => emoji.name === 'grack');
+		const emoji = message.guild.emojis.cache.find(emoji => emoji.name === 'Grack');
 		if (emoji) {
 			message.react(emoji);
 		}
