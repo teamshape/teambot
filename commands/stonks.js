@@ -104,7 +104,7 @@ module.exports = {
 			}
 			const ticker = args[1].toUpperCase();
 			const shares = Number(args[2]);
-z
+
 			if (!moment().tz('Australia/Sydney').isBetween(marketOpen, marketClose) || weekend) {
 				return message.reply('You can\'t trade while the market is closed.');
 			}
