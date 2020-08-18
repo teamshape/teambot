@@ -200,7 +200,7 @@ bot.once('ready', async () => {
 					const balance = +(dollars - totalPrice).toFixed(2);
 					await teambot.db.users.update({ dollars: balance }, { where: { id: logProcessUser.dataValues.id } });
 					await teambot.db.log.update({ executed: 1 }, { where: { id: id } });
-					saySomething(`<@${user}>, your trade to buy ${amount} units of ${ticker} has been executed for ${totalPrice}. You currently have a balance of $${balance}.`);
+					saySomething(`<@${user}>, your trade to buy ${amount} units of ${ticker} has been executed for $${totalPrice}. You currently have a balance of $${balance}.`);
 					console.log(`${logProcessUser.dataValues.user} bought ${ticker} for ${totalPrice} and now has balance of ${balance}.`);
 				}
 				if (sell) {
@@ -221,7 +221,7 @@ bot.once('ready', async () => {
 						await teambot.db.holdings.update({ amount: newAmount }, { where: { userId: user, ticker: ticker } });
 						await teambot.db.users.update({ dollars: balance }, { where: { id: logProcessUser.dataValues.id } });
 						await teambot.db.log.update({ executed: 1 }, { where: { id: id } });
-						saySomething(`<@${user}>, your trade to sell ${amount} units of ${ticker} has been executed for ${totalPrice}. You currently have a balance of $${balance}.`);
+						saySomething(`<@${user}>, your trade to sell ${amount} units of ${ticker} has been executed for $${totalPrice}. You currently have a balance of $${balance}.`);
 						console.log(`${logProcessUser.dataValues.user} sold ${ticker} for ${totalPrice} and now has balance of ${balance} and this many shares: ${newAmount}`);
 					}
 					catch (error) {
