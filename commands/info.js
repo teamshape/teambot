@@ -3,7 +3,7 @@ const moment = require('moment-timezone');
 module.exports = {
 	name: 'info',
 	description: 'Gets user info.',
-	permission: permissions.ADMINISTRATOR | permissions.OPERATOR | permissions.PREMIUM | permissions.STANDARD,
+	permission: permissions.ADMINISTRATOR | permissions.OPERATOR | permissions.PREMIUM | permissions.STANDARD | permissions.PLEBIAN | permissions.DOUBLEPLEBIAN,
 	async execute(teambot, message, args) {
 
 		const data = [];
