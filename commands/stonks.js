@@ -8,7 +8,7 @@ module.exports = {
 	aliases: ['stocks', 'stock'],
 	description: 'Provides a stock market game. Buy and sell your stocks on paper, but in Discord.',
 	args: true,
-	usage: 'buy <ticker> <amount> | sell <ticker> <amount> | holdings | scores',
+	usage: 'buy <ticker> [<amount>|max] | sell <ticker> <amount> | holdings | scores (teamshape only) | liquidate',
 	permission: ADMINISTRATOR | OPERATOR | PREMIUM | STANDARD,
 	async execute(teambot, message, args) {
 
@@ -41,20 +41,16 @@ module.exports = {
 		}
 
 		if (args[0] === 'buy') {
-			if (args[2] === 'undefined') {
-				return message.reply('Please add a ticker and the number of shares.');
-			}
-			const ticker = args[1].toUpperCase();
-			const shares = Number(args[2]);
-			const dollars = Number(loadedCommandUser.dataValues.dollars);
-
 			if (!moment().tz('Australia/Sydney').isBetween(marketOpen, marketClose) || weekend) {
 				return message.reply('You can\'t trade while the market is closed.');
 			}
 
-			if (!Number.isInteger(shares)) {
-				return message.reply('This is not a number.');
+			if (args[2] === 'undefined') {
+				return message.reply('Please add a ticker and the number of shares.');
 			}
+			const ticker = args[1].toUpperCase();
+			let shares = args[2];
+			const dollars = Number(loadedCommandUser.dataValues.dollars);
 
 			// Check the stock exists and calculate the price.
 			try {
@@ -68,7 +64,18 @@ module.exports = {
 				return message.reply('No price information available.');
 			}
 
-			// @TODO round totalPrice to 2DP.
+			// if shares is 'max' work out the maximum that can be purchased by dividing the total balance by the price.
+			if (shares === 'max') {
+				shares = Math.floor(dollars / asx.last_price);
+			}
+			else {
+				shares = Number(shares);
+			}
+
+			if (!Number.isInteger(shares)) {
+				return message.reply('This is not a number.');
+			}
+
 			const totalPrice = +(asx.last_price * shares).toFixed(2);
 
 			if (totalPrice === 0) {
@@ -99,15 +106,14 @@ module.exports = {
 			}
 		}
 		else if (args[0] === 'sell') {
+			if (!moment().tz('Australia/Sydney').isBetween(marketOpen, marketClose) || weekend) {
+				return message.reply('You can\'t trade while the market is closed.');
+			}
 			if (args[2] === 'undefined') {
 				return message.reply('Please add a ticker and a dollar value of shares.');
 			}
 			const ticker = args[1].toUpperCase();
 			const shares = Number(args[2]);
-
-			if (!moment().tz('Australia/Sydney').isBetween(marketOpen, marketClose) || weekend) {
-				return message.reply('You can\'t trade while the market is closed.');
-			}
 
 			if (!Number.isInteger(shares)) {
 				return message.reply('This is not a number.');
@@ -144,7 +150,7 @@ module.exports = {
 				await teambot.db.log.create({
 					guild: guild,
 					userId: message.author.id,
-					message: `Bought ${shares} of ${ticker}`,
+					message: `Sold ${shares} of ${ticker}`,
 					sell: 1,
 					ticker: ticker,
 					amount: shares,
@@ -243,6 +249,56 @@ module.exports = {
 					console.log(error);
 				}
 			}
+		}
+		else if (args[0] === 'liquidate') {
+			if (!moment().tz('Australia/Sydney').isBetween(marketOpen, marketClose) || weekend) {
+				return message.reply('You can\'t trade while the market is closed.');
+			}
+
+			const data = [];
+
+			const holdings = loadedCommandUser.dataValues.holdings;
+
+			for (const h of holdings) {
+				if (h.amount == 0) {
+					continue;
+				}
+				try {
+					asx = await got.get('https://www.asx.com.au/asx/1/share/' + h.dataValues.ticker).json();
+				}
+				catch (error) {
+					return message.reply(`Stock not found ${h.dataValues.ticker}.`);
+				}
+
+				// Sometimes the API returns results without price information.
+				if (!asx.last_price) {
+					return message.reply(`No price information available for ${h.dataValues.ticker}.`);
+				}
+				const stockPrice = +(asx.last_price * h.dataValues.amount).toFixed(2);
+
+				if (moment(h.dataValues.updatedAt).tz('Australia/Sydney').add(30, 'minutes') > moment().tz('Australia/Sydney')) {
+					return message.reply(`You must hold a stock for at least 30 minutes before selling (${h.dataValues.ticker}).`);
+				}
+
+				try {
+					await teambot.db.log.create({
+						guild: guild,
+						userId: message.author.id,
+						message: `Sold ${h.dataValues.amount} of ${h.dataValues.ticker}`,
+						sell: 1,
+						ticker: h.dataValues.ticker,
+						amount: h.dataValues.amount,
+						executed: 0,
+					});
+					data.push(`You have queued the sale of ${h.dataValues.amount} of ${h.dataValues.ticker}.`);
+				}
+				catch (error) {
+					console.log(error);
+					data.push(`Something went wrong queueing ${h.dataValues.ticker} for sale`);
+				}
+			}
+
+			return message.reply(data, { split: true });
 		}
 	},
 };

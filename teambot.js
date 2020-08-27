@@ -49,11 +49,11 @@ bot.once('ready', async () => {
 	console.log(`${bot.user.tag} v${pjson.version}#${hash} loaded in ${timerEnd} seconds!`);
 	saySomething(`${bot.user.tag} v${pjson.version}#${hash} loaded in ${timerEnd} seconds!`);
 
-	bot.user.setUsername('TeamBot Nguyen')
+	bot.user.setUsername('TeamBot DDD')
 		.then(user => console.log(`Username set to ${user.username}`))
 		.catch(console.error);
 
-	bot.user.setPresence({ activity: { name: '光復香港，時代革命', type: 'WATCHING' }, status: 'online' })
+	bot.user.setPresence({ activity: { name: 'DDD grow higher', type: 'WATCHING' }, status: 'online' })
 		.then(presence => console.log(`Activity set to ${presence.activities[0].name}`))
 		.catch(console.error);
 
@@ -114,7 +114,6 @@ bot.once('ready', async () => {
 		});
 
 		// Cron job that runs every minute (during market hours) to execute trades created by stocks command/game.
-
 		let logsToProcess = [];
 		try {
 			logsToProcess = await teambot.db.log.findAll({
