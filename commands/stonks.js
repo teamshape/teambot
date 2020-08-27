@@ -274,7 +274,6 @@ module.exports = {
 				if (!asx.last_price) {
 					return message.reply(`No price information available for ${h.dataValues.ticker}.`);
 				}
-				const stockPrice = +(asx.last_price * h.dataValues.amount).toFixed(2);
 
 				if (moment(h.dataValues.updatedAt).tz('Australia/Sydney').add(30, 'minutes') > moment().tz('Australia/Sydney')) {
 					return message.reply(`You must hold a stock for at least 30 minutes before selling (${h.dataValues.ticker}).`);
