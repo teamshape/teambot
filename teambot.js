@@ -314,7 +314,6 @@ bot.on('message', async message => {
 	}
 
 	if (message.content.toLowerCase().includes('brother') && state.brotheremoji === 'on') {
-		console.log('got in here');
 		const emoji = message.guild.emojis.cache.find(emoji => emoji.name === 'Brother');
 		if (emoji) {
 			message.react(emoji);
