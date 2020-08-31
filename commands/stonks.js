@@ -220,9 +220,15 @@ module.exports = {
 								if (h.amount == 0) {
 									continue;
 								}
-								asx = await got.get('https://www.asx.com.au/asx/1/share/' + h.dataValues.ticker).json();
-								const stockPrice = +(asx.last_price * h.dataValues.amount).toFixed(2);
-								userBalance += stockPrice;
+								try {
+									asx = await got.get('https://www.asx.com.au/asx/1/share/' + h.dataValues.ticker).json();
+									const stockPrice = +(asx.last_price * h.dataValues.amount).toFixed(2);
+									userBalance += stockPrice;
+								}
+								catch(error) {
+									console.log(error);
+									console.log(`Error with ${h.dataValues.ticker} for ${u.user}.`);
+								}
 							}
 							return Number(userBalance).toFixed(2);
 						};
