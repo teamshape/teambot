@@ -240,6 +240,7 @@ bot.once('ready', async () => {
 		await saySomething('Ladies and Gentlemen start your engines.');
 		await saySomething('Stock codes starting with A-B open at 10:00:00am (+/- 15 seconds)');
 		await saySomething('Stock codes starting with C-F open at 10:02:15am (+/- 15 seconds)');
+		await saySomething('Stock codes starting with G-M open at 10:04:30am (+/- 15 seconds)');
 		await saySomething('Stock codes starting with N-R at 10:06:45am (+/- 15 seconds)');
 		await saySomething('Stock codes starting with S-Z at 10:09:00am (+/- 15 seconds)');
 
