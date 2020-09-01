@@ -191,7 +191,7 @@ module.exports = {
 			return message.reply(data, { split: true });
 		}
 		else if (args[0] === 'scores') {
-			if (teambot.permissions.isAdmin(loadedCommandUser.dataValues.permission)) {
+			if (teambot.permissions.isMod(loadedCommandUser.dataValues.permission)) {
 				try {
 					const allUsers = await teambot.db.users.findAll({
 						include: [

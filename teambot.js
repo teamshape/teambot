@@ -396,7 +396,7 @@ bot.on('message', async message => {
 				return message.reply('there was an error trying to execute that command!');
 			}
 		}
-		if (message.author.id === '571340140799197217') {
+		if (teambot.permissions.isAdmin(loadedUser.dataValues.permission)) {
 			if (commandName === 'set') {
 				console.log('Setting key');
 				const key = args.shift().toLowerCase();
