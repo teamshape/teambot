@@ -235,7 +235,8 @@ module.exports = {
 
 						const userBalance = await lookUp();
 						const userId = u.user;
-						scores.push({ userId, userBalance });
+						const nickname = u.name;
+						scores.push({ userId, nickname, userBalance });
 
 					}
 
@@ -246,7 +247,12 @@ module.exports = {
 
 					data.push('Total balances for all playing users:\n');
 					scores.forEach((s) => {
-						data.push(`<@${s.userId}>: $${s.userBalance}`);
+						if (s.nickname) {
+							data.push(`${s.nickname}: $${s.userBalance}`);
+						}
+						else {
+							data.push(`<@${s.userId}>: $${s.userBalance}`);
+						}
 					});
 					return message.reply(data, { split: true });
 
