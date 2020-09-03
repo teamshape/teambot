@@ -30,12 +30,16 @@ module.exports = function(sequelize, DataTypes) {
 		},
 		name: {
 			type: DataTypes.STRING(255),
-			allowNull: true,
+			allowNull: true
 		},
 		dollars: {
 			type: DataTypes.STRING(255),
 			allowNull: true,
 			defaultValue: '50000',
+		},
+		name: {
+			type: DataTypes.STRING(255),
+			allowNull: true,
 		},
 	}, {
 		sequelize,

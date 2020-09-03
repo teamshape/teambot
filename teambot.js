@@ -307,6 +307,11 @@ bot.on('messageReactionAdd', (reaction) => {
 
 bot.on('message', async message => {
 
+	// For Debugging.
+	// if (message.content === '!join') {
+	// 	bot.emit('guildMemberAdd', message.member);
+	// }
+
 	if (message.author.id === '132048431848882176' && state.grackemoji === 'on') {
 		const emoji = message.guild.emojis.cache.find(emoji => emoji.name === 'Grack');
 		if (emoji) {
@@ -499,7 +504,6 @@ bot.on('guildMemberAdd', async member => {
 
 	// Send the message to a designated channel on a server. @TODO change this to configuration managed.
 	const channel = member.guild.channels.cache.find(ch => ch.name === 'welcome-channel');
-	// Do nothing if the channel wasn't found on this server
 
 	// Update their record within the user database.
 	try {
@@ -507,6 +511,7 @@ bot.on('guildMemberAdd', async member => {
 			guild: member.guild.id,
 			user: member.id,
 			permission: permissions.STANDARD,
+			name: member.nickname,
 			dollars: 50000,
 		});
 	}
@@ -688,12 +693,24 @@ bot.on('guildBanRemove', async (guild, user) => {
 // This function can be removed when we reach parity with what's in the UserDB.
 // There may be other uses for this function e.g. updating users on name changes.
 bot.on('presenceUpdate', async (oldMember, newMember) => {
+	const user = newMember.guild.members.cache.find(user => user.id === newMember.userID);
+
 	try {
 		await teambot.db.users.upsert({
 			guild: newMember.guild.id,
 			user: newMember.userID,
 			permission: permissions.STANDARD,
 		});
+		await teambot.db.users.update({
+			name: user.nickname
+		},
+		{
+			where: {
+				guild: newMember.guild.id,
+				user: newMember.userID,
+			}
+		})
+
 	}
 	catch (e) {
 		console.log(e);
