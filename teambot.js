@@ -307,11 +307,6 @@ bot.on('messageReactionAdd', (reaction) => {
 
 bot.on('message', async message => {
 
-	// For Debugging.
-	// if (message.content === '!join') {
-	// 	bot.emit('guildMemberAdd', message.member);
-	// }
-
 	if (message.author.id === '132048431848882176' && state.grackemoji === 'on') {
 		const emoji = message.guild.emojis.cache.find(emoji => emoji.name === 'Grack');
 		if (emoji) {
@@ -377,6 +372,13 @@ bot.on('message', async message => {
 		}
 		catch (e) {
 			return message.reply('Something went wrong with finding user.');
+		}
+
+		// For Debugging.
+		console.log(commandName);
+		console.log(loadedUser);
+		if (permissions.isAdmin(loadedUser.dataValues.permission) && commandName === 'join') {
+			bot.emit('guildMemberAdd', message.member);
 		}
 
 		if (command && (command.permission & loadedUser.dataValues.permission)) {
