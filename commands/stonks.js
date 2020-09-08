@@ -8,7 +8,7 @@ module.exports = {
 	aliases: ['stocks', 'stock'],
 	description: 'Provides a stock market game. Buy and sell your stocks on paper, but in Discord.',
 	args: true,
-	usage: 'buy <ticker> [<amount>|max] | sell <ticker> <amount> | holdings | scores (teamshape only) | liquidate',
+	usage: 'buy <ticker> [<amount>|max] | sell <ticker> <amount> | holdings | scores (admins only) | liquidate',
 	permission: ADMINISTRATOR | OPERATOR | PREMIUM | STANDARD,
 	async execute(teambot, message, args) {
 
