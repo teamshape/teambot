@@ -50,7 +50,8 @@ module.exports = {
 			catch (e) {
 				console.log(e);
 			}
-			return message.channel.send('BANG!');
+			message.channel.send(`<@${message.member.user.id}> :gun:`);
+			return message.member.kick('BANG!');
 		}
 		else {
 			chance -= 1;

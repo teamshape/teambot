@@ -375,8 +375,6 @@ bot.on('message', async message => {
 		}
 
 		// For Debugging.
-		console.log(commandName);
-		console.log(loadedUser);
 		if (permissions.isAdmin(loadedUser.dataValues.permission) && commandName === 'join') {
 			bot.emit('guildMemberAdd', message.member);
 		}
