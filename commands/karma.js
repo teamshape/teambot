@@ -19,7 +19,7 @@ module.exports = {
 			const member = k.dataValues.user;
 			const karma = k.dataValues.karma;
 
-			data.push(`<@!${member}>: ${karma}`);
+			data.push(`<@${member}>: ${karma}`);
 		});
 
 		return message.author.send(data, { split: true })
