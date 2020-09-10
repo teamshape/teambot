@@ -244,6 +244,24 @@ bot.once('ready', async () => {
 		await saySomething('Stock codes starting with N-R at 10:06:45am (+/- 15 seconds)');
 		await saySomething('Stock codes starting with S-Z at 10:09:00am (+/- 15 seconds)');
 
+		// Also tack on the FB Normie role remover here too.
+		bot.guilds.cache.forEach(async function(g) {
+			const role = g.roles.cache.find(role => role.name === "FB Normie");
+			if (role) {
+				const users = await teambot.db.users.findAll({ where: {
+					createdAt: {
+						[Op.lte]: moment().tz('Australia/Sydney').subtract(7, 'days').tz('UTC').format(),
+						[Op.gte]: moment().tz('Australia/Sydney').subtract(8, 'days').tz('UTC').format(),
+					},
+				} });
+
+				users.forEach(async function(u) {
+					const id = u.dataValues.user;
+					const member = g.members.cache.get(id);
+					member.roles.remove(role);
+				});
+			}
+		})
 	}, null, true, 'Australia/Sydney');
 	marketOpenJob.start();
 
@@ -281,7 +299,6 @@ bot.once('ready', async () => {
 				date: thisMonth,
 			});
 		});
-
 
 	}, null, true, 'Australia/Sydney');
 	asxGame.start();
@@ -582,6 +599,11 @@ bot.on('guildMemberAdd', async member => {
 	const users = pluralize('user', userCount);
 	const have = pluralize('has', userCount);
 	channel.send(`${welcomes.dataValues.welcome} ${member}. ${userCount} ${users} ${have} joined today.`, attachment);
+
+	const role = member.guild.roles.cache.find(role => role.name === "FB Normie");
+	if (role) {
+		member.roles.add(role);
+	}
 });
 
 // Fire when users have their role updated.
