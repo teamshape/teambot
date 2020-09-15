@@ -79,6 +79,31 @@ bot.once('ready', async () => {
 				});
 			}
 		});
+
+		// Also work through temporary bans to remove bans if they have expired.
+		const bans = await teambot.db.bans.findAll({ where: {
+			banDate: {
+				[Op.lte]: Date.now(),
+			},
+		} });
+
+		// Take all loaded bans and remove them/unban the user.
+		bans.forEach(async function(b) {
+			const guildId = b.dataValues.guild;
+			const guild = bot.guilds.cache.get(guildId);
+			try {
+				teambot.db.bans.destroy({
+					where: {
+						id: b.dataValues.id,
+					},
+				});
+				guild.members.unban(user);
+				saySomething(`${user} has been unbanned.`);
+			}
+			catch (e) {
+				console.log(e);
+			}
+		});
 	}, null, true, 'Australia/Sydney');
 	job.start();
 
@@ -244,7 +269,10 @@ bot.once('ready', async () => {
 		await saySomething('Stock codes starting with N-R at 10:06:45am (+/- 15 seconds)');
 		await saySomething('Stock codes starting with S-Z at 10:09:00am (+/- 15 seconds)');
 
-		// Also tack on the FB Normie role remover here too.
+	}, null, true, 'Australia/Sydney');
+	marketOpenJob.start();
+
+	const roleRemover = new CronJob('0 0 0 * * *', async function() {
 		bot.guilds.cache.forEach(async function(g) {
 			const role = g.roles.cache.find(role => role.name === "FB Normie");
 			if (role) {
@@ -261,9 +289,9 @@ bot.once('ready', async () => {
 					member.roles.remove(role);
 				});
 			}
-		})
+		});
 	}, null, true, 'Australia/Sydney');
-	marketOpenJob.start();
+	roleRemover.start();
 
 	const asxGame = new CronJob('0 0 1 1 * *', async function() {
 		// Add cron job here to runs at 1am on the first day of every month.
@@ -598,7 +626,7 @@ bot.on('guildMemberAdd', async member => {
 
 	const users = pluralize('user', userCount);
 	const have = pluralize('has', userCount);
-	channel.send(`${welcomes.dataValues.welcome} ${member}. ${userCount} ${users} ${have} joined today.`, attachment);
+	channel.send(`${welcomes.dataValues.welcome} ${member}. ${userCount} new ${users} ${have} joined today.`, attachment);
 
 	const role = member.guild.roles.cache.find(role => role.name === "FB Normie");
 	if (role) {
