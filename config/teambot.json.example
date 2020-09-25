@@ -1,10 +1,11 @@
 {
-    "prefix": "!", 
+    "prefix": "!",
     "token": "",
     "timer": 5000,
     "allowedChannels": [
         "123456789098765342",
         "876543456789876566"
     ],
+    "botChannel": "876543456789876566",
     "avApiKey": "",
 }

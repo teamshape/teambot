@@ -1,4 +1,5 @@
 const pluralize = require('pluralize');
+const { BOTCHANNEL } = require('../util/channels');
 const { ADMINISTRATOR } = require('../util/permissions');
 
 module.exports = {
@@ -6,6 +7,7 @@ module.exports = {
 	description: 'Updates the bot',
 	args: false,
 	permission: ADMINISTRATOR,
+	channel: BOTCHANNEL,
 	async execute(teambot, message) {
 
 		require('simple-git')()

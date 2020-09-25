@@ -1,5 +1,6 @@
 const dateparser = require('dateparser');
 const moment = require('moment-timezone');
+const { ALL } = require('../util/channels');
 const { ADMINISTRATOR, OPERATOR, PREMIUM } = require('../util/permissions');
 
 module.exports = {
@@ -8,6 +9,7 @@ module.exports = {
 	args: true,
 	usage: '<@user> [time]',
 	permission: ADMINISTRATOR | OPERATOR,
+	channel: ALL,
 	async execute(teambot, message, args) {
 
 		if (!message.member.hasPermission(['BAN_MEMBERS'])) {

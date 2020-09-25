@@ -1,4 +1,5 @@
 const got = require('got');
+const { BOTCHANNEL } = require('../util/channels');
 const { ADMINISTRATOR, OPERATOR, PREMIUM, STANDARD } = require('../util/permissions');
 module.exports = {
 	name: 'etf',
@@ -6,6 +7,7 @@ module.exports = {
 	args: true,
 	usage: '<stock>',
 	permission: ADMINISTRATOR | OPERATOR | PREMIUM | STANDARD,
+	channel: BOTCHANNEL,
 	async execute(teambot, message, args) {
 		const etf = args[0].toUpperCase();
 

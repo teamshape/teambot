@@ -1,3 +1,4 @@
+const { ALL } = require('../util/channels');
 const { ADMINISTRATOR, OPERATOR, PREMIUM } = require('../util/permissions');
 
 module.exports = {
@@ -7,6 +8,7 @@ module.exports = {
 	args: true,
 	usage: 'addwelcome <welcome> | getwelcomes | deletewelcome <id> | addbotline <botline> | getbotlines | deletebotline <id>',
 	permission: ADMINISTRATOR | OPERATOR | PREMIUM,
+	channel: ALL,
 	async execute(teambot, message, args) {
 
 		if (args[0] === 'addwelcome') {

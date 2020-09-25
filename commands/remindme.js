@@ -1,4 +1,5 @@
 const dateparser = require('dateparser');
+const { ALL } = require('../util/channels');
 const { ADMINISTRATOR, OPERATOR, PREMIUM, STANDARD } = require('../util/permissions');
 
 module.exports = {
@@ -8,6 +9,7 @@ module.exports = {
 	args: true,
 	usage: 'in <time> to <do something>',
 	permission: ADMINISTRATOR | OPERATOR | PREMIUM | STANDARD,
+	channel: ALL,
 	async execute(teambot, message, args) {
 		// !remind me in {time increments} to {message}
 		const myMessage = args.slice(1).join(' ').split(/ to (.+)?/, 2);

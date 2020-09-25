@@ -1,4 +1,5 @@
 const got = require('got');
+const { ALL, BOTCHANNEL } = require('../util/channels');
 const { ADMINISTRATOR, OPERATOR, PREMIUM, STANDARD } = require('../util/permissions');
 
 module.exports = {
@@ -7,6 +8,7 @@ module.exports = {
 	args: true,
 	usage: '<stock> <operator> <price>',
 	permission: ADMINISTRATOR | OPERATOR | PREMIUM | STANDARD,
+	channel: BOTCHANNEL,
 	async execute(teambot, message, args) {
 		const stock = args[0];
 		const operator = args[1];

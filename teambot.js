@@ -22,6 +22,7 @@ const bot = new Client();
 // Load local files to define required features for the bot.
 const db = require('./models/index');
 const permissions = require('./util/permissions');
+const channels = require('./util/channels');
 
 // Create global state for settings/flags.
 let state = [];
@@ -397,7 +398,7 @@ bot.on('message', async message => {
 	}
 
 	// Only for specific bot channels after this, remove listening from DMs, and prevent actions if the bot spoke.
-	if (!(allowedChannels.includes(message.channel.id)) || message.channel.type === 'dm' || message.author.bot) return;
+	if (message.channel.type === 'dm' || message.author.bot) return;
 
 	// Check messages start with prefix (defaults to !).
 	if (message.content.startsWith(prefix)) {
@@ -424,7 +425,7 @@ bot.on('message', async message => {
 			bot.emit('guildMemberAdd', message.member);
 		}
 
-		if (command && (command.permission & loadedUser.dataValues.permission)) {
+		if (command && (command.permission & loadedUser.dataValues.permission) && channels.canCommandRun(command, message.channel.id)) {
 			if (command.args && !args.length) {
 				let reply = `You didn't provide any arguments, ${message.author}!`;
 				if (command.usage) {
@@ -504,6 +505,8 @@ bot.on('message', async message => {
 		}
 	}
 
+	if (!(allowedChannels.includes(message.channel.id))) return;
+
 	// Karma matches
 	const karma = /<@!\d+>\s?\+\+|<@!\d+>\s?--/gm;
 	let l;
@@ -522,6 +525,7 @@ bot.on('message', async message => {
 					done();
 				}, timer);
 			}, function(err, ret) {
+				console.log('Karma error!');
 				console.log(err);
 				console.log(ret);
 			});

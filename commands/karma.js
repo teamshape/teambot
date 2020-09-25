@@ -1,8 +1,10 @@
+const { BOTCHANNEL } = require('../util/channels');
 const { ADMINISTRATOR, OPERATOR, PREMIUM, STANDARD } = require('../util/permissions');
 module.exports = {
 	name: 'karma',
 	description: 'Shows the karma list.',
 	permission: ADMINISTRATOR | OPERATOR | PREMIUM | STANDARD,
+	channel: BOTCHANNEL,
 	async execute(teambot, message) {
 
 		const data = [];

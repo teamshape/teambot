@@ -1,3 +1,4 @@
+const { BOTCHANNEL } = require('../util/channels');
 const { ADMINISTRATOR } = require('../util/permissions');
 module.exports = {
 	name: 'reload',
@@ -5,6 +6,7 @@ module.exports = {
 	args: true,
 	usage: '<command>',
 	permission: ADMINISTRATOR,
+	channel: BOTCHANNEL,
 	async execute(teambot, message, args) {
 		if (!args.length) return message.channel.send(`You didn't pass any command to reload, ${message.author}!`);
 		const commandName = args[0].toLowerCase();

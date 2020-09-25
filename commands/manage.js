@@ -1,3 +1,4 @@
+const { ALL } = require('../util/channels');
 const { OPERATOR, ADMINISTRATOR } = require('../util/permissions');
 
 module.exports = {
@@ -6,6 +7,7 @@ module.exports = {
 	args: true,
 	usage: 'setpermission <user> <permission>',
 	permission: ADMINISTRATOR | OPERATOR,
+	channel: ALL,
 	async execute(teambot, message, args) {
 
 		// Load user sending the command and user being acted upon.

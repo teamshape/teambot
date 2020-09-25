@@ -2,6 +2,7 @@ const { ADMINISTRATOR, OPERATOR, PREMIUM, STANDARD } = require('../util/permissi
 const got = require('got');
 const { Op } = require('sequelize');
 const moment = require('moment-timezone');
+const { BOTCHANNEL } = require('../util/channels');
 
 module.exports = {
 	name: 'stonks',
@@ -10,6 +11,7 @@ module.exports = {
 	args: true,
 	usage: 'buy <ticker> [<amount>|max] | sell <ticker> <amount> | holdings | scores (admins only) | liquidate',
 	permission: ADMINISTRATOR | OPERATOR | PREMIUM | STANDARD,
+	channel: BOTCHANNEL,
 	async execute(teambot, message, args) {
 
 		// Set market open and close times.

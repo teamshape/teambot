@@ -1,4 +1,5 @@
 const { prefix } = require('../config/teambot.json');
+const { BOTCHANNEL } = require('../util/channels');
 const { ADMINISTRATOR, OPERATOR, PREMIUM, STANDARD, PLEBIAN, DOUBLEPLEBIAN } = require('../util/permissions');
 module.exports = {
 	name: 'help',
@@ -7,6 +8,7 @@ module.exports = {
 	usage: '[command name]',
 	cooldown: 5,
 	permission: ADMINISTRATOR | OPERATOR | PREMIUM | STANDARD | PLEBIAN | DOUBLEPLEBIAN,
+	channel: BOTCHANNEL,
 	execute(teambot, message, args) {
 		const data = [];
 		const { commands } = message.client;
