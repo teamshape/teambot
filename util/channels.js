@@ -10,7 +10,7 @@ exports.canCommandRun = function(command, channel) {
 		return true;
 	}
 	// Returns true if this is in an allowed channel the bot can specifically respond in.
-	else if (command.channel === exports.ALLOWEDCHANNELS && allowedChannels.indexOf(channel)) {
+	else if (command.channel === exports.ALLOWEDCHANNELS && allowedChannels.indexOf(channel) !== -1) {
 		return true;
 	}
 	// Returns true if this is the bot channel.
