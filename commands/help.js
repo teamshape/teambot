@@ -1,5 +1,6 @@
 const { prefix } = require('../config/teambot.json');
-const { BOTCHANNEL } = require('../util/channels');
+const channels = require('../util/channels');
+
 const { ADMINISTRATOR, OPERATOR, PREMIUM, STANDARD, PLEBIAN, DOUBLEPLEBIAN } = require('../util/permissions');
 module.exports = {
 	name: 'help',
@@ -8,7 +9,7 @@ module.exports = {
 	usage: '[command name]',
 	cooldown: 5,
 	permission: ADMINISTRATOR | OPERATOR | PREMIUM | STANDARD | PLEBIAN | DOUBLEPLEBIAN,
-	channel: BOTCHANNEL,
+	channel: channels.BOTCHANNEL,
 	execute(teambot, message, args) {
 		const data = [];
 		const { commands } = message.client;
@@ -37,6 +38,8 @@ module.exports = {
 
 		data.push(`**Name:** ${command.name}`);
 		if (command.aliases) data.push(`**Aliases:** ${command.aliases.join(', ')}`);
+		const channelName = Object.keys(channels).find(key => channels[key] === command.channel);
+		if (command.channel) data.push(`**Channels:** ${channelName}`);
 		if (command.description) data.push(`**Description:** ${command.description}`);
 		if (command.usage) data.push(`**Usage:** ${prefix}${command.name} ${command.usage}`);
 		data.push(`**Cooldown:** ${command.cooldown || 3} second(s)`);
