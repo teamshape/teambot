@@ -21,6 +21,7 @@ module.exports = {
 		const guild = teambot.bot.guilds.cache.get(guildId);
 
 		if (!args[1]) {
+			message.reply(`${user} has been b&.`);
 			return guild.members.ban(user);
 		}
 		else {
