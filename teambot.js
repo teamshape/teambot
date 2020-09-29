@@ -5,7 +5,7 @@ const fs = require('fs');
 const got = require('got');
 const moment = require('moment-timezone');
 const { Client, Collection, Intents, MessageAttachment, MessageEmbed } = require('discord.js');
-const { token, allowedChannels, avApiKey, timer, prefix, auditChannel } = require('./config/teambot.json');
+const { token, allowedChannels, botChannel, avApiKey, timer, prefix, auditChannel } = require('./config/teambot.json');
 const { CronJob } = require('cron');
 const { Sequelize, Op } = require('sequelize');
 const AsyncLock = require('async-lock');
@@ -804,7 +804,7 @@ function auditLine(line) {
 	console.log(line);
 }
 
-function saySomething(line) {
+function sayInAllowedChannels(line) {
 	allowedChannels.forEach(function(channel) {
 		const chan = bot.channels.cache.get(channel);
 		if (chan) {
@@ -813,10 +813,17 @@ function saySomething(line) {
 	});
 }
 
+function saySomething(line) {
+	const chan = bot.channels.cache.get(botChannel);
+	if (chan) {
+		chan.send(`${line}`);
+	}
+}
+
 function randomLine() {
 	(async () => {
 		const botlines = await teambot.db.botlines.findOne({ order: Sequelize.literal('random()') });
-		saySomething(`${botlines.dataValues.botline}`);
+		sayInAllowedChannels(`${botlines.dataValues.botline}`);
 	})();
 }
 
