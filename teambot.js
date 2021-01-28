@@ -50,11 +50,27 @@ bot.once('ready', async () => {
 	console.log(`${bot.user.tag} v${pjson.version}#${hash} loaded in ${timerEnd} seconds!`);
 	saySomething(`${bot.user.tag} v${pjson.version}#${hash} loaded in ${timerEnd} seconds!`);
 
-	bot.user.setUsername('TeamBot DDD')
-		.then(user => console.log(`Username set to ${user.username}`))
-		.catch(console.error);
+	// Load keys and values into the state variable for use around TeamBot.
+	const kv = await teambot.db.kvs.findAll();
+	kv.forEach(async function(t) {
+		const key = t.dataValues.key;
+		const value = t.dataValues.value;
+		state[key] = value;
+		console.log(`[State] ${key} => ${value}`);
+	});
 
-	bot.user.setPresence({ activity: { name: 'DDD grow higher', type: 'WATCHING' }, status: 'online' })
+	if (state.botname) {
+		bot.user.setUsername(state.botname)
+			.then(user => console.log(`Username set to ${state.botname}`))
+			.catch(console.error);
+        }
+	else {
+		bot.user.setUsername('TeamBot')
+			.then(user => console.log(`Username set to ${user.username}`))
+			.catch(console.error);
+        }
+
+	bot.user.setPresence({ activity: { name: 'all my stocks grow higher', type: 'WATCHING' }, status: 'online' })
 		.then(presence => console.log(`Activity set to ${presence.activities[0].name}`))
 		.catch(console.error);
 
@@ -332,14 +348,6 @@ bot.once('ready', async () => {
 	}, null, true, 'Australia/Sydney');
 	asxGame.start();
 
-	// Load keys and values into the state variable for use around TeamBot.
-	const kv = await teambot.db.kvs.findAll();
-	kv.forEach(async function(t) {
-		const key = t.dataValues.key;
-		const value = t.dataValues.value;
-		state[key] = value;
-		console.log(`[State] ${key} => ${value}`);
-	});
 });
 
 bot.on('messageReactionAdd', (reaction) => {
@@ -440,6 +448,7 @@ bot.on('message', async message => {
 				// Inject/update the bot variable before the command is executed.
 				teambot.bot = bot;
 				teambot.user = loadedUser;
+                                teambot.state = state;
 				return command.execute(teambot, message, args);
 			}
 			catch (error) {
