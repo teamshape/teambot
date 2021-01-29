@@ -645,6 +645,31 @@ bot.on('guildMemberAdd', async member => {
 	if (role) {
 		member.roles.add(role);
 	}
+
+	const dm = [];
+	const server = member.guild.name;
+	let rules = member.guild.channels.cache.find(
+		channel => channel.name.toLowerCase() === "read-me"
+	)
+	let botChannel = member.guild.channels.cache.find(
+		channel => channel.name.toLowerCase() === "trading-bot-channel"
+	)
+	dm.push(`Welcome new loser to ${server}. You are loser #${totalUsers} and very important to us.\n`);
+	dm.push(`Since you're new here, we thought it would be important to send you some information so you don't immediately make a fool of yourself.\n`);
+	dm.push(`As you probably have a reading age of 5, we will keep it simple so you don't get confused:`);
+	dm.push(`- Make sure you read the rules first before saying anything. These are found here: <#${rules.id}>`);
+	dm.push(`- Continue following the rules.`);
+	dm.push(`- There are no further steps.\n`);
+	dm.push(`${state.botname} commands can be found by typing !commands in <#${botChannel.id}>.`);
+
+	return member.send(dm, { split: true })
+		.then(() => {
+			console.log(`Sent welcome message to ${member.displayName}.\n`);
+		})
+		.catch(error => {
+			console.error(`Could not send help DM to ${message.author.tag}.\n`, error);
+		});
+
 });
 
 // Fire when users have their role updated.
