@@ -691,7 +691,7 @@ bot.on('guildMemberUpdate', async (oldMember, newMember) => {
 				channel => channel.name.toLowerCase() === "fb-normie-enclosure"
 			)
 			if (normieChannel) {
-				normieChannel.send(`Great contribution <@${oldMember.id}>.`);
+				normieChannel.send(`Congratulations for escaping the ape enclosure <@${oldMember.id}>. Take note everyone.`);
 			}
 		}
 	}
