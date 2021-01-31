@@ -295,8 +295,8 @@ bot.once('ready', async () => {
 			if (role) {
 				const users = await teambot.db.users.findAll({ where: {
 					createdAt: {
-						[Op.lte]: moment().tz('Australia/Sydney').subtract(7, 'days').tz('UTC').format(),
-						[Op.gte]: moment().tz('Australia/Sydney').subtract(8, 'days').tz('UTC').format(),
+						[Op.lte]: moment().tz('Australia/Sydney').subtract(1, 'days').tz('UTC').format(),
+						[Op.gte]: moment().tz('Australia/Sydney').subtract(2, 'days').tz('UTC').format(),
 					},
 				} });
 
@@ -654,13 +654,16 @@ bot.on('guildMemberAdd', async member => {
 	let botChannel = member.guild.channels.cache.find(
 		channel => channel.name.toLowerCase() === "trading-bot-channel"
 	)
+	let normieChannel = member.guild.channels.cache.find(
+		channel => channel.name.toLowerCase() === "fb-normie-enclosure"
+	)
 	dm.push(`Welcome new loser to ${server}. You are loser #${totalUsers} and very important to us.\n`);
 	dm.push(`Since you're new here, we thought it would be important to send you some information so you don't immediately make a fool of yourself.\n`);
 	dm.push(`As you probably have a reading age of 5, we will keep it simple so you don't get confused:`);
 	dm.push(`- Make sure you read the rules first before saying anything. These are found here: <#${rules.id}>`);
 	dm.push(`- Continue following the rules.`);
 	dm.push(`- There are no further steps.\n`);
-	dm.push(`If you show that you aren't a sperg you will get access to the other channels.\n`);
+	dm.push(`If you show that you aren't a sperg you will get access to the other channels. Please show your value by sending some semi-inelligent messages in <#${normieChannel.id}> to unlock everything.`\n`);
 	dm.push(`${state.botname} commands can be found by typing !commands in <#${botChannel.id}>.`);
 
 	return member.send(dm, { split: true })
