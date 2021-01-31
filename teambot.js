@@ -660,6 +660,7 @@ bot.on('guildMemberAdd', async member => {
 	dm.push(`- Make sure you read the rules first before saying anything. These are found here: <#${rules.id}>`);
 	dm.push(`- Continue following the rules.`);
 	dm.push(`- There are no further steps.\n`);
+	dm.push(`If you show that you aren't a sperg you will get access to the other channels.\n`);
 	dm.push(`${state.botname} commands can be found by typing !commands in <#${botChannel.id}>.`);
 
 	return member.send(dm, { split: true })
