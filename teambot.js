@@ -430,7 +430,7 @@ bot.on('message', async message => {
 
 		// For Debugging.
 		if (permissions.isAdmin(loadedUser.dataValues.permission) && commandName === 'join') {
-			bot.emit('guildMemberAdd', message.member);
+			return bot.emit('guildMemberAdd', message.member);
 		}
 
 		if (command && (command.permission & loadedUser.dataValues.permission) && channels.canCommandRun(command, message.channel.id)) {
