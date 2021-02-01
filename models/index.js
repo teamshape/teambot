@@ -38,8 +38,10 @@ db.Sequelize = Sequelize;
 // Add associations
 db.users.hasMany(db.holdings, { foreignKey: 'userId', sourceKey: 'user' });
 db.users.hasMany(db.log, { foreignKey: 'userId', sourceKey: 'user' });
+db.users.hasMany(db.chats, { foreignKey: 'user', sourceKey: 'user' });
 
 db.log.belongsTo(db.users);
 db.holdings.belongsTo(db.users);
+db.chats.belongsTo(db.users, { as: 'Chat', foreignKey: { name: 'user' }});
 
 module.exports = db;

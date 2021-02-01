@@ -310,6 +310,39 @@ bot.once('ready', async () => {
 	}, null, true, 'Australia/Sydney');
 	roleRemover.start();
 
+	// Once a week on a Sunday at midnight.
+	const surAddition = new CronJob('0 0 0 * * 0', async function() {
+		bot.guilds.cache.forEach(async function(g) {
+			const role = g.roles.cache.find(role => role.name === "Suspect Under Review");
+			if (role) {
+				const users = await teambot.db.users.findAll({
+					attributes: ['user', 'guild', 'createdAt'],
+					include: [
+						{
+							model: teambot.db.chats,
+							attributes: ['id', 'guild', 'user'],
+							required: false
+						},
+					],
+					where: {
+						createdAt: {
+							[Op.lte]: moment().tz('Australia/Sydney').subtract(60, 'days').tz('UTC').format(),
+							[Op.gte]: moment().tz('Australia/Sydney').subtract(90, 'days').tz('UTC').format(),
+						},
+						'$chats.id$': null,
+					},
+				});
+
+				users.forEach(async function(u) {
+					const id = u.dataValues.user;
+					const member = g.members.cache.get(id);
+					member.roles.add(role);
+				});
+			}
+		});
+	}, null, true, 'Australia/Sydney');
+	surAddition.start();
+
 	const asxGame = new CronJob('0 0 1 1 * *', async function() {
 		// Add cron job here to runs at 1am on the first day of every month.
 		// This will record the closing prices of all stocks for next month's game.
