@@ -693,6 +693,9 @@ bot.on('guildMemberUpdate', async (oldMember, newMember) => {
 			if (normieChannel) {
 				normieChannel.send(`Congratulations for escaping the ape enclosure <@${oldMember.id}>. Take note everyone.`);
 			}
+			let dm = [];
+			dm.push(`Congratulations for escaping the ape enclosure, you're now free to see and chat in all channels.`);
+			oldMember.send(dm, { split: true })
 		}
 	}
 	// If the role(s) are present on the new member object but are not on the old one (i.e role(s) were added)
