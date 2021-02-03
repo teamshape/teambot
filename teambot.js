@@ -5,7 +5,7 @@ const fs = require('fs');
 const got = require('got');
 const moment = require('moment-timezone');
 const { Client, Collection, Intents, MessageAttachment, MessageEmbed } = require('discord.js');
-const { token, allowedChannels, botChannel, avApiKey, timer, prefix, auditChannel } = require('./config/teambot.json');
+const { token, allowedChannels, botChannel, avApiKey, timer, prefix, auditChannel, client_id } = require('./config/teambot.json');
 const { CronJob } = require('cron');
 const { Sequelize, Op } = require('sequelize');
 const AsyncLock = require('async-lock');
@@ -718,17 +718,21 @@ bot.on('guildMemberUpdate', async (oldMember, newMember) => {
 	// If the role(s) are present on the old member object but no longer on the new one (i.e role(s) were removed)
 	const removedRoles = oldMember.roles.cache.filter(role => !newMember.roles.cache.has(role.id));
 	if (removedRoles.size > 0) {
+console.log(executor);
 		auditLine(`The role(s) ${removedRoles.map(r => r.name)} were removed from ${oldMember.displayName} by ${executor.tag}.`);
 		if (removedRoles.map(r => r.name).includes('FB Normie')) {
-			let normieChannel = oldMember.guild.channels.cache.find(
-				channel => channel.name.toLowerCase() === "fb-normie-enclosure"
-			)
-			if (normieChannel) {
-				normieChannel.send(`Congratulations for escaping the ape enclosure <@${oldMember.id}>. Take note everyone.`);
+console.log(log.id);
+			if (executor.id !== client_id) {
+				let normieChannel = oldMember.guild.channels.cache.find(
+					channel => channel.name.toLowerCase() === "fb-normie-enclosure"
+				)
+				if (normieChannel) {
+					normieChannel.send(`Congratulations for escaping the ape enclosure <@${oldMember.id}>. Take note everyone.`);
+				}
+				let dm = [];
+				dm.push(`Congratulations for escaping the ape enclosure, you're now free to see and chat in all channels.`);
+				oldMember.send(dm, { split: true })
 			}
-			let dm = [];
-			dm.push(`Congratulations for escaping the ape enclosure, you're now free to see and chat in all channels.`);
-			oldMember.send(dm, { split: true })
 		}
 	}
 	// If the role(s) are present on the new member object but are not on the old one (i.e role(s) were added)
