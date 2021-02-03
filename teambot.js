@@ -994,7 +994,7 @@ function goGetStock(message, match) {
 				{ name: 'Previous close', value: request.previous_close_price, inline: true },
 			)
 			.setTimestamp()
-			.setFooter('Found with ❤️ by TeamBot', 'https://i.imgur.com/zCl2dri.jpg');
+			.setFooter('Data delayed by 15m', 'https://i.imgur.com/zCl2dri.jpg');
 
 		return message.channel.send({ embed: stockEmbed });
 
