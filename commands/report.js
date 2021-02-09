@@ -11,9 +11,6 @@ module.exports = {
 	async execute(teambot, message) {
 
 		const reported = message.mentions.users.first();
-
-		console.log(reported);
-
 		try {
 			await teambot.db.reports.create({
 				guild: message.guild.id,

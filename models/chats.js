@@ -5,7 +5,7 @@ module.exports = function(sequelize, DataTypes) {
 		id: {
 			autoIncrement: true,
 			type: DataTypes.INTEGER,
-			allowNull: true,
+			allowNull: false,
 			primaryKey: true,
 		},
 		messageId: {
@@ -48,5 +48,10 @@ module.exports = function(sequelize, DataTypes) {
 	}, {
 		sequelize,
 		tableName: 'chats',
+		indexes: [
+			{ fields: ['guild', 'user'] },
+			{ fields: ['guild', 'channel'] },
+			{ fields: ['createdAt'] }
+		]
 	});
 };

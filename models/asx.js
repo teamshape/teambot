@@ -35,5 +35,9 @@ module.exports = function(sequelize, DataTypes) {
 	}, {
 		sequelize,
 		tableName: 'asx',
+		indexes: [
+			{ unique: true, fields: ['user', 'date'] },
+			{ unique: true, fields: ['ticker', 'date'] }
+		]
 	});
 };

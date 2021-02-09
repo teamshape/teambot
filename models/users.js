@@ -5,7 +5,7 @@ module.exports = function(sequelize, DataTypes) {
 		id: {
 			autoIncrement: true,
 			type: DataTypes.INTEGER,
-			allowNull: true,
+			allowNull: false,
 			primaryKey: true,
 		},
 		guild: {
@@ -44,5 +44,10 @@ module.exports = function(sequelize, DataTypes) {
 	}, {
 		sequelize,
 		tableName: 'users',
+		indexes: [
+			{ unique: true, fields: ['guild', 'user'] },
+			{ fields: ['dollars'] },
+			{ fields: ['createdAt'] }
+		]
 	});
 };
