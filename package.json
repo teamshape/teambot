@@ -30,6 +30,7 @@
     "interval-to-human": "^0.1.1",
     "moment": "^2.27.0",
     "moment-timezone": "^0.5.31",
+    "mysql2": "^2.2.5",
     "pluralize": "^8.0.0",
     "sequelize": "^5.21.12",
     "simple-git": "^2.12.0",

@@ -1,5 +1,7 @@
 # teambot
 
+## Preparation
+Copy config/config.json.example to config/config.json and replace appropriate values. The default configuration uses sqlite for dev and mysql for prod. These can be altered as needed.
 
 ## Installation
 ```
