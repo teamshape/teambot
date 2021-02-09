@@ -624,7 +624,7 @@ bot.on('guildMemberAdd', async member => {
 		},
 	} });
 
-	const welcomes = await teambot.db.welcomes.findOne({ order: Sequelize.literal('random()') });
+	const welcomes = await teambot.db.welcomes.findOne({ order: Sequelize.literal('rand()') });
 
 	// Set up the welcome canvas.
 	const canvas = createCanvas(700, 250);
@@ -911,7 +911,7 @@ function saySomething(line) {
 
 function randomLine() {
 	(async () => {
-		const botlines = await teambot.db.botlines.findOne({ order: Sequelize.literal('random()') });
+		const botlines = await teambot.db.botlines.findOne({ order: Sequelize.literal('rand()') });
 		sayInAllowedChannels(`${botlines.dataValues.botline}`);
 	})();
 }
