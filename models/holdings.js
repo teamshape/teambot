@@ -37,5 +37,6 @@ module.exports = function(sequelize, DataTypes) {
 	}, {
 		sequelize,
 		tableName: 'holdings',
+		indexes: [{ fields: ['userId'] }]
 	});
 };
