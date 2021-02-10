@@ -51,7 +51,8 @@ module.exports = function(sequelize, DataTypes) {
 		indexes: [
 			{ fields: ['guild', 'user'] },
 			{ fields: ['guild', 'channel'] },
-			{ fields: ['createdAt'] }
+			{ fields: ['createdAt'] },
+			{ fields: ['channel'] }
 		]
 	});
 };
