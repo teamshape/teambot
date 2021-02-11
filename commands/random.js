@@ -16,6 +16,6 @@ module.exports = {
 		
 		var stock = asxCodes[Math.floor(Math.random() * asxCodes.length)];
 
-		return message.reply(`You should buy some ${stock}.`);
+		return message.reply(`You could buy some ${stock} (DYOR, good luck to all bagholders).`);
 	},
 };
