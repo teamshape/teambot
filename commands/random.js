@@ -1,4 +1,4 @@
-const { ALL } = require('../util/channels');
+const { BOTCHANNEL } = require('../util/channels');
 const permissions = require('../util/permissions');
 
 module.exports = {
@@ -7,7 +7,7 @@ module.exports = {
 	args: false,
 	usage: 'random',
 	permission: permissions.ADMINISTRATOR | permissions.OPERATOR | permissions.PREMIUM | permissions.STANDARD | permissions.PLEBIAN | permissions.DOUBLEPLEBIAN,
-	channel: ALL,
+	channel: BOTCHANNEL,
 	async execute(teambot, message) {
 
 		const asxCodes = [
