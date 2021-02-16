@@ -401,6 +401,13 @@ bot.on('message', async message => {
 		}
 	}
 
+	if (message.author.id === '244697087298633729' && state.dvkemoji === 'on') {
+		const emoji = message.guild.emojis.cache.find(emoji => emoji.name === 'intredasting');
+		if (emoji) {
+			message.react(emoji);
+		}
+	}
+
 	if (message.content.toLowerCase().includes('brother') && state.brotheremoji === 'on') {
 		const emoji = message.guild.emojis.cache.find(emoji => emoji.name === 'Brother');
 		if (emoji) {
