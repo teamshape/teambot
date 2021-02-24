@@ -52,8 +52,16 @@ module.exports = {
 			catch (e) {
 				console.log(e);
 			}
-			message.channel.send(`<@${message.member.user.id}> :gun:`);
-			return message.member.kick('BANG!');
+			const fbNormie = message.member.guild.roles.cache.find(role => role.name === "FB Normie");
+			const rrLoser = message.member.guild.roles.cache.find(role => role.name === "Shit at russian roulette");
+			if (fbNormie) {
+				message.member.roles.add(fbNormie);
+			}
+			if (rrLoser) {
+				message.member.roles.add(rrLoser);
+			}
+			// return message.member.kick('BANG!');
+			return message.channel.send(`<@${message.member.user.id}> :gun:`);
 		}
 		else {
 			chance -= 1;
