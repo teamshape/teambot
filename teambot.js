@@ -582,7 +582,7 @@ bot.on('message', async message => {
 	}
 
 	// Fall through to matching stocks.
-	const regex = /[!|$]\w+/gm;
+	const regex = /[$]\w+/gm;
 	let m;
 
 	while ((m = regex.exec(message.content)) !== null) {
