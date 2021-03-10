@@ -725,10 +725,8 @@ bot.on('guildMemberUpdate', async (oldMember, newMember) => {
 	// If the role(s) are present on the old member object but no longer on the new one (i.e role(s) were removed)
 	const removedRoles = oldMember.roles.cache.filter(role => !newMember.roles.cache.has(role.id));
 	if (removedRoles.size > 0) {
-console.log(executor);
 		auditLine(`The role(s) ${removedRoles.map(r => r.name)} were removed from ${oldMember.displayName} by ${executor.tag}.`);
 		if (removedRoles.map(r => r.name).includes('FB Normie')) {
-console.log(log.id);
 			if (executor.id !== client_id) {
 				let normieChannel = oldMember.guild.channels.cache.find(
 					channel => channel.name.toLowerCase() === "fb-normie-enclosure"
