@@ -695,7 +695,7 @@ bot.on('guildMemberAdd', async member => {
 		channel => channel.name.toLowerCase() === "trading-bot-channel"
 	)
 	let normieChannel = member.guild.channels.cache.find(
-		channel => channel.name.toLowerCase() === "fb-normie-enclosure"
+		channel => channel.name.toLowerCase() === "ape-enclosure"
 	)
 	dm.push(`Welcome new loser to ${server}. You are loser #${totalUsers} and very important to us.\n`);
 	dm.push(`Since you're new here, we thought it would be important to send you some information so you don't immediately make a fool of yourself.\n`);
@@ -729,7 +729,7 @@ bot.on('guildMemberUpdate', async (oldMember, newMember) => {
 		if (removedRoles.map(r => r.name).includes('FB Normie')) {
 			if (executor.id !== client_id) {
 				let normieChannel = oldMember.guild.channels.cache.find(
-					channel => channel.name.toLowerCase() === "fb-normie-enclosure"
+					channel => channel.name.toLowerCase() === "ape-enclosure"
 				)
 				if (normieChannel) {
 					normieChannel.send(`Congratulations for escaping the ape enclosure <@${oldMember.id}>. Take note everyone.`);
