@@ -401,7 +401,7 @@ bot.on('message', async message => {
 		}
 	}
 
-	if (message.author.id === '244697087298633729' && state.dvkemoji === 'on') {
+	if (message.author.id === '739357798198149252' && state.dvkemoji === 'on') {
 		const emoji = message.guild.emojis.cache.find(emoji => emoji.name === 'intredasting');
 		if (emoji) {
 			message.react(emoji);
