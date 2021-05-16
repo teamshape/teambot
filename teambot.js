@@ -383,16 +383,69 @@ bot.once('ready', async () => {
 
 });
 
-bot.on('messageReactionAdd', (reaction) => {
+bot.on('messageReactionAdd', async (reaction) => {
 	if (reaction.emoji.name === '👍' && state.agreeablebot === 'on') {
 		reaction.message.react('👍');
 	}
 	if (reaction.emoji.name === '👎' && state.disagreeablebot === 'on') {
 		reaction.message.react('👎');
 	}
+
+	if (bot.emojis.cache.get(reaction.emoji.id)) {
+		let reactResponses = [];
+		try {
+			reactResponses = await teambot.db.responses.findAll({ where: {
+				guild: reaction.message.guild.id,
+				react: true,
+				target: reaction.emoji.id
+			} });
+		}
+		catch (e) {
+			console.log(e);
+		}
+
+		reactResponses.forEach(async function(t) {
+			reaction.message.react(t.dataValues.response);
+		});
+
+	}
+
 });
 
 bot.on('message', async message => {
+
+    let userResponses = [];
+	try {
+		userResponses = await teambot.db.responses.findAll({ where: {
+			guild: message.guild.id,
+			target: message.author.id,
+			user: true
+		} });
+	}
+	catch (e) {
+		console.log(e);
+	}
+
+	userResponses.forEach(async function(t) {
+		message.react(t.dataValues.response);
+	});
+
+	let wordResponses = [];
+	try {
+		wordResponses = await teambot.db.responses.findAll({ where: {
+			guild: message.guild.id,
+			word: true
+		} });
+	}
+	catch (e) {
+		console.log(e);
+	}
+
+	wordResponses.forEach(async function(w) {
+		if (message.content.toLowerCase().includes(w.dataValues.target)) {
+			message.react(w.dataValues.response);
+		}
+	});
 
 	if (message.author.id === '132048431848882176' && state.grackemoji === 'on') {
 		const emoji = message.guild.emojis.cache.find(emoji => emoji.name === 'Grack');
@@ -401,33 +454,33 @@ bot.on('message', async message => {
 		}
 	}
 
-	if (message.author.id === '739357798198149252' && state.dvkemoji === 'on') {
-		const emoji = message.guild.emojis.cache.find(emoji => emoji.name === 'intredasting');
-		if (emoji) {
-			message.react(emoji);
-		}
-	}
+	// if (message.author.id === '739357798198149252' && state.dvkemoji === 'on') {
+	// 	const emoji = message.guild.emojis.cache.find(emoji => emoji.name === 'intredasting');
+	// 	if (emoji) {
+	// 		message.react(emoji);
+	// 	}
+	// }
 
-	if (message.content.toLowerCase().includes('brother') && state.brotheremoji === 'on') {
-		const emoji = message.guild.emojis.cache.find(emoji => emoji.name === 'Brother');
-		if (emoji) {
-			message.react(emoji);
-		}
-	}
+	// if (message.content.toLowerCase().includes('brother') && state.brotheremoji === 'on') {
+	// 	const emoji = message.guild.emojis.cache.find(emoji => emoji.name === 'Brother');
+	// 	if (emoji) {
+	// 		message.react(emoji);
+	// 	}
+	// }
 
-	if (message.content.toLowerCase().includes('monster') && state.monsteremoji === 'on') {
-		const emoji = message.guild.emojis.cache.find(emoji => emoji.name === 'monsterposition');
-		if (emoji) {
-			message.react(emoji);
-		}
-	}
+	// if (message.content.toLowerCase().includes('monster') && state.monsteremoji === 'on') {
+	// 	const emoji = message.guild.emojis.cache.find(emoji => emoji.name === 'monsterposition');
+	// 	if (emoji) {
+	// 		message.react(emoji);
+	// 	}
+	// }
 
-	if (message.content.toLowerCase().includes('twitter.com/bhagdip143') && state.bhagdipemoji === 'on') {
-		const emoji = message.guild.emojis.cache.find(emoji => emoji.name === 'baghdeep');
-		if (emoji) {
-			message.react(emoji);
-		}
-	}
+	// if (message.content.toLowerCase().includes('twitter.com/bhagdip143') && state.bhagdipemoji === 'on') {
+	// 	const emoji = message.guild.emojis.cache.find(emoji => emoji.name === 'baghdeep');
+	// 	if (emoji) {
+	// 		message.react(emoji);
+	// 	}
+	// }
 
 	// Log chat but protect privacy by entering a '1' into the database for the chatline rather than content.
 	try {
