@@ -541,7 +541,7 @@ bot.on('message', async message => {
 				// Inject/update the bot variable before the command is executed.
 				teambot.bot = bot;
 				teambot.user = loadedUser;
-                                teambot.state = state;
+				teambot.state = state;
 				return command.execute(teambot, message, args);
 			}
 			catch (error) {

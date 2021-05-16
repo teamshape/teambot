@@ -22,11 +22,11 @@ module.exports = {
 			return message.author.send(data, { split: true })
 				.then(() => {
 					if (message.channel.type === 'dm') return;
-					message.reply('I\'ve sent you a DM with all my responses!');
+					return message.reply('I\'ve sent you a DM with all my responses!');
 				})
 				.catch(error => {
 					console.error(`Could not send help DM to ${message.author.tag}.\n`, error);
-					message.reply('it seems like I can\'t DM you! Do you have DMs disabled?');
+					return message.reply('it seems like I can\'t DM you! Do you have DMs disabled?');
 				});
 		}
 		if (args[0] === 'delete') {
@@ -35,7 +35,7 @@ module.exports = {
 					id: args[1],
 				},
 			});
-			message.reply(`Response #${args[1]} has been deleted.`);
+			return message.reply(`Response #${args[1]} has been deleted.`);
 		}
 
 		const parsedEmoji = Discord.Util.parseEmoji(args[2]);
