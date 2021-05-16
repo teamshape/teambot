@@ -447,41 +447,6 @@ bot.on('message', async message => {
 		}
 	});
 
-	if (message.author.id === '132048431848882176' && state.grackemoji === 'on') {
-		const emoji = message.guild.emojis.cache.find(emoji => emoji.name === 'Grack');
-		if (emoji) {
-			message.react(emoji);
-		}
-	}
-
-	// if (message.author.id === '739357798198149252' && state.dvkemoji === 'on') {
-	// 	const emoji = message.guild.emojis.cache.find(emoji => emoji.name === 'intredasting');
-	// 	if (emoji) {
-	// 		message.react(emoji);
-	// 	}
-	// }
-
-	// if (message.content.toLowerCase().includes('brother') && state.brotheremoji === 'on') {
-	// 	const emoji = message.guild.emojis.cache.find(emoji => emoji.name === 'Brother');
-	// 	if (emoji) {
-	// 		message.react(emoji);
-	// 	}
-	// }
-
-	// if (message.content.toLowerCase().includes('monster') && state.monsteremoji === 'on') {
-	// 	const emoji = message.guild.emojis.cache.find(emoji => emoji.name === 'monsterposition');
-	// 	if (emoji) {
-	// 		message.react(emoji);
-	// 	}
-	// }
-
-	// if (message.content.toLowerCase().includes('twitter.com/bhagdip143') && state.bhagdipemoji === 'on') {
-	// 	const emoji = message.guild.emojis.cache.find(emoji => emoji.name === 'baghdeep');
-	// 	if (emoji) {
-	// 		message.react(emoji);
-	// 	}
-	// }
-
 	// Log chat but protect privacy by entering a '1' into the database for the chatline rather than content.
 	try {
 		if (!message.guild) return;
