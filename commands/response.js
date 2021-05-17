@@ -22,14 +22,14 @@ module.exports = {
 				const reactionEmoji = teambot.bot.emojis.cache.get(r.dataValues.response);
 
 				if (r.dataValues.user) {
-					data.push(`${r.dataValues.id}: <@${r.dataValues.target}> - <:${reactionEmoji.name}:${reactionEmoji.id}>`);
+					data.push(`user: ${r.dataValues.id}: <@${r.dataValues.target}> - <:${reactionEmoji.name}:${reactionEmoji.id}>`);
 				}
 				else if (r.dataValues.react) {
 					const targetEmoji = teambot.bot.emojis.cache.get(r.dataValues.target);
-					data.push(`${r.dataValues.id}: <:${targetEmoji.name}:${targetEmoji.id}> - <:${reactionEmoji.name}:${reactionEmoji.id}>`);
+					data.push(`react: ${r.dataValues.id}: <:${targetEmoji.name}:${targetEmoji.id}> - <:${reactionEmoji.name}:${reactionEmoji.id}>`);
 				}
 				else {
-					data.push(`${r.dataValues.id}: ${r.dataValues.target} - <:${reactionEmoji.name}:${reactionEmoji.id}>`);
+					data.push(`word: ${r.dataValues.id}: ${r.dataValues.target} - <:${reactionEmoji.name}:${reactionEmoji.id}>`);
 				}
 			});
 
