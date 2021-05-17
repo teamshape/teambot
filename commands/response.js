@@ -17,7 +17,21 @@ module.exports = {
 			const responses = await teambot.db.responses.findAll();
 			const data = [];
 			data.push('Here\'s a list of all responses:');
-			data.push(responses.map(response => `${response.id}: ${response.target} - ${response.response}`).join('\n'));
+
+			responses.forEach(r => {
+				const reactionEmoji = teambot.bot.emojis.cache.get(r.dataValues.response);
+
+				if (r.dataValues.user) {
+					data.push(`${r.dataValues.id}: <@${r.dataValues.target}> - <:${reactionEmoji.name}:${reactionEmoji.id}>`);
+				}
+				else if (r.dataValues.react) {
+					const targetEmoji = teambot.bot.emojis.cache.get(r.dataValues.target);
+					data.push(`${r.dataValues.id}: <:${targetEmoji.name}:${targetEmoji.id}> - <:${reactionEmoji.name}:${reactionEmoji.id}>`);
+				}
+				else {
+					data.push(`${r.dataValues.id}: ${r.dataValues.target} - <:${reactionEmoji.name}:${reactionEmoji.id}>`);
+				}
+			});
 
 			return message.author.send(data, { split: true })
 				.then(() => {

@@ -414,6 +414,25 @@ bot.on('messageReactionAdd', async (reaction) => {
 
 bot.on('message', async message => {
 
+	// Log chat but protect privacy by entering a '1' into the database for the chatline rather than content.
+	try {
+		if (!message.guild) return;
+		teambot.db.chats.create({
+			guild: message.guild.id,
+			channel: message.channel.id,
+			messageId: message.id,
+			deleted: message.deleted,
+			user: message.author.id,
+			chatline: 1,
+		});
+	}
+	catch (error) {
+		console.log(error);
+	}
+
+	// Only for specific bot channels after this, remove listening from DMs, and prevent actions if the bot spoke.
+	if (message.channel.type === 'dm' || message.author.bot) return;
+
     let userResponses = [];
 	try {
 		userResponses = await teambot.db.responses.findAll({ where: {
@@ -446,25 +465,6 @@ bot.on('message', async message => {
 			message.react(w.dataValues.response);
 		}
 	});
-
-	// Log chat but protect privacy by entering a '1' into the database for the chatline rather than content.
-	try {
-		if (!message.guild) return;
-		teambot.db.chats.create({
-			guild: message.guild.id,
-			channel: message.channel.id,
-			messageId: message.id,
-			deleted: message.deleted,
-			user: message.author.id,
-			chatline: 1,
-		});
-	}
-	catch (error) {
-		console.log(error);
-	}
-
-	// Only for specific bot channels after this, remove listening from DMs, and prevent actions if the bot spoke.
-	if (message.channel.type === 'dm' || message.author.bot) return;
 
 	// Check messages start with prefix (defaults to !).
 	if (message.content.startsWith(prefix)) {
