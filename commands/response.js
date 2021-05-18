@@ -2,7 +2,6 @@ const { ALL } = require('../util/channels');
 const { OPERATOR, ADMINISTRATOR } = require('../util/permissions');
 const Discord = require('discord.js');
 const emojiRegex = require('emoji-regex');
-const regex = emojiRegex();
 
 module.exports = {
 	name: 'response',
@@ -26,6 +25,7 @@ module.exports = {
 				let dbEmoji = '';
 				if (!reactionEmoji) {
 					// Is this a standard Unicode emoji?
+					const regex = emojiRegex();
 					let match;
 					match = regex.exec(r.dataValues.response);
 					dbEmoji = match[0];
@@ -43,6 +43,7 @@ module.exports = {
 					let dbTargetEmoji = '';
 					if (!targetEmoji) {
 						// Is this a standard Unicode emoji?
+						const regex = emojiRegex();
 						let match;
 						match = regex.exec(r.dataValues.target);	
 						dbTargetEmoji = match[0];
@@ -82,6 +83,7 @@ module.exports = {
 		if (!reactionEmoji) {
 
 			// Is this a standard Unicode emoji?
+			const regex = emojiRegex();
 			let match;
 			match = regex.exec(args[2]);
 			if (!match) {
@@ -153,6 +155,7 @@ module.exports = {
 			if (!reactReactionEmoji) {
 
 				// Is this a standard Unicode emoji?
+				const regex = emojiRegex();
 				let match;
 				match = regex.exec(args[1]);
 				if (!match) {
