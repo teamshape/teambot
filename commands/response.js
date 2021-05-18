@@ -1,6 +1,8 @@
 const { ALL } = require('../util/channels');
 const { OPERATOR, ADMINISTRATOR } = require('../util/permissions');
 const Discord = require('discord.js');
+const emojiRegex = require('emoji-regex');
+const regex = emojiRegex();
 
 module.exports = {
 	name: 'response',
@@ -21,15 +23,37 @@ module.exports = {
 			responses.forEach(r => {
 				const reactionEmoji = teambot.bot.emojis.cache.get(r.dataValues.response);
 
+				let dbEmoji = '';
+				if (!reactionEmoji) {
+					// Is this a standard Unicode emoji?
+					let match;
+					match = regex.exec(r.dataValues.response);
+					dbEmoji = match[0];
+				}
+				else {
+					dbEmoji = `<:${reactionEmoji.name}:${reactionEmoji.id}>`;
+				}
+
 				if (r.dataValues.user) {
-					data.push(`user: ${r.dataValues.id}: <@${r.dataValues.target}> - <:${reactionEmoji.name}:${reactionEmoji.id}>`);
+					data.push(`user: ${r.dataValues.id}: <@${r.dataValues.target}> - ${dbEmoji}`);
 				}
 				else if (r.dataValues.react) {
 					const targetEmoji = teambot.bot.emojis.cache.get(r.dataValues.target);
-					data.push(`react: ${r.dataValues.id}: <:${targetEmoji.name}:${targetEmoji.id}> - <:${reactionEmoji.name}:${reactionEmoji.id}>`);
+
+					let dbTargetEmoji = '';
+					if (!targetEmoji) {
+						// Is this a standard Unicode emoji?
+						let match;
+						match = regex.exec(r.dataValues.target);	
+						dbTargetEmoji = match[0];
+					}
+					else {
+						dbTargetEmoji = `<:${targetEmoji.name}:${targetEmoji.id}>`;
+					}
+					data.push(`react: ${r.dataValues.id}: ${dbTargetEmoji} - ${dbEmoji}`);
 				}
 				else {
-					data.push(`word: ${r.dataValues.id}: ${r.dataValues.target} - <:${reactionEmoji.name}:${reactionEmoji.id}>`);
+					data.push(`word: ${r.dataValues.id}: ${r.dataValues.target} - ${dbEmoji}`);
 				}
 			});
 
@@ -54,8 +78,21 @@ module.exports = {
 
 		const parsedEmoji = Discord.Util.parseEmoji(args[2]);
 		const reactionEmoji = teambot.bot.emojis.cache.get(parsedEmoji.id);
+		let dbEmoji = '';
 		if (!reactionEmoji) {
-			return message.reply('Emoji not available on this server.');
+
+			// Is this a standard Unicode emoji?
+			let match;
+			match = regex.exec(args[2]);
+			if (!match) {
+				// Nope, not on the server and not Unicode.
+				return message.reply('Emoji not available on this server.');
+			}
+
+			dbEmoji = match[0];
+		}
+		else {
+			dbEmoji = reactionEmoji.id;
 		}
 
 		if (args[0] === 'user') {
@@ -77,7 +114,7 @@ module.exports = {
 					author: message.author.id,
 					user: true,
 					target: args[1].slice(3, -1).trim(),
-					response: reactionEmoji.id,
+					response: dbEmoji,
 				});
 				return message.reply('Response added.');
 			}
@@ -97,7 +134,7 @@ module.exports = {
 					author: message.author.id,
 					word: true,
 					target: args[1],
-					response: reactionEmoji.id,
+					response: dbEmoji,
 				});
 				return message.reply('Response added.');
 			}
@@ -112,17 +149,31 @@ module.exports = {
 		if (args[0] === 'react') {
 			const reactParsedEmoji = Discord.Util.parseEmoji(args[1]);
 			const reactReactionEmoji = teambot.bot.emojis.cache.get(reactParsedEmoji.id);
+			let dbReactionEmoji = '';
 			if (!reactReactionEmoji) {
-				return message.reply('Emoji not available on this server.');
+
+				// Is this a standard Unicode emoji?
+				let match;
+				match = regex.exec(args[2]);
+				if (!match) {
+					// Nope, not on the server and not Unicode.
+					return message.reply('Emoji not available on this server.');
+				}
+	
+				dbReactionEmoji = match[0];
 			}
+			else {
+				dbReactionEmoji = reactParsedEmoji.id;
+			}
+
 			try {
 				await teambot.db.responses.create({
 					guild: message.guild.id,
 					channel: message.channel.id,
 					author: message.author.id,
 					react: true,
-					target: reactReactionEmoji.id,
-					response: reactionEmoji.id,
+					target: dbReactionEmoji,
+					response: dbEmoji,
 				});
 				return message.reply('Response added.');
 			}
