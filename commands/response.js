@@ -154,7 +154,7 @@ module.exports = {
 
 				// Is this a standard Unicode emoji?
 				let match;
-				match = regex.exec(args[2]);
+				match = regex.exec(args[1]);
 				if (!match) {
 					// Nope, not on the server and not Unicode.
 					return message.reply('Emoji not available on this server.');
