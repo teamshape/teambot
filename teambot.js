@@ -384,13 +384,6 @@ bot.once('ready', async () => {
 });
 
 bot.on('messageReactionAdd', async (reaction) => {
-	if (reaction.emoji.name === '👍' && state.agreeablebot === 'on') {
-		reaction.message.react('👍');
-	}
-	if (reaction.emoji.name === '👎' && state.disagreeablebot === 'on') {
-		reaction.message.react('👎');
-	}
-
 	if (bot.emojis.cache.get(reaction.emoji.id)) {
 		let reactResponses = [];
 		try {
@@ -461,7 +454,7 @@ bot.on('message', async message => {
 	}
 
 	wordResponses.forEach(async function(w) {
-		if (message.content.toLowerCase().includes(w.dataValues.target)) {
+		if (message.content.toLowerCase().includes(w.dataValues.target.toLowerCase())) {
 			message.react(w.dataValues.response);
 		}
 	});
