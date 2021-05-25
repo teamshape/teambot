@@ -5,9 +5,9 @@ const emojiRegex = require('emoji-regex');
 
 module.exports = {
 	name: 'response',
-	description: 'Handles response management',
+	description: 'Handles response management. Word responds when the chatline matches, user responds when the user says something, react responds when a reaction is used.',
 	args: true,
-	usage: 'response <type> <target> <reaction>',
+	usage: '<word|user|react> <target> <reaction>',
 	permission: ADMINISTRATOR | OPERATOR,
 	channel: ALL,
 	async execute(teambot, message, args) {
