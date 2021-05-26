@@ -824,29 +824,13 @@ bot.on('guildBanRemove', async (guild, user) => {
 	}
 });
 
-// Fires when messages are deleted - either by the user or by another person.
-// bot.on('messageDelete', async message => {
-// Uncomment these lines to audit message deletions.
-// if (!message.guild) return;
-// const log = await auditLookup('MESSAGE_DELETE', message.guild);
+bot.on('messageDelete', async message => {
+	// Ignore direct messages
+	if (!message.guild) return;
 
-// if (!log) return auditLine(`A message by ${message.author.tag} in #${message.channel.name} was deleted, but no relevant audit logs were found. The message was "${message.content}"`);
-// const { executor, target } = log;
-
-// if (target.id === message.author.id) {
-// 	auditLine(`A message by ${message.author.tag} in #${message.channel.name} was deleted by ${executor.tag}. The message was "${message.content}"`);
-// }
-// else {
-// 	auditLine(`A message by ${message.author.tag} in #${message.channel.name} was deleted by themselves. The message was "${message.content}"`);
-// }
-
-// try {
-// 	await teambot.db.chats.update({ deleted: true }, { where: { messageId: message.id } });
-// }
-// catch (error) {
-// 	console.log(error);
-// }
-// });
+	// Update chats to show the message was deleted.
+	teambot.db.chats.update({ deleted: true }, { where: { messageId: message.id } });
+});
 
 // Fires when a user's presence changes e.g. status change, music change etc.
 // This function can be removed when we reach parity with what's in the UserDB.
