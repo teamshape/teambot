@@ -14,6 +14,8 @@ module.exports = {
 		try {
 			await teambot.db.reports.create({
 				guild: message.guild.id,
+				channel: message.channel.id,
+				message: message.content,
 				reporter: message.author.id,
 				reported: reported.id,
 			});

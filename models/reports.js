@@ -16,6 +16,10 @@ module.exports = function(sequelize, DataTypes) {
 			type: DataTypes.STRING(255),
 			allowNull: true,
 		},
+		message: {
+			type: DataTypes.STRING(1000),
+			allowNull: true,
+		},
 		reporter: {
 			type: DataTypes.STRING(255),
 			allowNull: true,
