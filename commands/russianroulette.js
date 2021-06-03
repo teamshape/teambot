@@ -1,10 +1,10 @@
 const { BOTCHANNEL } = require('../util/channels');
-const { ADMINISTRATOR, OPERATOR, PREMIUM, STANDARD } = require('../util/permissions');
+const { ADMINISTRATOR, OPERATOR, TRUSTED, PREMIUM, STANDARD } = require('../util/permissions');
 module.exports = {
 	name: 'russianroulette',
 	aliases: ['rr'],
 	description: 'Plays with fire.',
-	permission: ADMINISTRATOR | OPERATOR | PREMIUM | STANDARD,
+	permission: ADMINISTRATOR | OPERATOR | TRUSTED | PREMIUM | STANDARD,
 	channel: BOTCHANNEL,
 	async execute(teambot, message) {
 

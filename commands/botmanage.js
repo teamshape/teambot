@@ -1,5 +1,5 @@
 const { ALL } = require('../util/channels');
-const { ADMINISTRATOR, OPERATOR, PREMIUM } = require('../util/permissions');
+const { ADMINISTRATOR, OPERATOR, TRUSTED } = require('../util/permissions');
 
 module.exports = {
 	name: 'botmanage',
@@ -7,7 +7,7 @@ module.exports = {
 	description: 'Handles bot management',
 	args: true,
 	usage: 'addwelcome <welcome> | getwelcomes | deletewelcome <id> | addbotline <botline> | getbotlines | deletebotline <id>',
-	permission: ADMINISTRATOR | OPERATOR | PREMIUM,
+	permission: ADMINISTRATOR | OPERATOR | TRUSTED,
 	channel: ALL,
 	async execute(teambot, message, args) {
 

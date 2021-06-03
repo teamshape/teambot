@@ -1,4 +1,4 @@
-const { ADMINISTRATOR, OPERATOR, PREMIUM, STANDARD } = require('../util/permissions');
+const { ADMINISTRATOR, OPERATOR, TRUSTED, PREMIUM, STANDARD } = require('../util/permissions');
 const moment = require('moment-timezone');
 
 module.exports = {
@@ -7,7 +7,7 @@ module.exports = {
 	description: 'Provides a stock market game. One entry per person per month with all entries locked on the last day of the month prior.',
 	args: true,
 	usage: 'add <ticker> | remove | list <current|next>',
-	permission: ADMINISTRATOR | OPERATOR | PREMIUM | STANDARD,
+	permission: ADMINISTRATOR | OPERATOR | TRUSTED | PREMIUM | STANDARD,
 	async execute(teambot, message, args) {
 
 		// Load user sending the command and user being acted upon.

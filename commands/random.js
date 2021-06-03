@@ -1,12 +1,12 @@
 const { BOTCHANNEL } = require('../util/channels');
-const permissions = require('../util/permissions');
+const { ADMINISTRATOR, OPERATOR, TRUSTED, PREMIUM, STANDARD, PLEBIAN } = require('../util/permissions');
 
 module.exports = {
 	name: 'random',
 	description: 'Picks a random stock to invest in',
 	args: false,
 	usage: 'random',
-	permission: permissions.ADMINISTRATOR | permissions.OPERATOR | permissions.PREMIUM | permissions.STANDARD | permissions.PLEBIAN | permissions.DOUBLEPLEBIAN,
+	permission: ADMINISTRATOR | OPERATOR | TRUSTED | PREMIUM | STANDARD | PLEBIAN,
 	channel: BOTCHANNEL,
 	async execute(teambot, message) {
 

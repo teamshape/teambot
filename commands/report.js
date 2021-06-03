@@ -1,12 +1,12 @@
 const { ALL } = require('../util/channels');
-const { ADMINISTRATOR, OPERATOR } = require('../util/permissions');
+const { ADMINISTRATOR, OPERATOR, TRUSTED, PREMIUM } = require('../util/permissions');
 
 module.exports = {
 	name: 'report',
 	description: 'Reports users for rule breaking',
 	args: true,
 	usage: 'report <user>',
-	permission: ADMINISTRATOR | OPERATOR,
+	permission: ADMINISTRATOR | OPERATOR | TRUSTED | PREMIUM,
 	channel: ALL,
 	async execute(teambot, message) {
 

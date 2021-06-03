@@ -1,4 +1,4 @@
-const { ADMINISTRATOR, OPERATOR, PREMIUM, STANDARD } = require('../util/permissions');
+const { ADMINISTRATOR, OPERATOR, TRUSTED, PREMIUM, STANDARD } = require('../util/permissions');
 const moment = require('moment-timezone');
 const { BOTCHANNEL } = require('../util/channels');
 
@@ -7,7 +7,7 @@ module.exports = {
 	description: 'Shows time and date information (usually for debugging timezones).',
 	args: false,
 	usage: 'time',
-	permission: ADMINISTRATOR | OPERATOR | PREMIUM | STANDARD,
+	permission: ADMINISTRATOR | OPERATOR | TRUSTED | PREMIUM | STANDARD,
 	channel: BOTCHANNEL,
 	async execute(teambot, message, args) {
 

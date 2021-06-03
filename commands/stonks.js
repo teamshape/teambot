@@ -1,4 +1,4 @@
-const { ADMINISTRATOR, OPERATOR, PREMIUM, STANDARD } = require('../util/permissions');
+const { ADMINISTRATOR, OPERATOR, TRUSTED, PREMIUM, STANDARD } = require('../util/permissions');
 const got = require('got');
 const { Op } = require('sequelize');
 const moment = require('moment-timezone');
@@ -10,7 +10,7 @@ module.exports = {
 	description: 'Provides a stock market game. Buy and sell your stocks on paper, but in Discord.',
 	args: true,
 	usage: 'buy <ticker> [<amount>|max] | sell <ticker> <amount> | holdings | scores (admins only) | liquidate',
-	permission: ADMINISTRATOR | OPERATOR | PREMIUM | STANDARD,
+	permission: ADMINISTRATOR | OPERATOR | TRUSTED | PREMIUM | STANDARD,
 	channel: BOTCHANNEL,
 	async execute(teambot, message, args) {
 

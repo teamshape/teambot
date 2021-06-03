@@ -1,13 +1,13 @@
 const got = require('got');
 const { ALL, BOTCHANNEL } = require('../util/channels');
-const { ADMINISTRATOR, OPERATOR, PREMIUM, STANDARD } = require('../util/permissions');
+const { ADMINISTRATOR, OPERATOR, TRUSTED, PREMIUM, STANDARD } = require('../util/permissions');
 
 module.exports = {
 	name: 'alert',
 	description: 'Sets a price alert for rising and falling stocks on the ASX.',
 	args: true,
 	usage: '<stock> <operator> <price>',
-	permission: ADMINISTRATOR | OPERATOR | PREMIUM | STANDARD,
+	permission: ADMINISTRATOR | OPERATOR | TRUSTED | PREMIUM | STANDARD,
 	channel: BOTCHANNEL,
 	async execute(teambot, message, args) {
 		const stock = args[0];

@@ -1,14 +1,14 @@
 const dateparser = require('dateparser');
 const moment = require('moment-timezone');
 const { ALL } = require('../util/channels');
-const { ADMINISTRATOR, OPERATOR, PREMIUM } = require('../util/permissions');
+const { ADMINISTRATOR, OPERATOR, TRUSTED } = require('../util/permissions');
 
 module.exports = {
 	name: 'kick',
 	description: 'Handles kicks for users',
 	args: true,
 	usage: '<@user> [Reason]',
-	permission: ADMINISTRATOR | OPERATOR,
+	permission: ADMINISTRATOR | OPERATOR | TRUSTED,
 	channel: ALL,
 	async execute(teambot, message, args) {
 

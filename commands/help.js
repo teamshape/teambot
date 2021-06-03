@@ -1,14 +1,14 @@
 const { prefix } = require('../config/teambot.json');
 const channels = require('../util/channels');
 
-const { ADMINISTRATOR, OPERATOR, PREMIUM, STANDARD, PLEBIAN, DOUBLEPLEBIAN } = require('../util/permissions');
+const { ADMINISTRATOR, OPERATOR, TRUSTED, PREMIUM, STANDARD, PLEBIAN } = require('../util/permissions');
 module.exports = {
 	name: 'help',
 	description: 'List all of my commands or info about a specific command.',
 	aliases: ['commands'],
 	usage: '[command name]',
 	cooldown: 5,
-	permission: ADMINISTRATOR | OPERATOR | PREMIUM | STANDARD | PLEBIAN | DOUBLEPLEBIAN,
+	permission: ADMINISTRATOR | OPERATOR | TRUSTED | PREMIUM | STANDARD | PLEBIAN,
 	channel: channels.BOTCHANNEL,
 	execute(teambot, message, args) {
 		const data = [];

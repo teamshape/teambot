@@ -1,5 +1,5 @@
 const { ALL } = require('../util/channels');
-const { OPERATOR, ADMINISTRATOR } = require('../util/permissions');
+const { ADMINISTRATOR, OPERATOR, TRUSTED } = require('../util/permissions');
 const Discord = require('discord.js');
 const emojiRegex = require('emoji-regex');
 
@@ -8,7 +8,7 @@ module.exports = {
 	description: 'Handles response management. Word responds when the chatline matches, user responds when the user says something, react responds when a reaction is used.',
 	args: true,
 	usage: '<word|user|react> <target> <reaction>',
-	permission: ADMINISTRATOR | OPERATOR,
+	permission: ADMINISTRATOR | OPERATOR | TRUSTED,
 	channel: ALL,
 	async execute(teambot, message, args) {
 

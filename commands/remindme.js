@@ -1,6 +1,6 @@
 const dateparser = require('dateparser');
 const { ALL } = require('../util/channels');
-const { ADMINISTRATOR, OPERATOR, PREMIUM, STANDARD } = require('../util/permissions');
+const { ADMINISTRATOR, OPERATOR, TRUSTED, PREMIUM, STANDARD } = require('../util/permissions');
 
 module.exports = {
 	name: 'remindme',
@@ -8,7 +8,7 @@ module.exports = {
 	description: 'Reminds users to do a thing they wanted reminding of.',
 	args: true,
 	usage: 'in <time> to <do something>',
-	permission: ADMINISTRATOR | OPERATOR | PREMIUM | STANDARD,
+	permission: ADMINISTRATOR | OPERATOR | TRUSTED | PREMIUM | STANDARD,
 	channel: ALL,
 	async execute(teambot, message, args) {
 		// !remind me in {time increments} to {message}
