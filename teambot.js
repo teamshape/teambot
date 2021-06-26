@@ -719,7 +719,7 @@ bot.on('guildMemberAdd', async member => {
 
 	return member.send(dm, { split: true })
 		.then(() => {
-			console.log(`Sent welcome message to ${member.displayName}.\n`);
+			console.log(`Sent welcome message to ${member.displayName}.`);
 		})
 		.catch(error => {
 			console.error(`Could not send help DM to ${message.author.tag}.\n`, error);
