@@ -830,6 +830,18 @@ bot.on('messageDelete', async message => {
 
 	// Update chats to show the message was deleted.
 	teambot.db.chats.update({ deleted: true }, { where: { messageId: message.id } });
+
+	const log = await auditLookup('MESSAGE_DELETE', message.guild);
+
+	if (!log) return auditLine(`A message by ${message.author.tag} in #${message.channel.name} was deleted, but no relevant audit logs were found. The message was: "${message.content}"`);
+	const { executor, target } = log;
+
+	if (target.id === message.author.id) {
+		auditLine(`A message by ${message.author.tag} in #${message.channel.name} was deleted by ${executor.tag}. The message was: "${message.content}"`);
+	}
+	else {
+		auditLine(`A message by ${message.author.tag} in #${message.channel.name} was deleted by themselves. The message was: "${message.content}"`);
+	}
 });
 
 // Fires when a user's presence changes e.g. status change, music change etc.
@@ -886,10 +898,10 @@ async function auditLookup(type, guild) {
 }
 
 function auditLine(line) {
-	const chan = bot.channels.cache.get(auditChannel);
-	if (chan) {
-		chan.send(`${line}`);
-	}
+	// const chan = bot.channels.cache.get(auditChannel);
+	// if (chan) {
+	// 	chan.send(`${line}`);
+	// }
 	console.log(line);
 }
 
