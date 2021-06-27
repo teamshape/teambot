@@ -63,12 +63,12 @@ bot.once('ready', async () => {
 		bot.user.setUsername(state.botname)
 			.then(user => console.log(`Username set to ${state.botname}`))
 			.catch(console.error);
-        }
+	}
 	else {
 		bot.user.setUsername('TeamBot')
 			.then(user => console.log(`Username set to ${user.username}`))
 			.catch(console.error);
-        }
+	}
 
 	bot.user.setPresence({ activity: { name: 'all my stocks grow higher', type: 'WATCHING' }, status: 'online' })
 		.then(presence => console.log(`Activity set to ${presence.activities[0].name}`))
@@ -291,7 +291,7 @@ bot.once('ready', async () => {
 
 	const roleRemover = new CronJob('0 0 0 * * *', async function() {
 		bot.guilds.cache.forEach(async function(g) {
-			const role = g.roles.cache.find(role => role.name === "FB Normie");
+			const role = g.roles.cache.find(role => role.name === 'FB Normie');
 			if (role) {
 				const users = await teambot.db.users.findAll({ where: {
 					createdAt: {
@@ -313,7 +313,7 @@ bot.once('ready', async () => {
 	// Once a week on a Sunday at midnight.
 	const surAddition = new CronJob('0 0 0 * * 0', async function() {
 		bot.guilds.cache.forEach(async function(g) {
-			const role = g.roles.cache.find(role => role.name === "Suspect Under Review");
+			const role = g.roles.cache.find(role => role.name === 'Suspect Under Review');
 			if (role) {
 				const users = await teambot.db.users.findAll({
 					attributes: ['user', 'guild', 'createdAt'],
@@ -321,7 +321,7 @@ bot.once('ready', async () => {
 						{
 							model: teambot.db.chats,
 							attributes: ['id', 'guild', 'user'],
-							required: false
+							required: false,
 						},
 					],
 					where: {
@@ -390,7 +390,7 @@ bot.on('messageReactionAdd', async (reaction) => {
 			reactResponses = await teambot.db.responses.findAll({ where: {
 				guild: reaction.message.guild.id,
 				react: true,
-				target: reaction.emoji.id
+				target: reaction.emoji.id,
 			} });
 		}
 		catch (e) {
@@ -426,12 +426,12 @@ bot.on('message', async message => {
 	// Only for specific bot channels after this, remove listening from DMs, and prevent actions if the bot spoke.
 	if (message.channel.type === 'dm' || message.author.bot) return;
 
-    let userResponses = [];
+	let userResponses = [];
 	try {
 		userResponses = await teambot.db.responses.findAll({ where: {
 			guild: message.guild.id,
 			target: message.author.id,
-			user: true
+			user: true,
 		} });
 	}
 	catch (e) {
@@ -446,7 +446,7 @@ bot.on('message', async message => {
 	try {
 		wordResponses = await teambot.db.responses.findAll({ where: {
 			guild: message.guild.id,
-			word: true
+			word: true,
 		} });
 	}
 	catch (e) {
@@ -692,28 +692,28 @@ bot.on('guildMemberAdd', async member => {
 	const have = pluralize('has', userCount);
 	channel.send(`${welcomes.dataValues.welcome} ${member}. ${userCount} new ${users} ${have} joined today.`, attachment);
 
-	const role = member.guild.roles.cache.find(role => role.name === "FB Normie");
+	const role = member.guild.roles.cache.find(role => role.name === 'FB Normie');
 	if (role) {
 		member.roles.add(role);
 	}
 
 	const dm = [];
 	const server = member.guild.name;
-	let rules = member.guild.channels.cache.find(
-		channel => channel.name.toLowerCase() === "read-me"
-	)
-	let botChannel = member.guild.channels.cache.find(
-		channel => channel.name.toLowerCase() === "trading-bot-channel"
-	)
-	let normieChannel = member.guild.channels.cache.find(
-		channel => channel.name.toLowerCase() === "ape-enclosure"
-	)
+	const rules = member.guild.channels.cache.find(
+		channel => channel.name.toLowerCase() === 'read-me',
+	);
+	const botChannel = member.guild.channels.cache.find(
+		channel => channel.name.toLowerCase() === 'trading-bot-channel',
+	);
+	const normieChannel = member.guild.channels.cache.find(
+		channel => channel.name.toLowerCase() === 'ape-enclosure',
+	);
 	dm.push(`Welcome new loser to ${server}. You are loser #${totalUsers} and very important to us.\n`);
-	dm.push(`Since you're new here, we thought it would be important to send you some information so you don't immediately make a fool of yourself.\n`);
-	dm.push(`As you probably have a reading age of 5, we will keep it simple so you don't get confused:`);
+	dm.push('Since you\'re new here, we thought it would be important to send you some information so you don\'t immediately make a fool of yourself.\n');
+	dm.push('As you probably have a reading age of 5, we will keep it simple so you don\'t get confused:');
 	dm.push(`- Make sure you read the rules first before saying anything. These are found here: <#${rules.id}>`);
-	dm.push(`- Continue following the rules.`);
-	dm.push(`- There are no further steps.\n`);
+	dm.push('- Continue following the rules.');
+	dm.push('- There are no further steps.\n');
 	dm.push(`If you show that you aren't a sperg you will get access to the other channels. Please show your value by sending some semi-intelligent messages in <#${normieChannel.id}> to unlock everything.\n`);
 	dm.push(`${state.botname} commands can be found by typing !commands in <#${botChannel.id}>.`);
 
@@ -739,15 +739,15 @@ bot.on('guildMemberUpdate', async (oldMember, newMember) => {
 		auditLine('GUILD_MEMBER_UPDATE', newMember.guild.id, `The role(s) ${removedRoles.map(r => r.name)} were removed from ${oldMember.displayName} by ${executor.tag}.`);
 		if (removedRoles.map(r => r.name).includes('FB Normie')) {
 			if (executor.id !== client_id) {
-				let normieChannel = oldMember.guild.channels.cache.find(
-					channel => channel.name.toLowerCase() === "ape-enclosure"
-				)
+				const normieChannel = oldMember.guild.channels.cache.find(
+					channel => channel.name.toLowerCase() === 'ape-enclosure',
+				);
 				if (normieChannel) {
 					normieChannel.send(`Congratulations for escaping the ape enclosure <@${oldMember.id}>. Take note everyone.`);
 				}
-				let dm = [];
-				dm.push(`Congratulations for escaping the ape enclosure, you're now free to see and chat in all channels.`);
-				oldMember.send(dm, { split: true })
+				const dm = [];
+				dm.push('Congratulations for escaping the ape enclosure, you\'re now free to see and chat in all channels.');
+				oldMember.send(dm, { split: true });
 			}
 		}
 	}
@@ -857,14 +857,14 @@ bot.on('presenceUpdate', async (oldMember, newMember) => {
 			permission: permissions.STANDARD,
 		});
 		await teambot.db.users.update({
-			name: user.nickname
+			name: user.nickname,
 		},
 		{
 			where: {
 				guild: newMember.guild.id,
 				user: newMember.userID,
-			}
-		})
+			},
+		});
 
 	}
 	catch (e) {
