@@ -18,4 +18,4 @@ exports.canCommandRun = function(command, channel) {
 		return true;
 	}
 	return false;
-}
+};
