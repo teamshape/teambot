@@ -26,8 +26,7 @@ module.exports = {
 				if (!reactionEmoji) {
 					// Is this a standard Unicode emoji?
 					const regex = emojiRegex();
-					let match;
-					match = regex.exec(r.dataValues.response);
+					const match = regex.exec(r.dataValues.response);
 					dbEmoji = match[0];
 				}
 				else {
@@ -44,8 +43,7 @@ module.exports = {
 					if (!targetEmoji) {
 						// Is this a standard Unicode emoji?
 						const regex = emojiRegex();
-						let match;
-						match = regex.exec(r.dataValues.target);	
+						const match = regex.exec(r.dataValues.target);
 						dbTargetEmoji = match[0];
 					}
 					else {
@@ -84,8 +82,7 @@ module.exports = {
 
 			// Is this a standard Unicode emoji?
 			const regex = emojiRegex();
-			let match;
-			match = regex.exec(args[2]);
+			const match = regex.exec(args[2]);
 			if (!match) {
 				// Nope, not on the server and not Unicode.
 				return message.reply('Emoji not available on this server.');
@@ -99,15 +96,6 @@ module.exports = {
 
 		if (args[0] === 'user') {
 			const targetUser = args[1].slice(3, -1).trim();
-			try {
-				loadedTargetUser = await teambot.db.users.findOne({ where: {
-					guild: guild,
-					user: targetUser,
-				} });
-			}
-			catch (e) {
-				return message.reply('Something went wrong with finding the target user.');
-			}
 
 			try {
 				await teambot.db.responses.create({
@@ -115,7 +103,7 @@ module.exports = {
 					channel: message.channel.id,
 					author: message.author.id,
 					user: true,
-					target: args[1].slice(3, -1).trim(),
+					target: targetUser,
 					response: dbEmoji,
 				});
 				return message.reply('Response added.');
@@ -156,13 +144,12 @@ module.exports = {
 
 				// Is this a standard Unicode emoji?
 				const regex = emojiRegex();
-				let match;
-				match = regex.exec(args[1]);
+				const match = regex.exec(args[1]);
 				if (!match) {
 					// Nope, not on the server and not Unicode.
 					return message.reply('Emoji not available on this server.');
 				}
-	
+
 				dbReactionEmoji = match[0];
 			}
 			else {

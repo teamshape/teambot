@@ -30,7 +30,7 @@ module.exports = {
 		data.push(`User count: ${userCount}`);
 		data.push(`Bot count: ${botCount}`);
 		data.push(`Chat lines: ${chatCount}`);
-		data.push("\nView all stats including historic records at https://asxbets.lol");
+		data.push('\nView all stats including historic records at https://asxbets.lol');
 
 		return message.author.send(data, { split: true })
 			.then(() => {

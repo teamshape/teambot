@@ -14,7 +14,6 @@ module.exports = {
 		const guild = message.guild.id;
 		const thisMonth = moment().format('MMMM YYYY');
 		const nextMonth = moment().add(1, 'months').format('MMMM YYYY');
-		let asx = '';
 
 		if (args[0] === 'add') {
 			if (args[1] === 'undefined') {

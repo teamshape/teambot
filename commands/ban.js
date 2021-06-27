@@ -35,7 +35,7 @@ module.exports = {
 					channel: message.channel.id,
 					moderator: message.author.id,
 					user: user.id,
-					banDate: banDate
+					banDate: banDate,
 				});
 				guild.members.ban(user);
 				return message.reply(`${user} has been banned until ${banDate}.`);

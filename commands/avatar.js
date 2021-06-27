@@ -7,7 +7,7 @@ module.exports = {
 	aliases: ['icon', 'pfp', 'a'],
 	permission: ADMINISTRATOR | OPERATOR | TRUSTED | PREMIUM | STANDARD,
 	channel: BOTCHANNEL,
-	async execute(teambot, message, args) {
+	async execute(teambot, message) {
 		if (!message.mentions.users.size) {
 			return message.channel.send(`${message.author.displayAvatarURL({ dynamic: true, format: 'png' })}`);
 		}

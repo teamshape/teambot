@@ -1,5 +1,5 @@
 const got = require('got');
-const { ALL, BOTCHANNEL } = require('../util/channels');
+const { BOTCHANNEL } = require('../util/channels');
 const { ADMINISTRATOR, OPERATOR, TRUSTED, PREMIUM, STANDARD } = require('../util/permissions');
 
 module.exports = {

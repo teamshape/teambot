@@ -9,13 +9,13 @@ module.exports = {
 	usage: 'time',
 	permission: ADMINISTRATOR | OPERATOR | TRUSTED | PREMIUM | STANDARD,
 	channel: BOTCHANNEL,
-	async execute(teambot, message, args) {
+	async execute(teambot, message) {
 
 		const local = moment().format();
 		const aus = moment().tz('Australia/Sydney').format();
 
 		const data = [];
-		data.push("Let's look up some times!");
+		data.push('Let\'s look up some times!');
 		data.push(`Server time: ${local}.`);
 		data.push(`Australia time: ${aus}.`);
 

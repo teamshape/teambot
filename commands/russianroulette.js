@@ -52,8 +52,8 @@ module.exports = {
 			catch (e) {
 				console.log(e);
 			}
-			const fbNormie = message.member.guild.roles.cache.find(role => role.name === "FB Normie");
-			const rrLoser = message.member.guild.roles.cache.find(role => role.name === "Shit at russian roulette");
+			const fbNormie = message.member.guild.roles.cache.find(role => role.name === 'FB Normie');
+			const rrLoser = message.member.guild.roles.cache.find(role => role.name === 'Shit at russian roulette');
 			if (fbNormie) {
 				message.member.roles.add(fbNormie);
 			}
