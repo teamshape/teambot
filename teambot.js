@@ -736,7 +736,7 @@ bot.on('guildMemberUpdate', async (oldMember, newMember) => {
 	// If the role(s) are present on the old member object but no longer on the new one (i.e role(s) were removed)
 	const removedRoles = oldMember.roles.cache.filter(role => !newMember.roles.cache.has(role.id));
 	if (removedRoles.size > 0) {
-		auditLine(`The role(s) ${removedRoles.map(r => r.name)} were removed from ${oldMember.displayName} by ${executor.tag}.`);
+		auditLine('GUILD_MEMBER_UPDATE', newMember.guild.id, `The role(s) ${removedRoles.map(r => r.name)} were removed from ${oldMember.displayName} by ${executor.tag}.`);
 		if (removedRoles.map(r => r.name).includes('FB Normie')) {
 			if (executor.id !== client_id) {
 				let normieChannel = oldMember.guild.channels.cache.find(
@@ -753,7 +753,7 @@ bot.on('guildMemberUpdate', async (oldMember, newMember) => {
 	}
 	// If the role(s) are present on the new member object but are not on the old one (i.e role(s) were added)
 	const addedRoles = newMember.roles.cache.filter(role => !oldMember.roles.cache.has(role.id));
-	if (addedRoles.size > 0) auditLine(`The role(s) ${addedRoles.map(r => r.name)} were added to ${oldMember.displayName} by ${executor.tag}.`);
+	if (addedRoles.size > 0) auditLine('GUILD_MEMBER_UPDATE', newMember.guild.id, `The role(s) ${addedRoles.map(r => r.name)} were added to ${oldMember.displayName} by ${executor.tag}.`);
 
 });
 
@@ -766,7 +766,7 @@ bot.on('channelCreate', async channel => {
 	if (!log) return console.log(`${channel.name} has been created, but no audit log could be found.`);
 	const { executor } = log;
 
-	auditLine(`${channel.name} has been created by ${executor.tag}.`);
+	auditLine('CHANNEL_CREATE', channel.guild.id, `${channel.name} has been created by ${executor.tag}.`);
 });
 
 // Fires when channels are deleted.
@@ -776,7 +776,7 @@ bot.on('channelDelete', async channel => {
 	if (!log) return console.log(`${channel.name} has been deleted, but no audit log could be found.`);
 	const { executor } = log;
 
-	auditLine(`${channel.name} has been deleted by ${executor.tag}.`);
+	auditLine('CHANNEL_DELETE', channel.guild.id, `${channel.name} has been deleted by ${executor.tag}.`);
 });
 
 // Fires when users are removed from the server - either by themselves or by another person.
@@ -787,10 +787,10 @@ bot.on('guildMemberRemove', async member => {
 	const { executor, target } = log;
 
 	if (target.id === member.id) {
-		auditLine(`${member.user.tag} left the server; kicked by ${executor.tag}.`);
+		auditLine('MEMBER_KICK', member.guild.id, `${member.user.tag} left the server; kicked by ${executor.tag}.`);
 	}
 	else {
-		auditLine(`${member.user.tag} left the server, audit log fetch was inconclusive.`);
+		auditLine('MEMBER_KICK', member.guild.id, `${member.user.tag} left the server, audit log fetch was inconclusive.`);
 	}
 });
 
@@ -798,14 +798,14 @@ bot.on('guildMemberRemove', async member => {
 bot.on('guildBanAdd', async (guild, user) => {
 	const log = await auditLookup('MEMBER_BAN_ADD', guild);
 
-	if (!log) return auditLine(`${user.tag} was banned from ${guild.name} but no audit log could be found.`);
+	if (!log) return auditLine('MEMBER_BAN_ADD', guild.id, `${user.tag} was banned from ${guild.name} but no audit log could be found.`);
 	const { executor, target } = log;
 
 	if (target.id === user.id) {
-		auditLine(`${user.tag} got banned in the server ${guild.name}, by ${executor.tag}`);
+		auditLine('MEMBER_BAN_ADD', guild.id, `${user.tag} got banned in the server ${guild.name}, by ${executor.tag}`);
 	}
 	else {
-		auditLine(`${user.tag} got banned in the server ${guild.name}, audit log fetch was inconclusive.`);
+		auditLine('MEMBER_BAN_ADD', guild.id, `${user.tag} got banned in the server ${guild.name}, audit log fetch was inconclusive.`);
 	}
 });
 
@@ -813,14 +813,14 @@ bot.on('guildBanAdd', async (guild, user) => {
 bot.on('guildBanRemove', async (guild, user) => {
 	const log = await auditLookup('MEMBER_BAN_REMOVE', guild);
 
-	if (!log) return auditLine(`${user.tag} was unbanned from ${guild.name} but no audit log could be found.`);
+	if (!log) return auditLine('MEMBER_BAN_REMOVE', guild.id, `${user.tag} was unbanned from ${guild.name} but no audit log could be found.`);
 	const { executor, target } = log;
 
 	if (target.id === user.id) {
-		auditLine(`${user.tag} got unbanned in the server ${guild.name}, by ${executor.tag}`);
+		auditLine('MEMBER_BAN_REMOVE', guild.id, `${user.tag} got unbanned in the server ${guild.name}, by ${executor.tag}`);
 	}
 	else {
-		auditLine(`${user.tag} got unbanned in the server ${guild.name}, audit log fetch was inconclusive.`);
+		auditLine('MEMBER_BAN_REMOVE', guild.id, `${user.tag} got unbanned in the server ${guild.name}, audit log fetch was inconclusive.`);
 	}
 });
 
@@ -833,14 +833,14 @@ bot.on('messageDelete', async message => {
 
 	const log = await auditLookup('MESSAGE_DELETE', message.guild);
 
-	if (!log) return auditLine(`A message by ${message.author.tag} in #${message.channel.name} was deleted, but no relevant audit logs were found. The message was: "${message.content}"`);
+	if (!log) return auditLine('MESSAGE_DELETE', message.guild.id, `A message by ${message.author.tag} in #${message.channel.name} was deleted, but no relevant audit logs were found. The message was: "${message.content}"`);
 	const { executor, target } = log;
 
 	if (target.id === message.author.id) {
-		auditLine(`A message by ${message.author.tag} in #${message.channel.name} was deleted by ${executor.tag}. The message was: "${message.content}"`);
+		auditLine('MESSAGE_DELETE', message.guild.id, `A message by ${message.author.tag} in #${message.channel.name} was deleted by ${executor.tag}. The message was: "${message.content}"`);
 	}
 	else {
-		auditLine(`A message by ${message.author.tag} in #${message.channel.name} was deleted by themselves. The message was: "${message.content}"`);
+		auditLine('MESSAGE_DELETE', message.guild.id, `A message by ${message.author.tag} in #${message.channel.name} was deleted by themselves. The message was: "${message.content}"`);
 	}
 });
 
@@ -897,12 +897,18 @@ async function auditLookup(type, guild) {
 	return fetchedLogs.entries.first();
 }
 
-function auditLine(line) {
-	// const chan = bot.channels.cache.get(auditChannel);
-	// if (chan) {
-	// 	chan.send(`${line}`);
-	// }
-	console.log(line);
+async function auditLine(event, guild, message) {
+	try {
+		await teambot.db.audit.create({
+			event: event,
+			guild: guild,
+			message: message,
+		});
+	}
+	catch (error) {
+		console.log(error);
+	}
+	console.log(message);
 }
 
 function sayInAllowedChannels(line) {
