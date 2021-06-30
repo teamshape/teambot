@@ -697,7 +697,7 @@ bot.on('guildMemberAdd', async member => {
 		member.roles.add(role);
 	}
 
-	const dm = [];
+	// Send the welcome DM and wait for them to react to it.
 	const server = member.guild.name;
 	const rules = member.guild.channels.cache.find(
 		channel => channel.name.toLowerCase() === 'read-me',
@@ -708,23 +708,39 @@ bot.on('guildMemberAdd', async member => {
 	const normieChannel = member.guild.channels.cache.find(
 		channel => channel.name.toLowerCase() === 'ape-enclosure',
 	);
-	dm.push(`Welcome new loser to ${server}. You are loser #${totalUsers} and very important to us.\n`);
-	dm.push('Since you\'re new here, we thought it would be important to send you some information so you don\'t immediately make a fool of yourself.\n');
-	dm.push('As you probably have a reading age of 5, we will keep it simple so you don\'t get confused:');
-	dm.push(`- Make sure you read the rules first before saying anything. These are found here: <#${rules.id}>`);
-	dm.push('- Continue following the rules.');
-	dm.push('- There are no further steps.\n');
-	dm.push(`If you show that you aren't a sperg you will get access to the other channels. Please show your value by sending some semi-intelligent messages in <#${normieChannel.id}> to unlock everything.\n`);
-	dm.push(`${state.botname} commands can be found by typing !commands in <#${botChannel.id}>.`);
+	let dm = `Welcome new loser to ${server}. You are loser #${totalUsers} and very important to us.\n\n`;
+	dm += 'Since you\'re new here, we thought it would be important to send you some information so you don\'t immediately make a fool of yourself.\n\n';
+	dm += 'As you probably have a reading age of 5, we will keep it simple so you don\'t get confused:\n';
+	dm += `- Make sure you read the rules first before saying anything. These are found here: <#${rules.id}>\n`;
+	dm += '- Continue following the rules.\n';
+	dm += '- There are no further steps.\n\n';
+	dm += `If you show that you aren't a sperg you will get access to the other channels. Please show your value by sending some semi-intelligent messages in <#${normieChannel.id}> to unlock everything.\n\n`;
+	dm += `${state.botname} commands can be found by typing !commands in <#${tradingBotChannel.id}>.\n\n`;
+	dm += 'Automatically validate yourself by adding a 📉 reaction to this message within the next 60 seconds.\n';
 
-	return member.send(dm, { split: true })
-		.then(() => {
+	member.send(dm)
+		.then(function(message) {
+			message.react('📈');
+			message.react('📉');
 			console.log(`Sent welcome message to ${member.displayName}.`);
+
+			const filter = (reaction, user) => {
+				return ['📉'].includes(reaction.emoji.name) && user.id === member.id;
+			};
+
+			message.awaitReactions(filter, { max: 1, time: 60000, errors: ['time'] })
+				.then(collected => {
+					console.log(`${member.displayName} added the correct emoji ${collected.size} times.`);
+					// Remove the fb normie role that was added above.
+					member.roles.remove(role);
+				})
+				.catch(collected => {
+					console.log(`After a minute, ${member.displayName} did not send a reaction.`);
+				});
 		})
 		.catch(error => {
-			console.error(`Could not send help DM to ${message.author.tag}.\n`, error);
+			console.error(`Could not send help DM to ${member.displayName}.\n`, error);
 		});
-
 });
 
 // Fire when users have their role updated.
