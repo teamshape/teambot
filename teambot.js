@@ -700,13 +700,13 @@ bot.on('guildMemberAdd', async member => {
 	// Send the welcome DM and wait for them to react to it.
 	const server = member.guild.name;
 	const rules = member.guild.channels.cache.find(
-		channel => channel.name.toLowerCase() === 'read-me',
+		rChannel => rChannel.name.toLowerCase() === 'read-me',
 	);
-	const botChannel = member.guild.channels.cache.find(
-		channel => channel.name.toLowerCase() === 'trading-bot-channel',
+	const tradingBotChannel = member.guild.channels.cache.find(
+		tChannel => tChannel.name.toLowerCase() === 'trading-bot-channel',
 	);
 	const normieChannel = member.guild.channels.cache.find(
-		channel => channel.name.toLowerCase() === 'ape-enclosure',
+		aChannel => aChannel.name.toLowerCase() === 'ape-enclosure',
 	);
 	let dm = `Welcome new loser to ${server}. You are loser #${totalUsers} and very important to us.\n\n`;
 	dm += 'Since you\'re new here, we thought it would be important to send you some information so you don\'t immediately make a fool of yourself.\n\n';
