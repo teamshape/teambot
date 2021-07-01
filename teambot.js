@@ -840,6 +840,11 @@ bot.on('guildBanRemove', async (guild, user) => {
 	}
 });
 
+// Fires when a channel is updated.
+bot.on('channelUpdate', async (oldChannel, newChannel) => {
+	auditLine('CHANNEL_UPDATE', newChannel.guild.id, `Channel ${newChannel.name} has been updated.`);
+});
+
 bot.on('messageDelete', async message => {
 	// Ignore direct messages
 	if (!message.guild) return;
