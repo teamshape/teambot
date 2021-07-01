@@ -5,7 +5,7 @@ const fs = require('fs');
 const got = require('got');
 const moment = require('moment-timezone');
 const { Client, Collection, Intents, MessageAttachment, MessageEmbed } = require('discord.js');
-const { token, allowedChannels, botChannel, avApiKey, timer, prefix, auditChannel, client_id } = require('./config/teambot.json');
+const { token, allowedChannels, botChannel, avApiKey, timer, prefix, client_id } = require('./config/teambot.json');
 const { CronJob } = require('cron');
 const { Sequelize, Op } = require('sequelize');
 const AsyncLock = require('async-lock');
@@ -25,7 +25,7 @@ const permissions = require('./util/permissions');
 const channels = require('./util/channels');
 
 // Create global state for settings/flags.
-let state = [];
+const state = [];
 
 const teambot = {
 	db: db,
@@ -61,7 +61,7 @@ bot.once('ready', async () => {
 
 	if (state.botname) {
 		bot.user.setUsername(state.botname)
-			.then(user => console.log(`Username set to ${state.botname}`))
+			.then(console.log(`Username set to ${state.botname}`))
 			.catch(console.error);
 	}
 	else {
@@ -108,6 +108,8 @@ bot.once('ready', async () => {
 		bans.forEach(async function(b) {
 			const guildId = b.dataValues.guild;
 			const guild = bot.guilds.cache.get(guildId);
+			const userId = b.dataValues.user;
+			const user = bot.users.cache.get(userId);
 			try {
 				teambot.db.bans.destroy({
 					where: {
@@ -115,7 +117,7 @@ bot.once('ready', async () => {
 					},
 				});
 				guild.members.unban(user);
-				saySomething(`${user} has been unbanned.`);
+				saySomething(`${user.displayName} has been unbanned.`);
 			}
 			catch (e) {
 				console.log(e);
@@ -291,7 +293,7 @@ bot.once('ready', async () => {
 
 	const roleRemover = new CronJob('0 0 0 * * *', async function() {
 		bot.guilds.cache.forEach(async function(g) {
-			const role = g.roles.cache.find(role => role.name === 'FB Normie');
+			const role = g.roles.cache.find(fRole => fRole.name === 'FB Normie');
 			if (role) {
 				const users = await teambot.db.users.findAll({ where: {
 					createdAt: {
@@ -313,7 +315,7 @@ bot.once('ready', async () => {
 	// Once a week on a Sunday at midnight.
 	const surAddition = new CronJob('0 0 0 * * 0', async function() {
 		bot.guilds.cache.forEach(async function(g) {
-			const role = g.roles.cache.find(role => role.name === 'Suspect Under Review');
+			const role = g.roles.cache.find(sRole => sRole.name === 'Suspect Under Review');
 			if (role) {
 				const users = await teambot.db.users.findAll({
 					attributes: ['user', 'guild', 'createdAt'],
@@ -662,7 +664,7 @@ bot.on('guildMemberAdd', async member => {
 	ctx.font = applyText(canvas, `${member.displayName}!`);
 	ctx.fillText(`${member.displayName}!`, canvas.width / 2.5, canvas.height / 1.5);
 
-	const totalUsers = (await member.guild.members.fetch()).filter(member => !member.user.bot).size;
+	const totalUsers = (await member.guild.members.fetch()).filter(fMember => !fMember.user.bot).size;
 	ctx.font = '20px Lato';
 
 	// Use 'x' as the format for unix time in milliseconds.
@@ -692,7 +694,8 @@ bot.on('guildMemberAdd', async member => {
 	const have = pluralize('has', userCount);
 	channel.send(`${welcomes.dataValues.welcome} ${member}. ${userCount} new ${users} ${have} joined today.`, attachment);
 
-	const role = member.guild.roles.cache.find(role => role.name === 'FB Normie');
+	// Add the normie role to the user.
+	const role = member.guild.roles.cache.find(fRole => fRole.name === 'FB Normie');
 	if (role) {
 		member.roles.add(role);
 	}
@@ -747,7 +750,7 @@ bot.on('guildMemberAdd', async member => {
 bot.on('guildMemberUpdate', async (oldMember, newMember) => {
 
 	const log = await auditLookup('GUILD_MEMBER_UPDATE', newMember.guild);
-	const { executor, target } = log;
+	const { executor } = log;
 
 	// If the role(s) are present on the old member object but no longer on the new one (i.e role(s) were removed)
 	const removedRoles = oldMember.roles.cache.filter(role => !newMember.roles.cache.has(role.id));
@@ -869,7 +872,7 @@ bot.on('messageDelete', async message => {
 // This function can be removed when we reach parity with what's in the UserDB.
 // There may be other uses for this function e.g. updating users on name changes.
 bot.on('presenceUpdate', async (oldMember, newMember) => {
-	const user = newMember.guild.members.cache.find(user => user.id === newMember.userID);
+	const user = newMember.guild.members.cache.find(fUser => fUser.id === newMember.userID);
 
 	try {
 		await teambot.db.users.upsert({
