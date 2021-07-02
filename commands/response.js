@@ -27,6 +27,10 @@ module.exports = {
 					// Is this a standard Unicode emoji?
 					const regex = emojiRegex();
 					const match = regex.exec(r.dataValues.response);
+					if (!match) {
+						console.log(`Missing react response for ${r.dataValues.id}`);
+						return;
+					}
 					dbEmoji = match[0];
 				}
 				else {
