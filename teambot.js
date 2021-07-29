@@ -860,17 +860,20 @@ bot.on('messageDelete', async message => {
 	if (!log) return auditLine('MESSAGE_DELETE', message.guild.id, `A message by ${message.author.tag} in #${message.channel.name} was deleted, but no relevant audit logs were found. The message was: "${message.content}"`);
 	const { executor, target } = log;
 
+	let userId;
 	if (target.id === message.author.id) {
 		auditLine('MESSAGE_DELETE', message.guild.id, `A message by ${message.author.tag} in #${message.channel.name} was deleted by ${executor.tag}. The message was: "${message.content}"`);
+		userId = executor.id;
 	}
 	else {
 		auditLine('MESSAGE_DELETE', message.guild.id, `A message by ${message.author.tag} in #${message.channel.name} was deleted by themselves. The message was: "${message.content}"`);
+		userId = message.author.id;
 	}
 
 	if (!state.disablenodeleting || state.disablenodeleting == 0) {
 		const chan = bot.channels.cache.get(message.channel.id);
 		if (chan) {
-			chan.send(`NO DELETING <@${executor.id}>`);
+			chan.send(`NO DELETING <@${userId}>`);
 		}
 	}
 });
