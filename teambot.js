@@ -866,6 +866,13 @@ bot.on('messageDelete', async message => {
 	else {
 		auditLine('MESSAGE_DELETE', message.guild.id, `A message by ${message.author.tag} in #${message.channel.name} was deleted by themselves. The message was: "${message.content}"`);
 	}
+
+	if (!state.disablenodeleting || state.disablenodeleting == 0) {
+		const chan = bot.channels.cache.get(message.channel.id);
+		if (chan) {
+			chan.send(`NO DELETING <@${executor.id}>`);
+		}
+	}
 });
 
 // Fires when a user's presence changes e.g. status change, music change etc.
