@@ -794,7 +794,8 @@ bot.on('messageDelete', async message => {
 	}
 
 	// Only delete if our state is not set and the message was sent under 20s ago.
-	if ((!state.get('disablenodeleting') || state.get('disablenodeleting') == 0) && message.createdTimestamp > Date.now() - 20000) {
+	const disablenodeleting = await state.get(message.guild, 'disablenodeleting');
+	if ((!disablenodeleting || disablenodeleting == 0) && message.createdTimestamp > Date.now() - 20000) {
 		const chan = bot.channels.cache.get(message.channel.id);
 		if (chan) {
 			chan.send(`NO DELETING <@${userId}>`);

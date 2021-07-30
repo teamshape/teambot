@@ -6,15 +6,14 @@ exports.get = async function(guild, key) {
 			guild: guild.id,
 			key: key,
 		} });
-		const value = dbValue.dataValues.value;
-		if (typeof value !== 'undefined' && value !== null) {
-			return `Key [${key}] is set to [${value}]`;
+		if (dbValue) {
+			return dbValue.dataValues.value;
 		}
 		return false;
 	}
 	catch (e) {
 		console.log(e);
-		return `Error getting key [${key}]`;
+		return false;
 	}
 };
 
@@ -25,18 +24,17 @@ exports.set = async function(guild, key, value) {
 			key: key,
 			value: value,
 		});
-		const response = `New key [${key}] has been set to [${value}]`;
-		return response;
+		return true;
 	}
 	catch (error) {
 		if (error.name === 'SequelizeUniqueConstraintError') {
 			try {
 				await db.kvs.update({ value: value }, { where: { guild: guild.id, key: key } });
-				return `Key [${key}] has been updated to [${value}]`;
+				return true;
 			}
 			catch (e) {
 				console.log(e);
-				return `Error setting key [${key}] to [${value}]`;
+				return false;
 			}
 		}
 	}
@@ -50,10 +48,10 @@ exports.delete = async function(guild, key) {
 				key: key,
 			},
 		});
-		return `Deleted key [${key}]`;
+		return true;
 	}
 	catch (e) {
 		console.log(e);
-		return `Error deleting key [${key}]`;
+		return false;
 	}
 };

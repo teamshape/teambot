@@ -13,19 +13,26 @@ module.exports = {
 		const command = args.shift();
 		if (command === 'get') {
 			const key = args.shift().toLowerCase();
-			const response = await state.get(message.guild, key);
-			return message.reply(response);
+			const value = await state.get(message.guild, key);
+			if (value) {
+				return message.reply(`Key [${key}] is set to [${value}].`);
+			}
+			return message.reply(`Error getting key [${key}].`);
 		}
 		else if (command === 'set') {
 			const key = args.shift().toLowerCase();
 			const value = args.join();
-			const response = await state.set(message.guild, key, value);
-			return message.reply(response);
+			if(await state.set(message.guild, key, value)) {
+				return message.reply(`Key [${key}] is set to [${value}].`);
+			}
+			return message.reply(`Error setting key [${key}] to value [${value}].`);
 		}
 		else if (command === 'delete') {
 			const key = args.shift().toLowerCase();
-			const response = await state.delete(message.guild, key);
-			return message.reply(response);
+			if(await state.delete(message.guild, key)) {
+				return message.reply(`Key [${key}] has been deleted.`);
+			}
+			return message.reply(`Error delete key [${key}].`);
 		}
 	},
 };
