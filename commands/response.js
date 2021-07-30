@@ -12,8 +12,6 @@ module.exports = {
 	channel: ALL,
 	async execute(teambot, message, args) {
 
-		const guild = message.guild.id;
-
 		if (args[0] === 'list') {
 			const responses = await teambot.db.responses.findAll();
 			const data = [];
