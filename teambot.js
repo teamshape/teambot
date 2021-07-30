@@ -23,13 +23,12 @@ const bot = new Client();
 const db = require('./models/index');
 const permissions = require('./util/permissions');
 const channels = require('./util/channels');
-
-// Create global state for settings/flags.
-const state = [];
+const state = require('./util/state');
 
 const teambot = {
 	db: db,
 	permissions: permissions,
+	state: state,
 };
 
 // Set up bot commands.
@@ -49,26 +48,6 @@ bot.once('ready', async () => {
 	const timerEnd = (Date.now() - timerStart) / 1000;
 	console.log(`${bot.user.tag} v${pjson.version}#${hash} loaded in ${timerEnd} seconds!`);
 	saySomething(`${bot.user.tag} v${pjson.version}#${hash} loaded in ${timerEnd} seconds!`);
-
-	// Load keys and values into the state variable for use around TeamBot.
-	const kv = await teambot.db.kvs.findAll();
-	kv.forEach(async function(t) {
-		const key = t.dataValues.key;
-		const value = t.dataValues.value;
-		state[key] = value;
-		console.log(`[State] ${key} => ${value}`);
-	});
-
-	if (state.botname) {
-		bot.user.setUsername(state.botname)
-			.then(console.log(`Username set to ${state.botname}`))
-			.catch(console.error);
-	}
-	else {
-		bot.user.setUsername('TeamBot')
-			.then(user => console.log(`Username set to ${user.username}`))
-			.catch(console.error);
-	}
 
 	bot.user.setPresence({ activity: { name: 'all my stocks grow higher', type: 'WATCHING' }, status: 'online' })
 		.then(presence => console.log(`Activity set to ${presence.activities[0].name}`))
@@ -509,62 +488,6 @@ bot.on('message', async message => {
 				return message.reply('there was an error trying to execute that command!');
 			}
 		}
-		if (teambot.permissions.isAdmin(loadedUser.dataValues.permission)) {
-			if (commandName === 'set') {
-				console.log('Setting key');
-				const key = args.shift().toLowerCase();
-				const value = args.join();
-				console.log(`${key} => ${value}`);
-				// Save it in the state variable.
-				state[key] = value;
-				console.log(state);
-				// Save it in the database for persistence.
-				try {
-					await teambot.db.kvs.create({
-						guild: message.guild.id,
-						key: key,
-						value: value,
-					});
-				}
-				catch (error) {
-					if (error.name === 'SequelizeUniqueConstraintError') {
-						try {
-							await teambot.db.kvs.update({ value: value }, { where: { guild: message.guild.id, key: key } });
-						}
-						catch (e) {
-							console.log(e);
-						}
-					}
-				}
-				return message.reply(`${key} has been set to ${value}`);
-			}
-			if (commandName === 'get') {
-				console.log(state);
-				const key = args.shift().toLowerCase();
-				let value = state[key];
-				console.log(`${key} => ${value}`);
-				if (typeof value === 'undefined' || value === null) {
-					let dbValue = null;
-					try {
-						dbValue = await teambot.db.kvs.findOne({ where: {
-							guild: message.guild.id,
-							key: key,
-						} });
-						value = dbValue.dataValues.value;
-						if (typeof value !== 'undefined' && value !== null) {
-							state[key] = value;
-							console.log(state);
-							return message.reply(`Value is ${value}`);
-						}
-					}
-					catch (e) {
-						console.log(e);
-						return message.reply(`No stored value for ${key}`);
-					}
-				}
-				return message.reply(`Value is ${value}`);
-			}
-		}
 	}
 
 	if (!(allowedChannels.includes(message.channel.id))) return;
@@ -718,7 +641,7 @@ bot.on('guildMemberAdd', async member => {
 	dm += '- Continue following the rules.\n';
 	dm += '- There are no further steps.\n\n';
 	dm += `If you show that you aren't a sperg you will get access to the other channels. Please show your value by sending some semi-intelligent messages in <#${normieChannel.id}> to unlock everything.\n\n`;
-	dm += `${state.botname} commands can be found by typing !commands in <#${tradingBotChannel.id}>.\n\n`;
+	dm += `Bot commands can be found by typing !commands in <#${tradingBotChannel.id}>.\n\n`;
 	dm += 'Automatically validate yourself by adding a 📉 reaction to this message within the next 60 seconds.\n';
 
 	member.send(dm)
@@ -871,7 +794,7 @@ bot.on('messageDelete', async message => {
 	}
 
 	// Only delete if our state is not set and the message was sent under 20s ago.
-	if ((!state.disablenodeleting || state.disablenodeleting == 0) && message.createdTimestamp > Date.now() - 20000) {
+	if ((!state.get('disablenodeleting') || state.get('disablenodeleting') == 0) && message.createdTimestamp > Date.now() - 20000) {
 		const chan = bot.channels.cache.get(message.channel.id);
 		if (chan) {
 			chan.send(`NO DELETING <@${userId}>`);
