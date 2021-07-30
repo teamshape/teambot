@@ -567,7 +567,14 @@ bot.on('guildMemberAdd', async member => {
 		},
 	} });
 
-	const welcomes = await teambot.db.welcomes.findOne({ order: Sequelize.literal('rand()') });
+	// rand() only works on MySQL driver so switch query depending on which DB driver we're using.
+	let welcomes;
+	if (db.sequelize.getDialect() === 'sqlite') {
+		welcomes = await teambot.db.welcomes.findOne();
+	}
+	else {
+		welcomes = await teambot.db.welcomes.findOne({ order: Sequelize.literal('rand()') });
+	}
 
 	// Set up the welcome canvas.
 	const canvas = createCanvas(700, 250);
@@ -661,7 +668,7 @@ bot.on('guildMemberAdd', async member => {
 					member.roles.remove(role);
 				})
 				.catch(collected => {
-					console.log(`After a minute, ${member.displayName} did not send a reaction.`);
+					console.log(`After a minute, ${member.displayName} sent no (${collected.size}) reactions.`);
 				});
 		})
 		.catch(error => {
@@ -888,13 +895,20 @@ function saySomething(line) {
 
 function randomLine() {
 	(async () => {
-		const botlines = await teambot.db.botlines.findOne({ order: Sequelize.literal('rand()') });
+		let botlines;
+		if (db.sequelize.getDialect() === 'sqlite') {
+			botlines = await teambot.db.botlines.findOne();
+		}
+		else {
+			botlines = await teambot.db.botlines.findOne({ order: Sequelize.literal('rand()') });
+		}
 		sayInAllowedChannels(`${botlines.dataValues.botline}`);
 	})();
 }
 
 (function loop() {
-	// const rand = Math.round(Math.random() * 21600000); // 6 hours.
+	// 6 hours.
+	// const rand = Math.round(Math.random() * 21600000);
 	// 24 hours.
 	const rand = Math.round(Math.random() * 86400000);
 	setTimeout(function() {
