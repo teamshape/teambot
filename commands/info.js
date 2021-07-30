@@ -1,10 +1,10 @@
-const { ADMINISTRATOR, OPERATOR, TRUSTED, PREMIUM, STANDARD, PLEBIAN } = require('../util/permissions');
+const permissions = require('../util/permissions');
 const moment = require('moment-timezone');
 const { BOTCHANNEL } = require('../util/channels');
 module.exports = {
 	name: 'info',
 	description: 'Gets user info.',
-	permission: ADMINISTRATOR | OPERATOR | TRUSTED | PREMIUM | STANDARD | PLEBIAN,
+	permission: permissions.ADMINISTRATOR | permissions.OPERATOR | permissions.TRUSTED | permissions.PREMIUM | permissions.STANDARD | permissions.PLEBIAN,
 	channel: BOTCHANNEL,
 	async execute(teambot, message, args) {
 
