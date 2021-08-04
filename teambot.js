@@ -284,7 +284,10 @@ bot.once('ready', async () => {
 				users.forEach(async function(u) {
 					const id = u.dataValues.user;
 					const member = g.members.cache.get(id);
-					member.roles.remove(role);
+                                        // Check if member still exists. Some leave before we can un-ape them automatically (lmao).
+                                        if (member) {
+					        member.roles.remove(role);
+                                        }
 				});
 			}
 		});
