@@ -665,6 +665,9 @@ bot.on('guildMemberAdd', async member => {
 				.then(collected => {
 					console.log(`${member.displayName} added the correct emoji ${collected.size} times.`);
 					// Remove the fb normie role that was added above.
+                                        if (normieChannel) {
+                                                normieChannel.send(`Some apes are smarter than others. Congratulations <@${member.id}>.`);
+                                        }
 					member.roles.remove(role);
 				})
 				.catch(collected => {
