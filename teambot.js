@@ -467,6 +467,10 @@ bot.on('message', async message => {
 		if (permissions.isAdmin(loadedUser.dataValues.permission) && commandName === 'join') {
 			return bot.emit('guildMemberAdd', message.member);
 		}
+		if (permissions.isAdmin(loadedUser.dataValues.permission) && commandName === 'helpme') {
+                        const role = bot.roles.cache.find(fRole => fRole.name === 'FB Normie');
+                        message.member.roles.remove(role);
+                }
 
 		if (command && (command.permission & loadedUser.dataValues.permission) && channels.canCommandRun(command, message.channel.id)) {
 			if (command.args && !args.length) {
