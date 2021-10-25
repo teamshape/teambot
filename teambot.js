@@ -540,7 +540,8 @@ bot.on('message', async message => {
 bot.on('guildMemberAdd', async member => {
 
 	// Send the message to a designated channel on a server. @TODO change this to configuration managed.
-	const channel = member.guild.channels.cache.find(ch => ch.name === 'welcome-channel');
+	// const channel = member.guild.channels.cache.find(ch => ch.name === 'welcome-channel');
+        const channel = bot.channels.get("721332319943786537");
 
 	// Update their record within the user database.
 	try {
