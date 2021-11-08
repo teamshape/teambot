@@ -497,6 +497,21 @@ bot.on('message', async message => {
 		}
 	}
 
+	// Fall through to matching stocks.
+	const regex = /[$!]\w+/gm;
+	let m;
+
+	while ((m = regex.exec(message.content)) !== null) {
+		// This is necessary to avoid infinite loops with zero-width matches
+		if (m.index === regex.lastIndex) {
+			regex.lastIndex++;
+		}
+		// The result can be accessed through the `m`-variable.
+		m.forEach((match) => {
+			goGetStock(message, match);
+		});
+	}
+
 	if (!(allowedChannels.includes(message.channel.id))) return;
 
 	// Karma matches
@@ -524,20 +539,7 @@ bot.on('message', async message => {
 		});
 	}
 
-	// Fall through to matching stocks.
-	const regex = /[$]\w+/gm;
-	let m;
 
-	while ((m = regex.exec(message.content)) !== null) {
-		// This is necessary to avoid infinite loops with zero-width matches
-		if (m.index === regex.lastIndex) {
-			regex.lastIndex++;
-		}
-		// The result can be accessed through the `m`-variable.
-		m.forEach((match) => {
-			goGetStock(message, match);
-		});
-	}
 });
 
 // Fire when new members join the server.
