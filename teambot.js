@@ -941,7 +941,7 @@ function goGetStock(message, match) {
 		try {
 			if (stockPrefix === '$') {
 				request = await got.get('https://www.asx.com.au/asx/1/share/' + stock).json();
-				yahoo = await got.get('http://d.yimg.com/autoc.finance.yahoo.com/autoc?query=' + stock + '.ax&lang=en');
+				// yahoo = await got.get('http://d.yimg.com/autoc.finance.yahoo.com/autoc?query=' + stock + '.ax&lang=en');
 				url = 'https://www.bloomberg.com/quote/' + stock + ':AU';
 			}
 			else if (stockPrefix === '!') {
@@ -956,7 +956,7 @@ function goGetStock(message, match) {
 				request.change_in_percent = request['Global Quote']['10. change percent'];
 				request.previous_close_price = request['Global Quote']['08. previous close'];
 
-				yahoo = await got.get('http://d.yimg.com/autoc.finance.yahoo.com/autoc?query=' + stock + '&lang=en');
+				// yahoo = await got.get('http://d.yimg.com/autoc.finance.yahoo.com/autoc?query=' + stock + '&lang=en');
 				url = 'https://www.bloomberg.com/quote/' + stock + ':US';
 			}
 		}
@@ -964,12 +964,11 @@ function goGetStock(message, match) {
 			return;
 		}
 
-		const yahooBody = yahoo.body;
-		const yahooJson = JSON.parse(yahooBody);
-
-		if (!yahooJson.ResultSet.Result[0]) return;
-
-		const stockName = yahooJson.ResultSet.Result[0].name;
+		// const yahooBody = yahoo.body;
+		// const yahooJson = JSON.parse(yahooBody);
+		// if (!yahooJson.ResultSet.Result[0]) return;
+		// const stockName = yahooJson.ResultSet.Result[0].name;
+                const stockName = stock;
 
 		let thumbnail = 'https://i.imgur.com/zCl2dri.jpg';
 		let color = '0x0099ff';
