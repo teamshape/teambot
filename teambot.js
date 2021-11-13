@@ -968,6 +968,7 @@ function goGetStock(message, match) {
 		// const yahooJson = JSON.parse(yahooBody);
 		// if (!yahooJson.ResultSet.Result[0]) return;
 		// const stockName = yahooJson.ResultSet.Result[0].name;
+		if (!request.last_price) return;
                 const stockName = stock;
 
 		let thumbnail = 'https://i.imgur.com/zCl2dri.jpg';
